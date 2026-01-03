@@ -1,245 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
-    <meta charset="UTF-8" />
-    <title>YAML File Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-        }
-        .row {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        label {
-            width: 150px;
-            font-weight: bold;
-        }
-        select, input {
-            padding: 8px;
-            min-width: 200px;
-        }
-        button {
-            padding: 10px 16px;
-            background-color: #4a90e2;
-            color: white;
-            border: none;
-            radius: 4px;
-            cursor: pointer;
-        }
-        .output {
-            height: 350px;
-            border: 1px solid #ccc;
-            padding: 12px;
-            resize: vertical;
-            font-family: monospace;
-            white-space: pre-wrap;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator YAML</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-    <h1>YAML File Generator</h1>
-
-    <form id="generatorForm">
-        <div class="row">
-            <label for="count">Number of Records:</label>
-            <select id="count">
-                <option value="25">25</option>
-                <option value="30" selected>30</option>
-                <option value="40">40</option>
-                <option value="50">50</option>
-                <option value="60">60</option>
-            </select>
-        </div>
-
-        <div class="row">
-            <label for="locationType">Place Distribution:</label>
-            <select id="locationType">
-                <option value="OceanLakeReefRiverSwamp">Custom (Ocean/Lake/Reef/River/Swamp)</option>
-                <option value="Uniform">Equal Distribution</option>
-            </select>
-        </div>
-
-        <!-- Custom distribution controls if needed -->
-<!-- 
-        <div style="display:none;">
-            <div class="row" id="distRow">
-                <label for="oceanCount">Ocean:</label>
-                <input type="number" id="oceanCount" value="18"/>
-
-                <label for="lakeCount">Lake:</label>
-                <input type="number" id="lakeCount" value="13"/>
-
-                <label for="reefCount">Reef:</label>
-                <input type="number" id="reefCount" value="10"/>
-
-                <label for="riverCount">River:</label>
-                <input type="number" id="riverCount" value="8"/>
-
-                <label for="swampCount">Swamp:</label>
-                <input type="number" id="swampCount" value="3"/>
+    <div class="container">
+        <h1>Generator Plików YAML</h1>
+        
+        <form id="generatorForm">
+            <div class="form-group">
+                <label for="count">Liczba rekordów:</label>
+                <select id="count">
+                    <option value="25">25</option>
+                    <option value="30" selected>30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                </select>
             </div>
+
+            <div class="form-group">
+                <label for="locationType">Rozkład miejsc:</label>
+                <select id="locationType">
+                    <option value="OceanLakeReefRiverSwamp">Dostosowany (Ocean/Lake/Reef/River/Swamp)</option>
+                    <option value="Uniform">Równomierny rozkład</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="seed">Seed losowy (opcjonalnie):</label>
+                <input type="text" id="seed" placeholder="np. 12345">
+            </div>
+
+            <div class="buttons">
+                <button type="submit">Wygeneruj YAML</button>
+                <button type="reset">Zresetuj</button>
+            </div>
+        </form>
+
+        <div class="output-container">
+            <label for="yamlOutput" class="output-label">Wygenerowany YAML:</label>
+            <textarea id="yamlOutput" readonly></textarea>
         </div>
--->
+    </div>
 
-        <div class="row">
-            <label for="seedLabel">Random Seed (leave blank to use system time):</label>
-            <input type="text" id="seedLabel" placeholder="" />
-        </div>
-
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <button type="submit">Generate YAML</button>
-            <button type="reset">Reset</button>
-        </div>
-    </form>
-
-    <div class="output" id="yamlOutput"></div>
-</div>
-
-<script>
-    // List of fish with place and description
-    const FISH_LIST = [
-        { name: "Anchovy", spot: "Ocean", description: "Small, salty fish used in cooking." },
-        { name: "Angelfish", spot: "Reef", description: "Popular, elegant, disk-shaped aquarium fish." },
-        { name: "Barracuda", spot: "Reef", description: "Predatory fish with sharp, needle-like teeth." },
-        { name: "Bass", spot: "Lake", description: "Popular freshwater game fish for anglers." },
-        { name: "Betta", spot: "Swamp", description: "Colorful fish known for aggressive behavior." },
-        { name: "Bluegill", spot: "Lake", description: "Common North American freshwater sunfish species." },
-        { name: "Bonefish", spot: "Ocean", description: "Fast, silver fish found on flats." },
-        { name: "Burbot", spot: "Lake", description: "Only freshwater member of cod family." },
-        { name: "Carp", spot: "River", description: "Large, hardy freshwater bottom-feeding fish." },
-        { name: "Catfish", spot: "River", description: "Fish recognized by whisker-like barbels." },
-        { name: "Cisco", spot: "Lake", description: "Cold-water fish related to whitefish." },
-        { name: "Cod", spot: "Ocean", description: "Important commercial fish with white meat." },
-        { name: "Discus", spot: "River", description: "Colorful, circular South American cichlid." },
-        { name: "Eel", spot: "River", description: "Long, snake-like fish living in water." },
-        { name: "Flounder", spot: "Ocean", description: "Flatfish with both eyes on top." },
-        { name: "Goldfish", spot: "Lake", description: "Common orange pet kept in bowls." },
-        { name: "Grouper", spot: "Reef", description: "Large-mouthed predatory saltwater reef fish." },
-        { name: "Guppy", spot: "River", description: "Small, vibrant, easy-to-breed aquarium fish." },
-        { name: "Haddock", spot: "Ocean", description: "Saltwater fish similar to Atlantic cod." },
-        { name: "Hake", spot: "Ocean", description: "Lean, white-fleshed marine food fish." },
-        { name: "Halibut", spot: "Ocean", description: "Largest type of flatfish in oceans." },
-        { name: "Herring", spot: "Ocean", description: "Forage fish often served pickled or smoked." },
-        { name: "Hoki", spot: "Ocean", description: "Deep-sea fish caught near New Zealand." },
-        { name: "Ide", spot: "River", description: "Silvery freshwater fish of northern Europe." },
-        { name: "Inconnu", spot: "River", description: "Large, predatory northern whitefish species." },
-        { name: "Kaluga", spot: "River", description: "Giant predatory sturgeon from Amur River." },
-        { name: "Kanyu", spot: "River", description: "Predatory cyprinid found in East Asia." },
-        { name: "Killifish", spot: "Swamp", description: "Small, hardy, and very colorful fish." },
-        { name: "Koi", spot: "Lake", description: "Decorative, brightly colored Japanese carp." },
-        { name: "Kokanee", spot: "Lake", description: "Non-anadromous form of sockeye salmon." },
-        { name: "Mackerel", spot: "Ocean", description: "Oily fish with stripes on back." },
-        { name: "Marlin", spot: "Ocean", description: "Large game fish with long bill." },
-        { name: "Molly", spot: "Swamp", description: "Popular live-bearing fish for home aquariums." },
-        { name: "Mullet", spot: "Ocean", description: "Coastal fish often seen jumping frequently." },
-        { name: "Muskelunge", spot: "Lake", description: "Large, aggressive North American freshwater predator." },
-        { name: "Perch", spot: "Lake", description: "Common freshwater fish with spiny fins." },
-        { name: "Pickerel", spot: "Swamp", description: "Smaller relative of the northern pike." },
-        { name: "Pike", spot: "Lake", description: "Ambush predator with long, pointed snout." },
-        { name: "Plaice", spot: "Ocean", description: "Flatfish known for orange spots." },
-        { name: "Pollock", spot: "Ocean", description: "Marine fish used for frozen products." },
-        { name: "Glowfin", spot: "Reef", description: "Fish with glowing, neon-colored fins." },
-        { name: "Shellcrag", spot: "Reef", description: "Giant crab with a stone shell." },
-        { name: "Abysswalker", spot: "Ocean", description: "Many-legged beast from the deepest ocean." },
-        { name: "Hydraserpent", spot: "Reef", description: "Multi-headed snake living in coral." },
-        { name: "Waveglider", spot: "Ocean", description: "Creature that flies above the surface." },
-        { name: "Pearlscale", spot: "Reef", description: "Elegant mermaid-like fish with shiny scales." },
-        { name: "Stormray", spot: "Ocean", description: "Ray that shoots electric blue lightning." },
-        { name: "Bubblemouth", spot: "Swamp", description: "Round fish that traps prey in bubbles." },
-        { name: "Frosttentacle", spot: "Ocean", description: "Jellyfish that freezes water around it." },
-        { name: "Voidshark", spot: "Ocean", description: "Shadowy predator made of dark mist." }
-    ];
-
-    document.getElementById("generatorForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        const count = parseInt(document.getElementById("count").value);
-        const locationType = document.getElementById("locationType").value;
-        const seed = document.getElementById("seedLabel").value.trim() || "";
-
-        // Build place weights
-        let placeWeights = {};
-        if (locationType === "Uniform") {
-            // Uniform distribution: roughly 20% per place (5 places)
-            const base = Math.floor(count / 5);
-            for (const place of ["Ocean", "Lake", "Reef", "River", "Swamp"]) {
-                placeWeights[place] = base + (Math.random() < 0.4 ? 1 : 0);
-            }
-        } else {
-            // Custom distribution
-            placeWeights["Ocean"] = 18;
-            placeWeights["Lake"] = 13;
-            placeWeights["Reef"] = 10;
-            placeWeights["River"] = 8;
-            placeWeights["Swamp"] = 3;
-        }
-
-        // Set a random seed if provided
-        function srand(seedVal) {
-            // A simple pseudo-random number generator with seed
-            let x = Math.max(0, Math.min(2147483646, +seedVal || 1));
-            return () => {
-                x = (1103515245 * x + 12345) % 2147483648;
-                // Return a value between 0 and 1
-                return x / 2147483648;
-            };
-        }
-
-        const randomFn = seed ? srand(seed) : () => Math.random();
-
-        // Generate YAML
-        let yamlOutput = "# Generated YAML file\n\n";
-        yamlOutput += "records:\n";
-        for (let i = 0; i < count; i++) {
-            // Pick a place based on weights
-            const rand = randomFn();
-            let totalWeight = 0;
-            let selectedPlace;
-            for (const place in placeWeights) {
-                totalWeight += placeWeights[place];
-            }
-            let accumulated = 0;
-            for (const place in placeWeights) {
-                accumulated += placeWeights[place] * rand;
-                if (accumulated >= totalWeight) {
-                    selectedPlace = place;
-                    break;
-                }
-            }
-
-            // Find a random fish from that place
-            const fish = FISH_LIST.find(f => f.spot === selectedPlace);
-            if (!fish) continue;
-
-            // Build the YAML record
-            yamlOutput += "  - id: " + (i + 1) + "\n";
-            yamlOutput += "    name: \"" + fish.name + "\"\n";
-            yamlOutput += "    spot: \"" + fish.spot + "\"\n";
-            yamlOutput += "    description: \"" + fish.description + "\"\n";
-            // You can add more fields as needed
-            yamlOutput += "\n";
-        }
-
-        document.getElementById("yamlOutput").innerText = yamlOutput;
-    });
-</script>
+    <script src="script.js"></script>
 </body>
 </html>
