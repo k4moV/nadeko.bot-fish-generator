@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Fish Generator</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 20px;
+    }
+    button, input {
+      background: #1e293b;
+      color: #e5e7eb;
+      border: 1px solid #334155;
+      padding: 6px 10px;
+      margin: 5px 0;
+      cursor: pointer;
+    }
+    textarea {
+      width: 100%;
+      height: 500px;
+      background: #020617;
+      color: #e5e7eb;
+      border: 1px solid #334155;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🎣 Fish Generator</h2>
+
+<label>Ilość ryb:</label><br>
+<input type="number" id="count" value="20" min="1" max="200">
+<br><br>
+
+<button onclick="generate()">Generuj</button>
+<button onclick="copy()">Kopiuj do schowka</button>
+
+<br><br>
+<textarea id="output"></textarea>
+
+<script>
+const names = [
+  "Bass","Salmon","Carp","Catfish","Pike","Trout","Eel","Tuna",
+  "Sardine","Mackerel","Angelfish","Clownfish","Lionfish",
+  "Piranha","Mudskipper","Koi","Ice Cod","Ghost Eel",
+  "Swamp Gar","Moon Carp"
+];
+
+const weathers = ["Rain", "Clear", "Snow", "Storm"];
+const spots = ["Ocean", "River", "Reef", "Swamp", "Lake"];
+const times = ["Dawn", "Dusk", "Day", "Night"];
+
+function rand(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generate() {
+  const count = Number(document.getElementById("count").value);
+  let id = 1;
+  let out = "";
+
+  for (let i = 0; i < count; i++) {
