@@ -1,86 +1,71 @@
-/* ---------- CONFIGUROWANIE & USTAWIENIA DOM ---------- */
-const form     = document.getElementById('configForm');
-const output   = document.getElementById('output');
-const downloadBtn = document.getElementById('downloadBtn');
+- id: 0
+  name: Salmon
+  weather: null
+  spot: River
+  time: null
+  chance: 87
+  stars: 1
+  fluff: "Salmon glows in the Storm waters."
+  condition: ""
+  image: https://
+  emoji: "<>"
 
-/* ---------- PODSTAWOWE DANE ------------------------ */
-const fishNames  = ['Salmon', 'Trout', 'Carp', 'Bass', 'Pike'];
-const trashNames = ['Bottle', 'Newspaper', 'PlasticBag', 'Can', 'Tin'];
+- id: 1
+  name: Rare_Salmon
+  weather: Clear
+  spot: River
+  time: Day
+  chance: 43     # ≈ 87/2
+  stars: 2
+  fluff: "Salmon glows in the Rain waters."
+  condition: ""
+  image: https://
+  emoji: "<>"
 
-const weatherOptions = ['Rain','Clear','Snow','Storm'];
-const spotOptions    = ['Ocean','River','Reef','Swamp','Lake'];
-const timeOptions    = ['Dawn','Dusk','Day','Night'];
+- id: 2
+  name: Legendary_Salmon
+  weather: Snow
+  spot: River
+  time: Dawn
+  chance: 14     # ≈ 43/3
+  stars: 4
+  fluff: "Salmon glows in the Clear waters."
+  condition: ""
+  image: https://
+  emoji: "<>"
 
-/* ---------- POMOCNICZE FUNKCJE -------------------- */
-function randInt(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
-function maybePick(arr){ return Math.random()<0.5?arr[Math.floor(Math.random()*arr.length)]:null; }
+- id: 3
+  name: Snapper
+  weather: null
+  spot: Reef
+  time: null
+  chance: 59
+  stars: 1
+  fluff: "Snapper glows in the Rain waters."
+  condition: ""
+  image: https://
+  emoji: "<>"
 
-/* ---------- GŁÓWNA LOGIKA GENERATORA -------------- */
-function generateYAML({type, count, rare, legendary}) {
-  const baseList = type==='fish'? fishNames : trashNames;
+- id: 4
+  name: Rare_Snapper
+  weather: Storm
+  spot: Reef
+  time: Night
+  chance: 30     # ≈ 59/2
+  stars: 2
+  fluff: "Snapper glows in the Snow waters."
+  condition: ""
+  image: https://
+  emoji: "<>"
 
-  // Ustalenie prawdopodobieństw wariantów
-  const probs = {
-    normal:     1 - (rare?0.2:0) - (legendary?0.1:0),
-    rare:      rare?0.2:0,
-    legendary: legendary?0.1:0
-  };
-
-  function pickVariant(){
-    const r=Math.random();
-    if(r<probs.normal) return 'Normal';
-    if(r<probs.normal+probs.rare) return 'Rare';
-    return 'Legendary';
-  }
-
-  const starsMap = { Normal:1, Rare:3, Legendary:5 };
-
-  const items=[];
-  for(let i=0;i<count;i++){
-    const baseName = baseList[Math.floor(Math.random()*baseList.length)];
-    const variant  = pickVariant();
-
-    items.push({
-      id:          i,
-      name:        `${variant}_${baseName}`,
-      weather:     maybePick(weatherOptions),
-      spot:        maybePick(spotOptions),
-      time:        maybePick(timeOptions),
-      chance:      randInt(1,100),
-      stars:       starsMap[variant],
-      fluff:       `${baseName} glows in the ${maybePick(weatherOptions)||'unknown'} waters.`,
-      condition:   "",
-      image:       "https://",
-      emoji:       "<>"
-    });
-  }
-
-  // Serializacja do YAML
-  return jsyaml.dump(items, { lineWidth:-1 }); // `jsyaml` z CDN
-}
-
-/* ---------- OBSŁUGA FORMULARZA -------------------- */
-form.addEventListener('submit', e=>{
-  e.preventDefault();
-  const data = new FormData(form);
-  const opts = {
-    type:     data.get('type'),
-    count:    parseInt(data.get('count'),10),
-    rare:     data.get('rare')!==null,
-    legendary:data.get('legendary')!==null
-  };
-  const yamlStr = generateYAML(opts);
-  output.value = yamlStr;
-  downloadBtn.disabled=false;
-});
-
-/* ---------- DOWNLOAD PLIKU ------------------------ */
-downloadBtn.addEventListener('click', ()=>{
-  const blob = new Blob([output.value], {type:"text/yaml"});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'generated.yaml';
-  a.click();
-  URL.revokeObjectURL(url);
-});
+- id: 5
+  name: Legendary_Snapper
+  weather: Clear
+  spot: Reef
+  time: Dusk
+  chance: 10     # ≈ 30/3
+  stars: 4
+  fluff: "Snapper glows in the Rain waters."
+  condition: ""
+  image: https://
+  emoji: "<>"
