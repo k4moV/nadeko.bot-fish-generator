@@ -1,41 +1,24 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<title>Generator ryb / śmieci → YAML</title>
-<link rel="stylesheet" href="style.css">
-<!-- js-yaml z CDN (dla serializacji) -->
-<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <meta charset="utf-8">
+  <title>Generator YAML‑a</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+  <!-- Twoja forma i inne elementy -->
+  <form id="configForm">
+    Liczba: <input type="number" name="count" min="1" max="100" value="5">
+    <button type="submit">Generuj</button>
+  </form>
 
-<h1>Generator ryb / śmieci → YAML</h1>
+  <textarea id="output" rows="15"></textarea>
+  <br>
+  <button id="downloadBtn" disabled>Pobierz YAML</button>
 
-<form id="configForm">
-  <label>
-    Rodzaj:
-    <select name="type" required>
-      <option value="fish">Ryby</option>
-      <option value="trash">Śmieci</option>
-    </select>
-  </label><br>
-
-  <label>
-    Liczba pozycji (1‑50):
-    <input type="number" name="count" min="1" max="50" value="10" required>
-  </label><br>
-
-  <label><input type="checkbox" name="rare"> Rzadkie (Rare)</label><br>
-  <label><input type="checkbox" name="legendary"> Legendarne (Legendary)</label><br>
-
-  <button type="submit">Generuj YAML</button>
-</form>
-
-<h2>Wynik:</h2>
-<textarea id="output" rows="15" readonly></textarea>
-<br>
-<button id="downloadBtn" disabled>Pobierz jako plik .yaml</button>
-
-<script src="generator.js"></script>
+  <!-- Najpierw biblioteka, potem Twój skrypt -->
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
+  <script src="generator.js"></script>
 </body>
 </html>
