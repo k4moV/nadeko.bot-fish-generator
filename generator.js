@@ -1,3 +1,7 @@
+/* ==============================================================
+   generator.js – przyjazny, bez‑BOM JavaScript
+   ============================================================== */
+
 /* ---------- DOM ---------- */
 const form        = document.getElementById('configForm');
 const output      = document.getElementById('output');
