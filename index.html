@@ -1,24 +1,365 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="utf-8">
-  <title>Generator YAML‑a</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generator pliku YAML – Ryby & Śmiecie</title>
+    <!-- Dodamy ładny design w stylu gradientu fioletowego -->
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        header {
+            padding: 28px 40px;
+            text-align: center;
+        }
+        h1 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+        .form-section {
+            padding: 30px;
+        }
+        .row {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+        label {
+            min-width: 140px;
+            font-weight: 600;
+            color: #333;
+            display: block;
+            font-size: 0.95rem;
+        }
+        .control {
+            flex: 1;
+            padding: 12px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.95rem;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            font-size: 0.95rem;
+            border: 1px solid #9ca4b6;
+            border-radius: 6px;
+        }
+        button {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.4);
+        }
+        #yamlOutput {
+            height: 450px;
+            background-color: #f9fbfd;
+            border: 1px solid #d1dadffe;
+            padding: 18px;
+            border-radius: 9px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+        .info {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+    </style>
 </head>
-
 <body>
-  <!-- Twoja forma i inne elementy -->
-  <form id="configForm">
-    Liczba: <input type="number" name="count" min="1" max="100" value="5">
-    <button type="submit">Generuj</button>
-  </form>
+<div class="container">
+    <header>
+        <h1>Generator pliku YAML</h1>
+        <p class="subtitle">Tworzenie list pozycji ryb lub śmieci w formacie YAML</p>
+    </header>
 
-  <textarea id="output" rows="15"></textarea>
-  <br>
-  <button id="downloadBtn" disabled>Pobierz YAML</button>
+    <div class="form-section">
+        <form id="genForm">
+            <div class="row">
+                <label for="startId">Startowy ID (liczba całkowita):</label>
+                <input type="number" id="startId" class="control" placeholder="np. 0" value="0" min="0"/>
+            </div>
 
-  <!-- Najpierw biblioteka, potem Twój skrypt -->
-  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
-  <script src="generator.js"></script>
+            <div class="row">
+                <label for="count">Ilość pozycji:</label>
+                <input type="number" id="count" class="control" placeholder="np. 5" value="5" min="1" max="60"/>
+            </div>
+
+            <div class="row">
+                <label for="typeOption">Typ pozycji:</label>
+                <select id="typeOption" class="control">
+                    <option value="fish">Ryby</option>
+                    <option value="creature">Stworzenia wodne</option>
+                    <option value="trash">Śmiecie morskie</option>
+                </select>
+            </div>
+
+            <div class="row">
+                <label for="weatherOption">Pogoda (opcjonalnie):</label>
+                <select id="weatherOption" class="control">
+                    <option value="">(puste)</option>
+                    <option value="Rain">Rain</option>
+                    <option value="Clear">Clear</option>
+                    <option value="Snow">Snow</option>
+                    <option value="Storm">Storm</option>
+                </select>
+            </div>
+
+            <div class="row">
+                <label for="timeOption">Czas (opcjonalnie):</label>
+                <select id="timeOption" class="control">
+                    <option value="">(puste)</option>
+                    <option value="Dawn">Dawn</option>
+                    <option value="Dusk">Dusk</option>
+                    <option value="Day">Day</option>
+                    <option value="Night">Night</option>
+                </select>
+            </div>
+
+            <!-- Informacja o miejscu (opcjonalnie) -->
+            <div class="row" id="spotInfoRow" style="display:none;">
+                <label for="spotsInput">Wprowadź własne miejsca (przykład: Beach, Lake):</label>
+                <input type="text" id="spotsInput" class="control" placeholder="Beach, Lake, River"/>
+            </div>
+
+            <div class="row">
+                <button type="button" id="generateBtn">Generuj plik YAML</button>
+            </div>
+        </form>
+    </div>
+
+    <div style="padding: 20px;">
+        <h3>Wynik (plik YAML)</h3>
+        <pre id="yamlOutput"></pre>
+    </div>
+
+    <div class="info">
+        <p>
+            Wybierz parametry, kliknij "Generuj plik YAML", i skopiuj/wynik zapisz w pliku YAML.
+        </p>
+    </div>
+</div>
+
+<script>
+// —————————————————————
+// Dane statyczne (lista ryb/stworzeń/śmieci)
+// —————————————————————
+const FISH_NAMES = [
+  "Salmon", "Trout", "Cod", "Tuna", "Shark",
+  "Whale", "Octopus", "Eel", "Crab", "Lobster",
+  "Stingray", "Seahorse", "Pufferfish", "Anglerfish",
+  "Jellyfish", "Starfish", "Lionfish", "Clownfish",
+  "Tilapia", "Catfish"
+];
+
+const CREATURE_NAMES = [
+  "Whale Shark", "Bluefin Tuna", "Narwhal",
+  "Manta Ray", "Giant Squid", "Nautilus",
+  "Cephalopod", "Sperm Whale", "Beluga Whale",
+  "Humpback Whale", "Minke Whale", "Orca"
+];
+
+const TRASH_NAMES = [
+  "Plastic Bottle", "Disposable Cup",
+  "Straw", "Cigarette Butts", "Food Wrapper",
+  "Burger Wrapper", "Pizza Box", "Pringles Can",
+  "Toothpick", "Nail", "Paint Can", "Foam Block"
+];
+
+const SPOTS = [
+  "Beach", "Lake", "River", "Ocean", "Marsh"
+];
+
+// Opcje dla pogody i czasu
+const WEATHER_OPTIONS = ["", "Rain", "Clear", "Snow", "Storm"];
+const TIME_OPTIONS = ["", "Dawn", "Dusk", "Day", "Night"];
+
+// —————————————————————
+// Helperowe funkcje
+// —————————————————————
+function getRandomOption(list) {
+  if (!list.length) return "";
+  const idx = Math.floor(Math.random() * list.length);
+  return list[idx];
+}
+
+// Funkcja tworząca short description na podstawie szablonu
+function generateFluff(template, name, weather, spot, time) {
+  // Przykład: 
+  // "A common fish named {name} is often seen in {spot}. If the weather is {weather}, it’s even more popular during {time}."
+  return template
+    .replace("{name}", name)
+    .replace("{weather}", weather || "")
+    .replace("{spot}", spot || "")
+    .replace("{time}", time || "");
+}
+
+// —————————————————————
+// Generowanie listy pozycji
+// —————————————————————
+function generateItems(count, startId, type, weatherChoice, timeChoice) {
+  const items = [];
+
+  for (let i = 0; i < count; i++) {
+    // ID rosnące
+    const id = startId + i;
+
+    let nameList;
+    if (type === "fish") nameList = FISH_NAMES;
+    else if (type === "creature") nameList = CREATURE_NAMES;
+    else if (type === "trash") nameList = TRASH_NAMES;
+
+    // Losowy wybór nazwy
+    const name = getRandomOption(nameList);
+
+    // Miejsce: opcja 1) od nazwy, opcja 2) z listy (jeśli użytkownik wypełnił)
+    let spot;
+    if (document.getElementById("spotsInput").value.trim() !== "") {
+      // Jeśli użytkownik podał własne miejsca, rozdzielimy je przecinkami
+      const userSpots = document.getElementById("spotsInput").value
+        .trim()
+        .split(",") // zakładamy rozdzielaczami przecinkowe
+        .map((s) => s.trim());
+      
+      if (userSpots.length) {
+        spot = getRandomOption(userSpots);
+      } else {
+        // Jeśli lista jest pusta, wybieramy z ogólnej
+        spot = getRandomOption(SPOTS);
+      }
+    } else {
+      spot = getRandomOption(SPOTS);
+    }
+
+    // Pogoda i czas
+    const weather = weatherChoice || getRandomOption(WEATHER_OPTIONS);
+    const time = timeChoice || getRandomOption(TIME_OPTIONS);
+
+    // Losowe liczby
+    const chance = Math.floor(Math.random() * 100) + 1;       // od 1 do 100
+    const stars = Math.floor(Math.random() * 4) + 1;           // od 1 do 4
+
+    // Krótki opis
+    const fluff = generateFluff(
+      "A common " + (type === "trash" ? "trash item" : "fish") + " named " + name + 
+        " is often seen in " + spot + ". If the weather is " + weather +
+        ", it’s even more popular during " + time + ".",
+      name,
+      weather,
+      spot,
+      time
+    );
+
+    items.push({
+      id,
+      name,
+      weather,
+      spot,
+      time,
+      chance,
+      stars,
+      fluff,
+      condition: "",       // zawsze puste
+      image: "https://via.placeholder.com/300",  // placeholder link
+      emoji: type === "trash" ? "🚯" : "🐟"
+    });
+  }
+
+  return items;
+}
+
+// —————————————————————
+// Konstrukcja pliku YAML na podstawie listy pozycji
+// —————————————————————
+function buildYaml(items) {
+  // Nagłówek (opcjonalnie)
+  let yaml = "# Lista pozycji ryb lub śmieci\n\n";
+  
+  // Dla każdej pozycji tworzymy rekord:
+  items.forEach((item) => {
+    yaml += "- id: " + item.id + "\n";
+    yaml += "  name: \"" + item.name + "\"\n";
+    yaml += "  weather: \"" + item.weather + "\"\n";
+    yaml += "  spot: \"" + item.spot + "\"\n";
+    yaml += "  time: \"" + item.time + "\"\n";
+    yaml += "  chance: " + item.chance + "\n";       // liczba od 1 do 100
+    yaml += "  stars: " + item.stars + "\n";         // liczba od 1 do 4
+    yaml += "  fluff: \"" + item.fluff + "\"\n";
+    yaml += "  condition: \"\"\n";                  // zawsze puste
+    // image i emoji to linki (można dodać je, jeśli potrzebujesz):
+    //   - id: "https://example.com/image1.jpg"
+    //   - emoji: "\" " + item.emoji + " "
+  });
+
+  return yaml;
+}
+
+// —————————————————————
+// Event listener – generowanie pliku YAML
+// —————————————————————
+document.getElementById("generateBtn").addEventListener("click", () => {
+  const startId = parseInt(document.getElementById("startId").value) || 0;
+  const count = parseInt(document.getElementById("count").value) || 5;
+
+  const type = document.getElementById("typeOption").value;
+  const weatherChoice = document.getElementById("weatherOption").value;
+  const timeChoice = document.getElementById("timeOption").value;
+
+  // Ustawienie widoczności informacji o miejscu
+  const spotsInputValue = document.getElementById("spotsInput").value.trim();
+  const showSpotsRow = spotsInputValue !== "";
+  document.getElementById("spotInfoRow").style.display = showSpotsRow ? "flex" : "none";
+
+  try {
+    // Generowanie pozycji
+    const items = generateItems(count, startId, type, weatherChoice, timeChoice);
+    // Konstrukcja YAML
+    const yamlOutput = buildYaml(items);
+
+    document.getElementById("yamlOutput").innerText = yamlOutput;
+  } catch (err) {
+    alert("Wystąpił błąd: " + err.message);
+  }
+});
+</script>
 </body>
 </html>
