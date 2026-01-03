@@ -64,59 +64,60 @@ function maybePick(arr){ return arr && arr.length ? arr[Math.floor(Math.random()
 function generateYAML({count}) {
   const items = [];
 
-  for (let i=0;i<count;i++){
-    /* ---- Wybierz losową rybę ---- */
-    const baseName   = fishNames[Math.floor(Math.random()*fishNames.length)];
-    const spot       = fishSpotMap[baseName] || maybePick(spotOptions);
-    const normalChance = randInt(1,100);            // 1‑100
-    const rareChance   = Math.max(1, Math.round(normalChance/2));     // ½ szansy, min 1
-    const legChance    = Math.max(1, Math.round(rareChance/3));       // ⅓ Rare, min 1
+for (let i=0;i<count;i++){
+  const baseName   = fishNames[Math.floor(Math.random()*fishNames.length)];
+  const spot       = fishSpotMap[baseName] || maybePick(spotOptions);
+  const normalChance = randInt(1,100);
 
-    /* --- Normalny wariant ------------------------------------ */
-    items.push({
-      id:          i*3,
-      name:        baseName,
-      weather:     null,
-      spot:        spot,
-      time:        null,
-      chance:      normalChance,
-      stars:       1,                          // zawsze 1
-      fluff:       `${baseName} glows in the ${maybePick(weatherOptions)||'unknown'} waters.`,
-      condition:   "",
-      image:       "https://",
-      emoji:       "<>"
-    });
+  /* ★ LOSOWE stars dla normalnej ryby */
+  const normalStars = randInt(1,4);
 
-    /* --- Rare wariant --------------------------------------- */
-    items.push({
-      id:          i*3+1,
-      name:        `Rare_${baseName}`,
-      weather:     maybePick(weatherOptions),
-      spot:        spot,
-      time:        maybePick(timeOptions),
-      chance:      rareChance,
-      stars:       Math.min(4, 2),              // 1 + 1 = 2 (max 4)
-      fluff:       `${baseName} glows in the ${maybePick(weatherOptions)||'unknown'} waters.`,
-      condition:   "",
-      image:       "https://",
-      emoji:       "<>"
-    });
+  const rareChance   = Math.max(1, Math.round(normalChance/2));
+  const legChance    = Math.max(1, Math.round(rareChance/3));
 
-    /* --- Legendary wariant ----------------------------------- */
-    items.push({
-      id:          i*3+2,
-      name:        `Legendary_${baseName}`,
-      weather:     maybePick(weatherOptions),
-      spot:        spot,
-      time:        maybePick(timeOptions),
-      chance:      legChance,
-      stars:       4,                           // zawsze 4
-      fluff:       `${baseName} glows in the ${maybePick(weatherOptions)||'unknown'} waters.`,
-      condition:   "",
-      image:       "https://",
-      emoji:       "<>"
-    });
-  }
+  items.push({
+    id:          i*3,
+    name:        baseName,
+    weather:     null,
+    spot:        spot,
+    time:        null,
+    chance:      normalChance,
+    stars:       normalStars,
+    fluff:       `${baseName} glows in the ${maybePick(weatherOptions)||'unknown'} waters.`,
+    condition:   "",
+    image:       "https://",
+    emoji:       "<>"
+  });
+
+  items.push({
+    id:          i*3+1,
+    name:        `Rare_${baseName}`,
+    weather:     maybePick(weatherOptions),
+    spot:        spot,
+    time:        maybePick(timeOptions),
+    chance:      rareChance,
+    stars:       Math.min(4, normalStars + 1),
+    fluff:       `${baseName} glows in the ${maybePick(weatherOptions)||'unknown'} waters.`,
+    condition:   "",
+    image:       "https://",
+    emoji:       "<>"
+  });
+
+  items.push({
+    id:          i*3+2,
+    name:        `Legendary_${baseName}`,
+    weather:     maybePick(weatherOptions),
+    spot:        spot,
+    time:        maybePick(timeOptions),
+    chance:      legChance,
+    stars:       4,
+    fluff:       `${baseName} glows in the ${maybePick(weatherOptions)||'unknown'} waters.`,
+    condition:   "",
+    image:       "https://",
+    emoji:       "<>"
+  });
+}
+
 
   return jsyaml.dump(items, { lineWidth:-1 }); // `jsyaml` z CDN
 }
