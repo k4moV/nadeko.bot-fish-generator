@@ -1,71 +1,137 @@
-- id: 0
-  name: Salmon
-  weather: null
-  spot: River
-  time: null
-  chance: 87
-  stars: 1
-  fluff: "Salmon glows in the Storm waters."
-  condition: ""
-  image: https://
-  emoji: "<>"
+/* ---------- DOM ---------- */
+const form        = document.getElementById('configForm');
+const output      = document.getElementById('output');
+const downloadBtn = document.getElementById('downloadBtn');
 
-- id: 1
-  name: Rare_Salmon
-  weather: Clear
-  spot: River
-  time: Day
-  chance: 43     # ≈ 87/2
-  stars: 2
-  fluff: "Salmon glows in the Rain waters."
-  condition: ""
-  image: https://
-  emoji: "<>"
+/* ---------- Dane ---------- */
+const fishNames   = [
+  'Salmon','Trout','Carp','Bass','Pike','Perch','Catfish',
+  'Sturgeon','Haddock','Halibut','Cod','Tuna','Snapper',
+  'Mahi‑Mahi','Barracuda','Marlin','Swordfish','Octopus',
+  'Eel','Crab','Lobster','Shrimp','Mackerel','Sardine',
+  'Anchovy','Herring','Pufferfish','Angelfish','Grouper',
+  'Ray','Skate'
+];
 
-- id: 2
-  name: Legendary_Salmon
-  weather: Snow
-  spot: River
-  time: Dawn
-  chance: 14     # ≈ 43/3
-  stars: 4
-  fluff: "Salmon glows in the Clear waters."
-  condition: ""
-  image: https://
-  emoji: "<>"
+const spotOptions   = ['Ocean','River','Reef','Swamp','Lake'];
+const weatherOptions= ['Rain','Clear','Snow','Storm'];
+const timeOptions    = ['Dawn','Dusk','Day','Night'];
 
-- id: 3
-  name: Snapper
-  weather: null
-  spot: Reef
-  time: null
-  chance: 59
-  stars: 1
-  fluff: "Snapper glows in the Rain waters."
-  condition: ""
-  image: https://
-  emoji: "<>"
+/* ---------- Spot‑map (jedna wartość na rybę) ---------- */
+const fishSpotMap = {
+  Salmon: 'River',
+  Trout: 'River',
+  Carp: 'Lake',
+  Bass: 'Lake',
+  Pike: 'River',
+  Perch: 'River',
+  Catfish: 'River',
+  Sturgeon: 'River',
+  Haddock: 'Ocean',
+  Halibut: 'Ocean',
+  Cod: 'Ocean',
+  Tuna: 'Ocean',
+  Snapper: 'Reef',
+  'Mahi‑Mahi': 'Reef',
+  Barracuda: 'Reef',
+  Marlin: 'Ocean',
+  Swordfish: 'Ocean',
+  Octopus: 'Ocean',
+  Eel: 'River',
+  Crab: 'Swamp',
+  Lobster: 'Swamp',
+  Shrimp: 'Ocean',
+  Mackerel: 'Ocean',
+  Sardine: 'Ocean',
+  Anchovy: 'Ocean',
+  Herring: 'Ocean',
+  Pufferfish: 'Reef',
+  Angelfish: 'Reef',
+  Grouper: 'Reef',
+  Ray: 'Ocean',
+  Skate: 'Swamp'
+};
 
-- id: 4
-  name: Rare_Snapper
-  weather: Storm
-  spot: Reef
-  time: Night
-  chance: 30     # ≈ 59/2
-  stars: 2
-  fluff: "Snapper glows in the Snow waters."
-  condition: ""
-  image: https://
-  emoji: "<>"
+/* ---------- Pomocnicze ---------- */
+function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function maybePick(arr){ return arr && arr.length ? arr[Math.floor(Math.random()*arr.length)] : null; }
 
-- id: 5
-  name: Legendary_Snapper
-  weather: Clear
-  spot: Reef
-  time: Dusk
-  chance: 10     # ≈ 30/3
-  stars: 4
-  fluff: "Snapper glows in the Rain waters."
-  condition: ""
-  image: https://
-  emoji: "<>"
+/* ---------- Główna logika generowania YAML ---------- */
+function generateYAML({count}) {
+  const items = [];
+
+  for (let i=0;i<count;i++){
+    /* ---- Wybierz losową rybę ---- */
+    const baseName   = fishNames[Math.floor(Math.random()*fishNames.length)];
+    const spot       = fishSpotMap[baseName] || maybePick(spotOptions);
+    const normalChance = randInt(1,100);            // 1‑100
+    const rareChance   = Math.max(1, Math.round(normalChance/2));     // ½ szansy, min 1
+    const legChance    = Math.max(1, Math.round(rareChance/3));       // ⅓ Rare, min 1
+
+    /* --- Normalny wariant ------------------------------------ */
+    items.push({
+      id:          i*3,
+      name:        baseName,
+      weather:     null,
+      spot:        spot,
+      time:        null,
+      chance:      normalChance,
+      stars:       1,                          // zawsze 1
+      fluff:       `${baseName} glows in the ${maybePick(weatherOptions)||'unknown'} waters.`,
+      condition:   "",
+      image:       "https://",
+      emoji:       "<>"
+    });
+
+    /* --- Rare wariant --------------------------------------- */
+    items.push({
+      id:          i*3+1,
+      name:        `Rare_${baseName}`,
+      weather:     maybePick(weatherOptions),
+      spot:        spot,
+      time:        maybePick(timeOptions),
+      chance:      rareChance,
+      stars:       Math.min(4, 2),              // 1 + 1 = 2 (max 4)
+      fluff:       `${baseName} glows in the ${maybePick(weatherOptions)||'unknown'} waters.`,
+      condition:   "",
+      image:       "https://",
+      emoji:       "<>"
+    });
+
+    /* --- Legendary wariant ----------------------------------- */
+    items.push({
+      id:          i*3+2,
+      name:        `Legendary_${baseName}`,
+      weather:     maybePick(weatherOptions),
+      spot:        spot,
+      time:        maybePick(timeOptions),
+      chance:      legChance,
+      stars:       4,                           // zawsze 4
+      fluff:       `${baseName} glows in the ${maybePick(weatherOptions)||'unknown'} waters.`,
+      condition:   "",
+      image:       "https://",
+      emoji:       "<>"
+    });
+  }
+
+  return jsyaml.dump(items, { lineWidth:-1 }); // `jsyaml` z CDN
+}
+
+/* ---------- Obsługa formularza ---------- */
+form.addEventListener('submit', e=>{
+  e.preventDefault();
+  const count = parseInt(form.elements.count.value,10);
+  output.value = generateYAML({count});
+  downloadBtn.disabled=false;
+});
+
+/* ---------- Pobieranie pliku ---------- */
+downloadBtn.addEventListener('click', ()=>{
+  const blob = new Blob([output.value], {type:"text/yaml"});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'generated.yaml';
+  a.click();
+  URL.revokeObjectURL(url);
+});
