@@ -1,365 +1,245 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generator pliku YAML – Ryby & Śmiecie</title>
-    <!-- Dodamy ładny design w stylu gradientu fioletowego -->
+    <title>YAML File Generator</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
         .container {
             max-width: 900px;
-            background-color: white;
-            border-radius: 16px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-        header {
-            padding: 28px 40px;
-            text-align: center;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
         h1 {
-            color: #fff;
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-        .subtitle {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-        }
-        .form-section {
-            padding: 30px;
+            text-align: center;
         }
         .row {
             display: flex;
-            gap: 18px;
-            margin-bottom: 20px;
+            gap: 16px;
+            margin-bottom: 16px;
         }
         label {
-            min-width: 140px;
-            font-weight: 600;
-            color: #333;
-            display: block;
-            font-size: 0.95rem;
+            width: 150px;
+            font-weight: bold;
         }
-        .control {
-            flex: 1;
-            padding: 12px;
-            background-color: #f8fafc;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            font-size: 0.95rem;
-        }
-        select {
-            width: 100%;
+        select, input {
             padding: 8px;
-            font-size: 0.95rem;
-            border: 1px solid #9ca4b6;
-            border-radius: 6px;
+            min-width: 200px;
         }
         button {
-            padding: 14px 28px;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            padding: 10px 16px;
+            background-color: #4a90e2;
             color: white;
             border: none;
-            border-radius: 9px;
-            font-size: 1rem;
-            font-weight: 600;
+            radius: 4px;
             cursor: pointer;
-            width: 100%;
-            margin-bottom: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
         }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.4);
-        }
-        #yamlOutput {
-            height: 450px;
-            background-color: #f9fbfd;
-            border: 1px solid #d1dadffe;
-            padding: 18px;
-            border-radius: 9px;
+        .output {
+            height: 350px;
+            border: 1px solid #ccc;
+            padding: 12px;
+            resize: vertical;
             font-family: monospace;
             white-space: pre-wrap;
-            overflow-y: auto;
-        }
-        .info {
-            text-align: center;
-            padding: 20px;
-            color: #6b7280;
-            font-size: 0.95rem;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <header>
-        <h1>Generator pliku YAML</h1>
-        <p class="subtitle">Tworzenie list pozycji ryb lub śmieci w formacie YAML</p>
-    </header>
+    <h1>YAML File Generator</h1>
 
-    <div class="form-section">
-        <form id="genForm">
-            <div class="row">
-                <label for="startId">Startowy ID (liczba całkowita):</label>
-                <input type="number" id="startId" class="control" placeholder="np. 0" value="0" min="0"/>
+    <form id="generatorForm">
+        <div class="row">
+            <label for="count">Number of Records:</label>
+            <select id="count">
+                <option value="25">25</option>
+                <option value="30" selected>30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="60">60</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <label for="locationType">Place Distribution:</label>
+            <select id="locationType">
+                <option value="OceanLakeReefRiverSwamp">Custom (Ocean/Lake/Reef/River/Swamp)</option>
+                <option value="Uniform">Equal Distribution</option>
+            </select>
+        </div>
+
+        <!-- Custom distribution controls if needed -->
+<!-- 
+        <div style="display:none;">
+            <div class="row" id="distRow">
+                <label for="oceanCount">Ocean:</label>
+                <input type="number" id="oceanCount" value="18"/>
+
+                <label for="lakeCount">Lake:</label>
+                <input type="number" id="lakeCount" value="13"/>
+
+                <label for="reefCount">Reef:</label>
+                <input type="number" id="reefCount" value="10"/>
+
+                <label for="riverCount">River:</label>
+                <input type="number" id="riverCount" value="8"/>
+
+                <label for="swampCount">Swamp:</label>
+                <input type="number" id="swampCount" value="3"/>
             </div>
+        </div>
+-->
 
-            <div class="row">
-                <label for="count">Ilość pozycji:</label>
-                <input type="number" id="count" class="control" placeholder="np. 5" value="5" min="1" max="60"/>
-            </div>
+        <div class="row">
+            <label for="seedLabel">Random Seed (leave blank to use system time):</label>
+            <input type="text" id="seedLabel" placeholder="" />
+        </div>
 
-            <div class="row">
-                <label for="typeOption">Typ pozycji:</label>
-                <select id="typeOption" class="control">
-                    <option value="fish">Ryby</option>
-                    <option value="creature">Stworzenia wodne</option>
-                    <option value="trash">Śmiecie morskie</option>
-                </select>
-            </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button type="submit">Generate YAML</button>
+            <button type="reset">Reset</button>
+        </div>
+    </form>
 
-            <div class="row">
-                <label for="weatherOption">Pogoda (opcjonalnie):</label>
-                <select id="weatherOption" class="control">
-                    <option value="">(puste)</option>
-                    <option value="Rain">Rain</option>
-                    <option value="Clear">Clear</option>
-                    <option value="Snow">Snow</option>
-                    <option value="Storm">Storm</option>
-                </select>
-            </div>
-
-            <div class="row">
-                <label for="timeOption">Czas (opcjonalnie):</label>
-                <select id="timeOption" class="control">
-                    <option value="">(puste)</option>
-                    <option value="Dawn">Dawn</option>
-                    <option value="Dusk">Dusk</option>
-                    <option value="Day">Day</option>
-                    <option value="Night">Night</option>
-                </select>
-            </div>
-
-            <!-- Informacja o miejscu (opcjonalnie) -->
-            <div class="row" id="spotInfoRow" style="display:none;">
-                <label for="spotsInput">Wprowadź własne miejsca (przykład: Beach, Lake):</label>
-                <input type="text" id="spotsInput" class="control" placeholder="Beach, Lake, River"/>
-            </div>
-
-            <div class="row">
-                <button type="button" id="generateBtn">Generuj plik YAML</button>
-            </div>
-        </form>
-    </div>
-
-    <div style="padding: 20px;">
-        <h3>Wynik (plik YAML)</h3>
-        <pre id="yamlOutput"></pre>
-    </div>
-
-    <div class="info">
-        <p>
-            Wybierz parametry, kliknij "Generuj plik YAML", i skopiuj/wynik zapisz w pliku YAML.
-        </p>
-    </div>
+    <div class="output" id="yamlOutput"></div>
 </div>
 
 <script>
-// —————————————————————
-// Dane statyczne (lista ryb/stworzeń/śmieci)
-// —————————————————————
-const FISH_NAMES = [
-  "Salmon", "Trout", "Cod", "Tuna", "Shark",
-  "Whale", "Octopus", "Eel", "Crab", "Lobster",
-  "Stingray", "Seahorse", "Pufferfish", "Anglerfish",
-  "Jellyfish", "Starfish", "Lionfish", "Clownfish",
-  "Tilapia", "Catfish"
-];
+    // List of fish with place and description
+    const FISH_LIST = [
+        { name: "Anchovy", spot: "Ocean", description: "Small, salty fish used in cooking." },
+        { name: "Angelfish", spot: "Reef", description: "Popular, elegant, disk-shaped aquarium fish." },
+        { name: "Barracuda", spot: "Reef", description: "Predatory fish with sharp, needle-like teeth." },
+        { name: "Bass", spot: "Lake", description: "Popular freshwater game fish for anglers." },
+        { name: "Betta", spot: "Swamp", description: "Colorful fish known for aggressive behavior." },
+        { name: "Bluegill", spot: "Lake", description: "Common North American freshwater sunfish species." },
+        { name: "Bonefish", spot: "Ocean", description: "Fast, silver fish found on flats." },
+        { name: "Burbot", spot: "Lake", description: "Only freshwater member of cod family." },
+        { name: "Carp", spot: "River", description: "Large, hardy freshwater bottom-feeding fish." },
+        { name: "Catfish", spot: "River", description: "Fish recognized by whisker-like barbels." },
+        { name: "Cisco", spot: "Lake", description: "Cold-water fish related to whitefish." },
+        { name: "Cod", spot: "Ocean", description: "Important commercial fish with white meat." },
+        { name: "Discus", spot: "River", description: "Colorful, circular South American cichlid." },
+        { name: "Eel", spot: "River", description: "Long, snake-like fish living in water." },
+        { name: "Flounder", spot: "Ocean", description: "Flatfish with both eyes on top." },
+        { name: "Goldfish", spot: "Lake", description: "Common orange pet kept in bowls." },
+        { name: "Grouper", spot: "Reef", description: "Large-mouthed predatory saltwater reef fish." },
+        { name: "Guppy", spot: "River", description: "Small, vibrant, easy-to-breed aquarium fish." },
+        { name: "Haddock", spot: "Ocean", description: "Saltwater fish similar to Atlantic cod." },
+        { name: "Hake", spot: "Ocean", description: "Lean, white-fleshed marine food fish." },
+        { name: "Halibut", spot: "Ocean", description: "Largest type of flatfish in oceans." },
+        { name: "Herring", spot: "Ocean", description: "Forage fish often served pickled or smoked." },
+        { name: "Hoki", spot: "Ocean", description: "Deep-sea fish caught near New Zealand." },
+        { name: "Ide", spot: "River", description: "Silvery freshwater fish of northern Europe." },
+        { name: "Inconnu", spot: "River", description: "Large, predatory northern whitefish species." },
+        { name: "Kaluga", spot: "River", description: "Giant predatory sturgeon from Amur River." },
+        { name: "Kanyu", spot: "River", description: "Predatory cyprinid found in East Asia." },
+        { name: "Killifish", spot: "Swamp", description: "Small, hardy, and very colorful fish." },
+        { name: "Koi", spot: "Lake", description: "Decorative, brightly colored Japanese carp." },
+        { name: "Kokanee", spot: "Lake", description: "Non-anadromous form of sockeye salmon." },
+        { name: "Mackerel", spot: "Ocean", description: "Oily fish with stripes on back." },
+        { name: "Marlin", spot: "Ocean", description: "Large game fish with long bill." },
+        { name: "Molly", spot: "Swamp", description: "Popular live-bearing fish for home aquariums." },
+        { name: "Mullet", spot: "Ocean", description: "Coastal fish often seen jumping frequently." },
+        { name: "Muskelunge", spot: "Lake", description: "Large, aggressive North American freshwater predator." },
+        { name: "Perch", spot: "Lake", description: "Common freshwater fish with spiny fins." },
+        { name: "Pickerel", spot: "Swamp", description: "Smaller relative of the northern pike." },
+        { name: "Pike", spot: "Lake", description: "Ambush predator with long, pointed snout." },
+        { name: "Plaice", spot: "Ocean", description: "Flatfish known for orange spots." },
+        { name: "Pollock", spot: "Ocean", description: "Marine fish used for frozen products." },
+        { name: "Glowfin", spot: "Reef", description: "Fish with glowing, neon-colored fins." },
+        { name: "Shellcrag", spot: "Reef", description: "Giant crab with a stone shell." },
+        { name: "Abysswalker", spot: "Ocean", description: "Many-legged beast from the deepest ocean." },
+        { name: "Hydraserpent", spot: "Reef", description: "Multi-headed snake living in coral." },
+        { name: "Waveglider", spot: "Ocean", description: "Creature that flies above the surface." },
+        { name: "Pearlscale", spot: "Reef", description: "Elegant mermaid-like fish with shiny scales." },
+        { name: "Stormray", spot: "Ocean", description: "Ray that shoots electric blue lightning." },
+        { name: "Bubblemouth", spot: "Swamp", description: "Round fish that traps prey in bubbles." },
+        { name: "Frosttentacle", spot: "Ocean", description: "Jellyfish that freezes water around it." },
+        { name: "Voidshark", spot: "Ocean", description: "Shadowy predator made of dark mist." }
+    ];
 
-const CREATURE_NAMES = [
-  "Whale Shark", "Bluefin Tuna", "Narwhal",
-  "Manta Ray", "Giant Squid", "Nautilus",
-  "Cephalopod", "Sperm Whale", "Beluga Whale",
-  "Humpback Whale", "Minke Whale", "Orca"
-];
+    document.getElementById("generatorForm").addEventListener("submit", function(e) {
+        e.preventDefault();
 
-const TRASH_NAMES = [
-  "Plastic Bottle", "Disposable Cup",
-  "Straw", "Cigarette Butts", "Food Wrapper",
-  "Burger Wrapper", "Pizza Box", "Pringles Can",
-  "Toothpick", "Nail", "Paint Can", "Foam Block"
-];
+        const count = parseInt(document.getElementById("count").value);
+        const locationType = document.getElementById("locationType").value;
+        const seed = document.getElementById("seedLabel").value.trim() || "";
 
-const SPOTS = [
-  "Beach", "Lake", "River", "Ocean", "Marsh"
-];
+        // Build place weights
+        let placeWeights = {};
+        if (locationType === "Uniform") {
+            // Uniform distribution: roughly 20% per place (5 places)
+            const base = Math.floor(count / 5);
+            for (const place of ["Ocean", "Lake", "Reef", "River", "Swamp"]) {
+                placeWeights[place] = base + (Math.random() < 0.4 ? 1 : 0);
+            }
+        } else {
+            // Custom distribution
+            placeWeights["Ocean"] = 18;
+            placeWeights["Lake"] = 13;
+            placeWeights["Reef"] = 10;
+            placeWeights["River"] = 8;
+            placeWeights["Swamp"] = 3;
+        }
 
-// Opcje dla pogody i czasu
-const WEATHER_OPTIONS = ["", "Rain", "Clear", "Snow", "Storm"];
-const TIME_OPTIONS = ["", "Dawn", "Dusk", "Day", "Night"];
+        // Set a random seed if provided
+        function srand(seedVal) {
+            // A simple pseudo-random number generator with seed
+            let x = Math.max(0, Math.min(2147483646, +seedVal || 1));
+            return () => {
+                x = (1103515245 * x + 12345) % 2147483648;
+                // Return a value between 0 and 1
+                return x / 2147483648;
+            };
+        }
 
-// —————————————————————
-// Helperowe funkcje
-// —————————————————————
-function getRandomOption(list) {
-  if (!list.length) return "";
-  const idx = Math.floor(Math.random() * list.length);
-  return list[idx];
-}
+        const randomFn = seed ? srand(seed) : () => Math.random();
 
-// Funkcja tworząca short description na podstawie szablonu
-function generateFluff(template, name, weather, spot, time) {
-  // Przykład: 
-  // "A common fish named {name} is often seen in {spot}. If the weather is {weather}, it’s even more popular during {time}."
-  return template
-    .replace("{name}", name)
-    .replace("{weather}", weather || "")
-    .replace("{spot}", spot || "")
-    .replace("{time}", time || "");
-}
+        // Generate YAML
+        let yamlOutput = "# Generated YAML file\n\n";
+        yamlOutput += "records:\n";
+        for (let i = 0; i < count; i++) {
+            // Pick a place based on weights
+            const rand = randomFn();
+            let totalWeight = 0;
+            let selectedPlace;
+            for (const place in placeWeights) {
+                totalWeight += placeWeights[place];
+            }
+            let accumulated = 0;
+            for (const place in placeWeights) {
+                accumulated += placeWeights[place] * rand;
+                if (accumulated >= totalWeight) {
+                    selectedPlace = place;
+                    break;
+                }
+            }
 
-// —————————————————————
-// Generowanie listy pozycji
-// —————————————————————
-function generateItems(count, startId, type, weatherChoice, timeChoice) {
-  const items = [];
+            // Find a random fish from that place
+            const fish = FISH_LIST.find(f => f.spot === selectedPlace);
+            if (!fish) continue;
 
-  for (let i = 0; i < count; i++) {
-    // ID rosnące
-    const id = startId + i;
+            // Build the YAML record
+            yamlOutput += "  - id: " + (i + 1) + "\n";
+            yamlOutput += "    name: \"" + fish.name + "\"\n";
+            yamlOutput += "    spot: \"" + fish.spot + "\"\n";
+            yamlOutput += "    description: \"" + fish.description + "\"\n";
+            // You can add more fields as needed
+            yamlOutput += "\n";
+        }
 
-    let nameList;
-    if (type === "fish") nameList = FISH_NAMES;
-    else if (type === "creature") nameList = CREATURE_NAMES;
-    else if (type === "trash") nameList = TRASH_NAMES;
-
-    // Losowy wybór nazwy
-    const name = getRandomOption(nameList);
-
-    // Miejsce: opcja 1) od nazwy, opcja 2) z listy (jeśli użytkownik wypełnił)
-    let spot;
-    if (document.getElementById("spotsInput").value.trim() !== "") {
-      // Jeśli użytkownik podał własne miejsca, rozdzielimy je przecinkami
-      const userSpots = document.getElementById("spotsInput").value
-        .trim()
-        .split(",") // zakładamy rozdzielaczami przecinkowe
-        .map((s) => s.trim());
-      
-      if (userSpots.length) {
-        spot = getRandomOption(userSpots);
-      } else {
-        // Jeśli lista jest pusta, wybieramy z ogólnej
-        spot = getRandomOption(SPOTS);
-      }
-    } else {
-      spot = getRandomOption(SPOTS);
-    }
-
-    // Pogoda i czas
-    const weather = weatherChoice || getRandomOption(WEATHER_OPTIONS);
-    const time = timeChoice || getRandomOption(TIME_OPTIONS);
-
-    // Losowe liczby
-    const chance = Math.floor(Math.random() * 100) + 1;       // od 1 do 100
-    const stars = Math.floor(Math.random() * 4) + 1;           // od 1 do 4
-
-    // Krótki opis
-    const fluff = generateFluff(
-      "A common " + (type === "trash" ? "trash item" : "fish") + " named " + name + 
-        " is often seen in " + spot + ". If the weather is " + weather +
-        ", it’s even more popular during " + time + ".",
-      name,
-      weather,
-      spot,
-      time
-    );
-
-    items.push({
-      id,
-      name,
-      weather,
-      spot,
-      time,
-      chance,
-      stars,
-      fluff,
-      condition: "",       // zawsze puste
-      image: "https://via.placeholder.com/300",  // placeholder link
-      emoji: type === "trash" ? "🚯" : "🐟"
+        document.getElementById("yamlOutput").innerText = yamlOutput;
     });
-  }
-
-  return items;
-}
-
-// —————————————————————
-// Konstrukcja pliku YAML na podstawie listy pozycji
-// —————————————————————
-function buildYaml(items) {
-  // Nagłówek (opcjonalnie)
-  let yaml = "# Lista pozycji ryb lub śmieci\n\n";
-  
-  // Dla każdej pozycji tworzymy rekord:
-  items.forEach((item) => {
-    yaml += "- id: " + item.id + "\n";
-    yaml += "  name: \"" + item.name + "\"\n";
-    yaml += "  weather: \"" + item.weather + "\"\n";
-    yaml += "  spot: \"" + item.spot + "\"\n";
-    yaml += "  time: \"" + item.time + "\"\n";
-    yaml += "  chance: " + item.chance + "\n";       // liczba od 1 do 100
-    yaml += "  stars: " + item.stars + "\n";         // liczba od 1 do 4
-    yaml += "  fluff: \"" + item.fluff + "\"\n";
-    yaml += "  condition: \"\"\n";                  // zawsze puste
-    // image i emoji to linki (można dodać je, jeśli potrzebujesz):
-    //   - id: "https://example.com/image1.jpg"
-    //   - emoji: "\" " + item.emoji + " "
-  });
-
-  return yaml;
-}
-
-// —————————————————————
-// Event listener – generowanie pliku YAML
-// —————————————————————
-document.getElementById("generateBtn").addEventListener("click", () => {
-  const startId = parseInt(document.getElementById("startId").value) || 0;
-  const count = parseInt(document.getElementById("count").value) || 5;
-
-  const type = document.getElementById("typeOption").value;
-  const weatherChoice = document.getElementById("weatherOption").value;
-  const timeChoice = document.getElementById("timeOption").value;
-
-  // Ustawienie widoczności informacji o miejscu
-  const spotsInputValue = document.getElementById("spotsInput").value.trim();
-  const showSpotsRow = spotsInputValue !== "";
-  document.getElementById("spotInfoRow").style.display = showSpotsRow ? "flex" : "none";
-
-  try {
-    // Generowanie pozycji
-    const items = generateItems(count, startId, type, weatherChoice, timeChoice);
-    // Konstrukcja YAML
-    const yamlOutput = buildYaml(items);
-
-    document.getElementById("yamlOutput").innerText = yamlOutput;
-  } catch (err) {
-    alert("Wystąpił błąd: " + err.message);
-  }
-});
 </script>
 </body>
 </html>
