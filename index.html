@@ -1,50 +1,41 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <title>Fish Generator</title>
+<meta charset="utf-8">
+<title>Generator ryb / śmieci → YAML</title>
+<link rel="stylesheet" href="style.css">
+<!-- js-yaml z CDN (dla serializacji) -->
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 </head>
 <body>
 
-<h1>Fish Generator</h1>
+<h1>Generator ryb / śmieci → YAML</h1>
 
-<input id="count" type="number" value="5">
-<button onclick="generate()">Generuj</button>
+<form id="configForm">
+  <label>
+    Rodzaj:
+    <select name="type" required>
+      <option value="fish">Ryby</option>
+      <option value="trash">Śmieci</option>
+    </select>
+  </label><br>
 
-<pre id="output"></pre>
+  <label>
+    Liczba pozycji (1‑50):
+    <input type="number" name="count" min="1" max="50" value="10" required>
+  </label><br>
 
-<script>
-function generate() {
-  const count = document.getElementById("count").value;
-  let out = "";
+  <label><input type="checkbox" name="rare"> Rzadkie (Rare)</label><br>
+  <label><input type="checkbox" name="legendary"> Legendarne (Legendary)</label><br>
 
-  const weathers = ["Rain", "Clear", "Snow", "Storm"];
-  const spots = ["Ocean", "River", "Reef", "Swamp", "Lake"];
-  const times = ["Dawn", "Dusk", "Day", "Night"];
+  <button type="submit">Generuj YAML</button>
+</form>
 
-  function rand(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
+<h2>Wynik:</h2>
+<textarea id="output" rows="15" readonly></textarea>
+<br>
+<button id="downloadBtn" disabled>Pobierz jako plik .yaml</button>
 
-  for (let i = 1; i <= count; i++) {
-    out += `- id: ${i}
-  name: Fish${i}
-  weather: ${rand(weathers)}
-  spot: ${rand(spots)}
-  time: ${rand(times)}
-  chance: ${Math.floor(Math.random() * 100) + 1}
-  stars: ${Math.ceil(Math.random() * 4)}
-  fluff: Generated fish.
-  condition:
-  image: https://
-  emoji: <>
-
-`;
-  }
-
-  document.getElementById("output").textContent = out;
-}
-</script>
-
+<script src="generator.js"></script>
 </body>
 </html>
