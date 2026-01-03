@@ -34,33 +34,49 @@
 
 <label>Ilość ryb:</label><br>
 <input type="number" id="count" value="20" min="1" max="200">
-<br><br>
-
-<button onclick="generate()">Generuj</button>
-<button onclick="copy()">Kopiuj do schowka</button>
 
 <br><br>
-<textarea id="output"></textarea>
+
+<button id="generateBtn">Generuj</button>
+<button id="copyBtn">Kopiuj</button>
+
+<br><br>
+
+<textarea id="output" placeholder="Tutaj pojawi się wynik..."></textarea>
 
 <script>
-const names = [
-  "Bass","Salmon","Carp","Catfish","Pike","Trout","Eel","Tuna",
-  "Sardine","Mackerel","Angelfish","Clownfish","Lionfish",
-  "Piranha","Mudskipper","Koi","Ice Cod","Ghost Eel",
-  "Swamp Gar","Moon Carp"
-];
+document.addEventListener("DOMContentLoaded", () => {
 
-const weathers = ["Rain", "Clear", "Snow", "Storm"];
-const spots = ["Ocean", "River", "Reef", "Swamp", "Lake"];
-const times = ["Dawn", "Dusk", "Day", "Night"];
+  const names = [
+    "Bass","Salmon","Carp","Catfish","Pike","Trout","Eel","Tuna",
+    "Sardine","Mackerel","Angelfish","Clownfish","Lionfish",
+    "Piranha","Mudskipper","Koi","Ice Cod","Ghost Eel",
+    "Swamp Gar","Moon Carp"
+  ];
 
-function rand(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
+  const weathers = ["Rain", "Clear", "Snow", "Storm"];
+  const spots = ["Ocean", "River", "Reef", "Swamp", "Lake"];
+  const times = ["Dawn", "Dusk", "Day", "Night"];
 
-function generate() {
-  const count = Number(document.getElementById("count").value);
-  let id = 1;
-  let out = "";
+  const rand = arr => arr[Math.floor(Math.random() * arr.length)];
 
-  for (let i = 0; i < count; i++) {
+  document.getElementById("generateBtn").addEventListener("click", () => {
+    const count = Number(document.getElementById("count").value);
+    let out = "";
+
+    for (let i = 1; i <= count; i++) {
+      const stars = Math.ceil(Math.random() * 4);
+
+      out += `- id: ${i}
+  name: ${names[(i - 1) % names.length]}
+  weather: ${rand(weathers)}
+  spot: ${rand(spots)}
+  time: ${rand(times)}
+  chance: ${Math.floor(Math.random() * 100) + 1}
+  stars: ${stars}
+  fluff: A ${stars}-star fish found in the wild.
+  condition:
+  image: https://
+  emoji: <>
+
+`
