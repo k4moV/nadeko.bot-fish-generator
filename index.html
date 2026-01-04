@@ -476,7 +476,7 @@
                     // Apply rare modifications
                     rarePosition.name = `Rare_${fish.name}`;
                     rarePosition.chance = Math.max(1, Math.floor(fish.chance / 3));
-                    rarePosition.stars = Math.round(Math.min(4, fish.stars + 1));
+                    rarePosition.stars = Math.min(fish.stars + 1, 4);
                     rarePosition.fluff = `RARE! ${fish.description}`;
                     
                     positions.push(rarePosition);
