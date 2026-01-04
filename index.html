@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head class="container">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fish Position Generator</title>
@@ -168,42 +168,13 @@
     </div>
 
     <script>
-        const fishData = [
-            { name: "Anchovy", description: "Small, salty fish used in cooking.", spot: "Ocean" },
-            { name: "Angelfish", description: "Popular, elegant, disk-shaped aquarium fish.", spot: "Reef" },
-            { name: "Barracuda", description: "Predatory fish with sharp, needle-like teeth.", spot: "Reef" },
-            { name: "Bass", description: "Popular freshwater game fish for anglers." },
-            { name: "Betta", description: "Colorful fish known for aggressive behavior.", spot: "Swamp" },
-            { name: "Bluegill", description: "Common North American freshwater sunfish species.", spot: "Lake" },
-            { name: "Bonefish", description: "Fast, silver fish found on flats.", spot: "Ocean" },
-            { name: "Burbot", description: "Only freshwater member of cod family.", spot: "Lake" },
-            { name: "Carp", description: "Large, hardy bottom-feeding fish." },
-            { name: "Catfish", description: "Fish recognized by whisker-like barbels.", spot: "River" },
-            { name: "Cisco", description: "Cold-water fish related to whitefish.", spot: "Lake" },
-            { name: "Cod", description: "Important commercial fish with white meat." },
-            { name: "Discus", description: "Colorful, circular South American cichlid.", spot: "River" },
-            { name: "Eel", description: "Long, snake-like fish living in water." },
-            { name: "Flounder", description: "Flatfish with both eyes on top.", spot: "Ocean" },
-            { name: "Goldfish", description: "Common orange pet kept in bowls." },
-            { name: "Grouper", description: "Large-mouthed predatory saltwater reef fish.", spot: "Reef" },
-            { name: "Guppy", description: "Small, vibrant, easy-to-breed aquarium fish.", spot: "River" },
-            { name: "Haddock", description: "Saltwater fish similar to Atlantic cod.", spot: "Ocean" },
-            { name: "Hake", description: "Lean, white-fleshed marine food fish.", spot: "Ocean" },
-            { name: "Halibut", description: "Largest type of flatfish in oceans.", spot: "Ocean" },
-            { name: "Herring", description: "Forage fish often served pickled or smoked.", spot: "Ocean" },
-            { name: "Koi", description: "Decorative, brightly-colored Japanese carp.", spot: "Lake" },
-            { name: "Mackerel", description: "Oily fish with stripes on back." },
-            { name: "Marlin", description: "Large game fish with long bill." },
-            { name: "Pike", description: "Ambush predator with pointed snout." }
-        ];
-
         let currentPosition = 0;
 
         // Update count display
         function updateCountDisplay() {
             const countInput = document.getElementById('numPositions');
-            const display = document.getElementById('currentCount');
-            display.textContent = countInput.value;
+            const display = document.getElementById('countDisplay');
+            display.textContent = `Current: ${countInput.value}`;
         }
 
         // Get unique fish randomly
@@ -219,7 +190,7 @@
             return selectedFish;
         }
 
-                // Generate YAML from positions
+        // Generate YAML from positions
         function generateYAML(positions) {
             let yaml = '';
             
@@ -237,15 +208,14 @@
                 yaml += `    stars: ${pos.stars}\n`;
                 yaml += `    fluff: "${pos.fluff}"\n`;
                 
-                // Always included (placeholders if empty)
+                // Placeholders if empty
                 yaml += `    condition: ${pos.condition || ''}\n`;
                 yaml += `    image: "${pos.image || 'https://'}"\n`;
                 yaml += `    emoji: ${pos.emoji || '<>'}\n\n`;
             });
             
-            return yaml;
+            return yaml.trim(); // Remove trailing newline
         }
-
 
         // Update statistics display
         function updateStatistics(positions) {
@@ -268,7 +238,7 @@
             const spotDistributions = Object.entries(spotCount)
                 .map(([spot, count]) => `${spot} (${count})`)
                 .join(', ');
-            document.getSpotDistribution().textContent = spotDistributions;
+            document.getElementById('spotDistribution').textContent = spotDistributions;
 
             let maxChance = 0, minChance = 101;
             positions.forEach(p => {
@@ -281,6 +251,9 @@
 
         // Generate positions
         function generatePositions() {
+            // Reset ID counter for each generation
+            currentPosition = 0;
+
             const numPositionsInput = document.getElementById('numPositions');
             const numPositions = parseInt(numPositionsInput.value);
             
@@ -309,7 +282,7 @@
                     id: currentPosition++,
                     name: fish.name,
                     weather: weatherSelect || undefined,
-                    spot: spotSelect || fish.spot || undefined,
+                    spot: spotSelect || undefined,
                     time: timeSelect || undefined,
                     chance: Math.floor(Math.random() * 71) + 30, // 30-100
                     stars: Math.floor(Math.random() * 4) + 1,
@@ -352,7 +325,7 @@
                 return;
             }
 
-            const blob = new Blob([yamlText], { type: 'text/yaml' });
+            const blob = Blob([yamlText], { type: 'text/yaml' });
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
@@ -375,7 +348,7 @@
             setTimeout(() => status.remove(), 5000);
         }
 
-        // Update statistics display when spot selection changes
+        // Update stats when spot selection changes
         document.getElementById('spotSelect').addEventListener('change', () => {
             const spotSelect = document.getElementById('spotSelect').value;
             const spotDistributionLabel = document.getElementById('spotDistribution');
@@ -386,6 +359,9 @@
                 spotDistributionLabel.textContent = 'None';
             }
         });
+
+        // Initial setup
+        updateCountDisplay();
     </script>
 </body>
 </html>
