@@ -114,6 +114,62 @@
             accent-color: #667eea;
         }
         
+        /* Zmienione styły do zarządzania pojedynczym wyborem */
+        .exclusive-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+        }
+        
+        .checkbox-row {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .checkbox-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .exclusive-checkbox {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 40px;
+        }
+        
+        .exclusive-checkbox:hover {
+            background-color: #f8f9fa;
+            border-color: #667eea;
+        }
+        
+        .exclusive-checkbox.checked {
+            background-color: #e8f4ff;
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .checkbox-icon {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-icon.checked {
+            background-color: #667eea;
+        }
+        
         .btn-generator {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -301,7 +357,7 @@
             color: #9b2c2c;
             padding: 10px 15px;
             border-radius: 7px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-weight: 600;
         }
         
@@ -343,9 +399,15 @@
             
             <div class="form-group">
                 <label for="numPositions">Number of Positions to Generate</label>
-                <input type="number" id="numPositions" value="5" min="1" max="50" oninput="updateCountDisplay()">
+                <input type="number" id="numPositions" value="5" min="1" max="100" oninput="updateCountDisplay()">
                 
                 <div id="countDisplay">Positions: <span id="currentCount">5</span></div>
+            </div>
+            
+            <!-- Start ID Selector -->
+            <div class="form-group">
+                <label for="startIndex">Starting ID (leave blank for 0)</label>
+                <input type="number" id="startIndex" value="" min="0" placeholder="0">
             </div>
             
             <div class="form-group">
@@ -355,7 +417,7 @@
                     <label><input type="checkbox" class="weatherCheckbox" value="Clear"> Clear</label>
                     <label><input type="checkbox" class="weatherCheckbox" value="Snow"> Snow</label>
                     <label><input type="checkbox" class="weatherCheckbox" value="Storm"> Storm</label>
-                    <label><span>none = all weathers</span></label>
+                    <label><span>or random selection</span></label>
                 </div>
             </div>
             
@@ -364,10 +426,10 @@
                 <div class="checkbox-group">
                     <label><input type="checkbox" class="spotCheckbox" value="Ocean"> Ocean</label>
                     <label><input type="checkbox" class="spotCheckbox" value="River"> River</label>
-                    <label><input type="checkbox" class="spotCheckbox" value="Reef"> Reef</label>
+                    <label><input type="checkbox" class."spotCheckbox" value="Reef"> Reef</label>
                     <label><input type="checkbox" class="spotCheckbox" value="Swamp"> Swamp</label>
                     <label><input type="checkbox" class="spotCheckbox" value="Lake"> Lake</label>
-                    <label><span>none = all spots</span></label>
+                    <label><span>or use default for each fish</span></label>
                 </div>
             </div>
             
@@ -377,8 +439,22 @@
                     <label><input type="checkbox" class="timeCheckbox" value="Dawn"> Dawn</label>
                     <label><input type="checkbox" class="timeCheckbox" value="Dusk"> Dusk</label>
                     <label><input type="checkbox" class="timeCheckbox" value="Day"> Day</label>
-                    <label><input type="checkbox" class="timeCheckbox" value="Night"> Night</label>
-                    <label><span>none = all times</span></label>
+                    <label><input type="checkbox" class."timeCheckbox" value="Night"> Night</label>
+                    <label><span>or random selection</span></label>
+                </div>
+            </div>
+            
+            <!-- Hardcoded Spot Override -->
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <label class="override-checkbox">
+                        <input type="checkbox" id="forceSpots">
+                        <strong>Force Specific Spots (overrides fish defaults)</strong>
+                    </label>
+                    <span style="display: block; margin-top: 5px; color: #666; font-size: 0.9em;">
+                        ✓ Only one spot type can be forced at a time<br>
+                        ✓ Prevents spots not matched to fish
+                    </span>
                 </div>
             </div>
             
@@ -462,6 +538,7 @@
         ];
 
         let currentPosition = 0;
+        let lastSavedConfig = null;
         
         function updateCountDisplay() {
             const countInput = document.getElementById('numPositions');
@@ -469,6 +546,30 @@
             display.textContent = countInput.value;
         }
         
+        // Check for conflicting checkboxes in same category
+        function checkCheckboxConflicts(category) {
+            const checkedBoxes = document.querySelectorAll(`.${category}Checkbox:checked`);
+            
+            if (checkedBoxes.length > 1) {
+                // Uncheck all except first
+                Array.from(checkedBoxes)[1].checked = false;
+                alert('Only one checkbox can be selected per category at a time!');
+            }
+        }
+
+        // Watch all checkboxes for conflicts
+        document.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox') {
+                if (e.target.classList.contains('weatherCheckbox')) {
+                    checkCheckboxConflicts('weather');
+                } else if (e.target.classList.contains('spotCheckbox')) {
+                    checkCheckboxConflicts('spot');
+                } else if (e.target.classList.contains('timeCheckbox')) {
+                    checkCheckboxConflicts('time');
+                }
+            }
+        });
+
         function getRandomUniqueFish(fishList, usedNames = new Set()) {
             // Filter fish not already used
             const availableFish = fishList.filter(fish => !usedNames.has(fish.name));
@@ -489,26 +590,26 @@
         function getRandomWeather(selectedWeathers) {
             if (selectedWeathers.length > 0) {
                 const randomIndex = Math.floor(Math.random() * selectedWeathers.length);
-                return selectedWeathers[randomIndex];
+                return selectedWeaters[randomIndex];
             }
             return null;
         }
         
-        function getFishSpot(fish, selectedSpots) {
+        function getFishSpot(fish, selectedSpots, forceSpot = false) {
             // If spots are specified and not empty, use them
-            if (selectedSpots.length > 0) {
+            if (selectedSpots.length > 0 || forceSpot) {
                 const randomSpot = selectedSpots[Math.floor(Math.random() * selectedSpots.length)];
                 
-               // For Ocean and Reef, return spot if it matches fish's spot
-               // if (['Ocean', 'Reef'].includes(randomSpot)) {
-                 //   if (fish.spot === randomSpot) {
-                      //  return randomSpot;
-                    //}
-                   // return null;
-                //}
+                // For Ocean and Reef, return spot if it matches fish's spot
+                if (['Ocean', 'Reef'].includes(randomSpot)) {
+                    if (fish.spot === randomSpot) {
+                        return randomSpot;
+                    }
+                    return null;
+                }
                 
                 // For Swamp, Lake, River - always return spot regardless of fish's spot
-                //return randomSpot;
+                return randomSpot;
             }
             
             // If no spots specified, return fish's default spot if it exists
@@ -525,10 +626,13 @@
         
         function generatePositions() {
             const numPositionsInput = document.getElementById('numPositions');
+            const startIndexInput = document.getElementById('startIndex');
+            
             const numPositions = parseInt(numPositionsInput.value);
+            const startIndex = parseInt(startIndexInput.value) || 0;
             
             if (isNaN(numPositions) || numPositions < 1) {
-                showStatus('error', 'Please enter a valid number of positions (1-50)');
+                showStatus('error', 'Please enter a valid number of positions (1-100)');
                 return;
             }
             
@@ -547,17 +651,25 @@
             
             const selectedTimes = Array.from(timeCheckboxes)
                 .filter(cb => cb.checked)
-                .map(cb => cb.value);
+               .map(cb => cb.value);
+            
+            // Check for checkbox conflicts
+            if (selectedSpots.length > 1) {
+                // Keep only first checked box, uncheck rest
+                Array.from(spotCheckboxes)[1].checked = false;
+            }
             
             // Store selections in JSON
             const config = {
                 numPositions: numPositions,
+                startIndex: startIndex,
                 weathers: selectedWeathers,
                 spots: selectedSpots,
                 times: selectedTimes,
                 timestamp: new Date().toISOString()
             };
             localStorage.setItem('generatorConfig', JSON.stringify(config));
+            lastSavedConfig = config;
             
             // Generate positions
             const positions = [];
@@ -568,37 +680,42 @@
                 const fish = getRandomUniqueFish(fishData, usedNames);
                 
                 if (!fish) {
-                    break; // Can't generate unique positions
+                    break; 
                 }
                 
                 // Get random weather
                 let weather = getRandomWeather(selectedWeathers);
                 
                 // If no weathers selected and some spots exist, use Ocean weather for Ocean spot fish
-               // if (selectedSpots.length > 0 && !weather && ['Ocean', 'Reef'].includes(fish.spot || '')) {
-                    //weather = 'Ocean';
-               // }
+                if (selectedSpots.length > 0 && !weather && ['Ocean', 'Reef'].includes(fish.spot || '')) {
+                    weather = 'Ocean';
+                }
                 
                 // Get random time
                 let time = getRandomTime(selectedTimes);
                 
                 // If no times selected and some spot exists, use Day for Reef/Ocean fish
-               // if (selectedSpots.length > 0 && !time && ['Ocean', 'Reef'].includes(fish.spot || '')) {
-                //    time = 'Day';
-               // }
+                if (selectedSpots.length > 0 && !time && ['Ocean', 'Reef'].includes(fish.spot || '')) {
+                    time = 'Day';
+                }
                 
                 // Get fish spot based on selections
-                const spot = getFishSpot(fish, selectedSpots);
+                const forceSpot = document.getElementById('forceSpotCheckbox').checked;
+                const spot = getFishSpot(fish, selectedSpots, forceSpot);
                 
-                // Create position object
+                // Skip if spot doesn't match and we don't have forced spot
+                if (!spot && !forceSpot) {
+                    continue;
+                }
+                
                 positions.push({
-                    id: currentPosition++,
+                    id: startIndex + i,
                     name: fish.name,
                     weather: weather,
                     spot: spot,
                     time: time,
-                    chance: Math.floor(Math.random() * 71) + 30, // 30-100
-                    stars: Math.floor(Math.random() * 4) + 1,     // 1-4
+                    chance: Math.floor(Math.random() * 71) + 30, 
+                    stars: Math.floor(Math.random() * 4) + 1,     
                     fluff: fish.description
                 });
             }
@@ -693,7 +810,7 @@
                 if (p.spot === 'Reef') reefCount++;
                 
                 if (p.chance > maxChance) maxChance = p.chance;
-                if (p.chance < minChance) minChance = p.chance;
+                if (p.chance < minChance) minChance = p.change;
             });
             
             document.getElementById('oceanCount').textContent = oceanCount;
