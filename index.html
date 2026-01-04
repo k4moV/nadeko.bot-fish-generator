@@ -287,11 +287,12 @@
 
     <script>
         let currentPosition = 0;
-const fishData = function choice ();
+var fishData [];
         // Updated fish data with optional spot
-        function choice (fishTrashSelect){
-			if (fishTrashSelect = "Fish"){
-		fishDatae = [
+        function choice (document.getElementById('fishTrashSelect').value){
+			
+			if (document.getElementById('fishTrashSelect').value = "Fish"){
+		const fishDatae = [
         { name: "Anchovy", description: "Small, salty fish used in cooking.", spot: "Ocean", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
         { name: "Angelfish", description: "Popular, elegant, disk-shaped aquarium fish.", spot: "Reef", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
         { name: "Barracuda", description: "Predatory fish with sharp, needle-like teeth.", spot: "Reef", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
@@ -344,7 +345,7 @@ const fishData = function choice ();
         { name: "Voidshark", description: "Shadowy predator made of dark mist.", spot: "Ocean", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1}
 		    ];}
 		else {
-			fishDatae = [
+			const fishDatae = [
         {name: "Bottle", description: "Plastic container floating in currents.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
 		{name: "Boot", description: "Old rubber footwear stuck in mud.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
 		{name: "Can", description: "Rusty aluminum soda or beer container.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
@@ -397,7 +398,7 @@ const fishData = function choice ();
 		{name: "Suitcase", description: "Forgotten luggage traveling across the world.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1}
 		    ];}
 			return fishDatae; }
-const fishData = function choice ();
+
         // Update count display
         //function updateCountDisplay() {
           //  const countInput = document.getElementById('numPositions');
