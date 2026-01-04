@@ -287,7 +287,7 @@
 
     <script>
         let currentPosition = 0;
- 
+    const fishTrashSelect = document.getElementById('fishTrashSelect').value;
         // Updated fish data with optional spot
      let fishData = (function (fishTrashSelect){
 			var fishDatae;
@@ -516,7 +516,7 @@
              //   showStatus('error', 'Please enter a valid number (min 1)');
              //   return;
             // 		}
-			const fishTrashSelect = document.getElementById('fishTrashSelect').value;
+			
             const weatherSelect = document.getElementById('weatherSelect').value;
             const timeSelect = document.getElementById('timeSelect').value;
             const spotSelect = document.getElementById('spotSelect').value;
