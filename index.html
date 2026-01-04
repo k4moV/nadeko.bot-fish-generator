@@ -76,7 +76,7 @@
                  animation: slideDown 0.3s ease; z-index: 1000; }
         .status.success { background: #28a745; }
         .status.error { background: #dc3545; }
-        .status.warning { background: #ffc107; color: #333; }
+        ..status.warning { background: #ffc107; color: #333; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); }
                              to { opacity: 1; transform: translateY(0); } }
         
@@ -170,6 +170,33 @@
     <script>
         let currentPosition = 0;
 
+        const fishData = [
+            { name: "Anchovy", description: "Small, salty fish used in cooking.", spot: "Ocean" },
+            { name: "Angelfish", description: "Popular, salted, disk-shaped aquarium fish.", spot: "Reef" },
+            { name: "Barracuda", description: "Predatory fish with sharp teeth.", spot: "Reef" },
+            { name: "Bass", description: "Popular freshwater game fish for anglers." },
+            { name: "Betta", description: "Colorful fish known for aggressive behavior.", spot: "Swamp" },
+            { name: "Bluegill", description: "Common North American sunfish species.", spot: "Lake" },
+            { name: "Bonefish", description: "Fast, silver fish found on flats.", spot: "Ocean" },
+            { name: "Burbot", description: "Only freshwater member of cod family.", spot: "Lake" },
+            { name: "Carp", description: "Large bottom-feeding fish." },
+            { name: "Catfish", description: "Fish recognized by whisker-like barbels.", spot: "River" },
+            { name: "Cisco", description: "Cold-water fish related to whitefish.", spot: "Lake" },
+            { name: "Cod", description: "Important commercial fish with white meat." },
+            { name: "Discus", description: "Colorful, circular South American cichlid.", spot: "River" },
+            { name: "Eel", description: "Long, snake-like fish living in water." },
+            { name: "Flounder", description: "Flatfish with both eyes on one side.", spot: "Ocean" },
+            { name: "Goldfish", description: "Common orange pet kept in bowls." },
+            { name: "Grouper", description: "Large-mouthed reef fish.", spot: "Reef" },
+            { name: "Haddock", description: "Saltwater fish similar to cod.", spot: "Ocean" },
+            { name: "Halibut", description: "Largest flatfish in oceans." },
+            { name: "Herring", description: "Pickled or smoked forage fish.", spot: "Ocean" },
+            { name: "Koi", description: "Decorative Japanese carp.", spot: "Lake" },
+            { name: "Mackerel", description: "Stripes on back, oily fish." },
+            { name: "Marlin", description: "Large game fish with long bill." },
+            { name: "Pike", description: "Ambush predator with pointed snout." }
+        ];
+
         // Update count display
         function updateCountDisplay() {
             const countInput = document.getElementById('numPositions');
@@ -262,7 +289,6 @@
                 return;
             }
 
-            // Get selected values
             const weatherSelect = document.getElementById('weatherSelect').value;
             const timeSelect = document.getElementById('timeSelect').value;
             const spotSelect = document.getElementById('spotSelect').value;
@@ -290,11 +316,9 @@
                 });
             }
 
-            // Generate and display YAML
             const yamlOutput = generateYAML(positions);
             document.getElementById('yamlOutput').textContent = yamlOutput;
 
-            // Update statistics
             updateStatistics(positions);
 
             showStatus('success', `Generated ${positions.length} positions!`);
@@ -325,7 +349,8 @@
                 return;
             }
 
-            const blob = Blob([yamlText], { type: 'text/yaml' });
+            // Fixed Blob creation (added 'new')
+            const blob = new Blob([yamlText], { type: 'text/yaml' });
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
@@ -347,18 +372,6 @@
             
             setTimeout(() => status.remove(), 5000);
         }
-
-        // Update stats when spot selection changes
-        document.getElementById('spotSelect').addEventListener('change', () => {
-            const spotSelect = document.getElementById('spotSelect').value;
-            const spotDistributionLabel = document.getElementById('spotDistribution');
-            
-            if (spotSelect) {
-                spotDistributionLabel.textContent = spotSelect;
-            } else {
-                spotDistributionLabel.textContent = 'None';
-            }
-        });
 
         // Initial setup
         updateCountDisplay();
