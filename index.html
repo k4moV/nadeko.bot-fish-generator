@@ -137,21 +137,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>Fish Position Generator</h1>
-        <p class="subtitle">Create custom YAML position files with weather, time, spot, and rarity settings</p>
+        <h1>Fish Generator for Nadeko.bot</h1>
+        <p class="subtitle">by kamov</p>
         
         <!-- Controls Section -->
         <div class="controls">
-            <h2>Generator Settings</h2>
+            <h2>Generation Settings</h2>
             
             <div class="form-group">
-                <label for="numPositions">Number of Positions to Generate</label>
+                <label for="numPositions">Number of Fish / Trash to Generate</label>
                 <input type="number" id="numPositions" value="5" min="1" max="50"
                        oninput="updateCountDisplay()">
                 
-                <div id="countDisplay" style="margin-top: 10px; font-weight: bold;">
-                    Current: 5
-                </div>
+               //<div id="countDisplay" style="margin-top: 10px; font-weight: bold;">
+                    // Current: 5
+               // </div>
             </div>
 
             <!-- Variant Options -->
@@ -239,19 +239,19 @@
         </div>
         
         <!-- Stats Section -->
-        <div class="stats">
-            <h2>Generation Statistics</h2>
-            <div class="stat-item"><span class="stat-label">Unique Species:</span>
-                <span class="stat-value" id="uniqueSpecies">0</span></div>
-            <div class="stat-item"><span class="stat-label">Spot Distribution:</span>
-                <span class="stat-value" id="spotDistribution">None</span></div>
-            <div class="stat-item"><span class="stat-label">Highest Chance:</span>
-                <span class="stat-value" id="highestChance">0%</span></div>
-            <div class="stat-item"><span class="stat-label">Lowest Chance:</span>
-                <span class="stat-value" id="lowestChance">0%</span></div>
-            <div class="stat-item"><span class="stat-label">Variants Generated:</span>
-                <span class="stat-value" id="variantCount">0</span></div>
-        </div>
+       // <div class="stats">
+           // <h2>Generation Statistics</h2>
+            //<div class="stat-item"><span class="stat-label">Unique Species:</span>
+              //  <span class="stat-value" id="uniqueSpecies">0</span></div>
+           // <div class="stat-item"><span class="stat-label">Spot Distribution:</span>
+            //    <span class="stat-value" id="spotDistribution">None</span></div>
+          //  <div class="stat-item"><span class="stat-label">Highest Chance:</span>
+             //   <span class="stat-value" id="highestChance">0%</span></div>
+         //   <div class="stat-item"><span class="stat-label">Lowest Chance:</span>
+          //      <span class="stat-value" id="lowestChance">0%</span></div>
+          //  <div class="stat-item"><span class="stat-label">Variants Generated:</span>
+            //    <span class="stat-value" id="variantCount">0</span></div>
+       // </div>
     </div>
 
     <script>
@@ -330,10 +330,10 @@
 
         // Get fish data in desired order
         function getFishDataInOrder() {
-            const shuffleOption = document.getElementById('shuffleOption').value;
-            if (shuffleOption === 'random') {
-                return shuffleArray(fishData);
-            }
+           // const shuffleOption = document.getElementById('shuffleOption').value;
+           // if (shuffleOption === 'random') {
+              //  return shuffleArray(fishData);
+          //  }
             return fishData.slice(); // Original order
         }
 
@@ -365,46 +365,46 @@
         }
 
         // Update statistics display
-        function updateStatistics(positions) {
-            if (positions.length === 0) {
-                document.getElementById('uniqueSpecies').textContent = '0';
-                document.getElementById('spotDistribution').textContent = 'None';
-                document.getElementById('highestChance').textContent = '0%';
-                document.getElementById('lowestChance').textContent = '0%';
-                document.getElementById('variantCount').textContent = '0';
-                return;
-            }
+        //function updateStatistics(positions) {
+           // if (positions.length === 0) {
+             //   document.getElementById('uniqueSpecies').textContent = '0';
+             //   document.getElementById('spotDistribution').textContent = 'None';
+             //   document.getElementById('highestChance').textContent = '0%';
+              //  document.getElementById('lowestChance').textContent = '0%';
+            //    document.getElementById('variantCount').textContent = '0';
+             //   return;
+          //  }
 
             // Count unique species (base names only)
-            const uniqueBaseSpecies = new Set(
-                positions.filter(p => !p.isVariant).map(p => p.baseName || p.name)
-            );
-            document.getElementById('uniqueSpecies').textContent = uniqueBaseSpecies.size;
+           // const uniqueBaseSpecies = new Set(
+          //      positions.filter(p => !p.isVariant).map(p => p.baseName || p.name)
+          //  );
+          //  document.getElementById('uniqueSpecies').textContent = uniqueBaseSpecies.size;
 
             // Spot distribution
-            const spotCount = {};
-            positions.forEach(p => {
-                const spot = p.spot || 'Unspecified';
-                spotCount[spot] = (spotCount[spot] || 0) + 1;
-            });
-            const spotDistributions = Object.entries(spotCount)
-                .map(([spot, count]) => `${spot} (${count})`)
-                .join(', ');
-            document.getElementById('spotDistribution').textContent = spotDistributions;
+           // const spotCount = {};
+          //  positions.forEach(p => {
+            //    const spot = p.spot || 'Unspecified';
+            //    spotCount[spot] = (spotCount[spot] || 0) + 1;
+          //  });
+           // const spotDistributions = Object.entries(spotCount)
+           //     .map(([spot, count]) => `${spot} (${count})`)
+             //   .join(', ');
+           // document.getElementById('spotDistribution').textContent = spotDistributions;
 
             // Chance statistics
-            let maxChance = 0, minChance = 101;
-            positions.forEach(p => {
-                if (p.chance > maxChance) maxChance = p.chance;
-                if (p.chance < minChance) minChance = p.chance;
-            });
-            document.getElementById('highestChance').textContent = `${maxChance}%`;
-            document.getElementById('lowestChance').textContent = `${minChance}%`;
+          //  let maxChance = 0, minChance = 101;
+           // positions.forEach(p => {
+           //     if (p.chance > maxChance) maxChance = p.chance;
+            //    if (p.chance < minChance) minChance = p.chance;
+           // });
+          //  document.getElementById('highestChance').textContent = `${maxChance}%`;
+          //  document.getElementById('lowestChance').textContent = `${minChance}%`;
 
             // Variant count
-            const variantCount = positions.filter(p => p.isVariant).length;
-            document.getElementById('variantCount').textContent = variantCount;
-        }
+           // const variantCount = positions.filter(p => p.isVariant).length;
+           // document.getElementById('variantCount').textContent = variantCount;
+       // }
 
         // Generate positions with variants
         function generatePositions() {
@@ -490,21 +490,21 @@
             }
 
             // Sort positions by base fish order with variants interleaved
-            positions.sort((a, b) => {
-                if (!a.isVariant && !b.isVariant) {
-                    return a.baseIndex - b.baseIndex;
-                } else if (a.isVariant && !b.isVariant) {
-                    return 1; // Normal comes before variant
-                } else if (!a.isVariant && b.isVariant) {
-                    return -1;
-                } else {
+          //  positions.sort((a, b) => {
+             //   if (!a.isVariant && !b.isVariant) {
+              //      return a.baseIndex - b.baseIndex;
+              //  } else if (a.isVariant && !b.isVariant) {
+              //      return 1; // Normal comes before variant
+              //  } else if (!a.isVariant && b.isVariant) {
+              //      return -1;
+              //  } else {
                     // Both variants - keep relative order
-                    return a.variantOrderIndex - b.variantOrderIndex;
-                }
-            });
+                //    return a.variantOrderIndex - b.variantOrderIndex;
+              //  }
+           // });
 
             // Reassign IDs in final order
-            positions.forEach((p, idx) => p.id = idx);
+           // positions.forEach((p, idx) => p.id = idx);
 
             const yamlOutput = generateYAML(positions);
             document.getElementById('yamlOutput').textContent = yamlOutput;
