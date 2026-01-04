@@ -154,6 +154,16 @@
                <!--</div> -->
             </div>
 
+			<div class="form-group">
+                <label for="numStartId">Start ID (default 0)</label>
+                <input type="number" id="numStartId" value="0" min="0" max=""
+                       oninput="updateCountDisplay()">
+                
+               <!-- <div id="countDisplay" style="margin-top: 10px; font-weight: bold;"> -->
+                  <!--  Current: 5 -->
+               <!--</div> -->
+            </div>
+
             <!-- Variant Options -->
             <div class="variant-section">
                 <h3>🐠 Rarity Options</h3>
@@ -312,11 +322,11 @@
 		    ];
 
         // Update count display
-        function updateCountDisplay() {
-            const countInput = document.getElementById('numPositions');
-            const display = document.getElementById('countDisplay');
-            display.textContent = `Current: ${countInput.value}`;
-        }
+        //function updateCountDisplay() {
+          //  const countInput = document.getElementById('numPositions');
+          //  const display = document.getElementById('countDisplay');
+          //  display.textContent = `Current: ${countInput.value}`;
+       // }
 
         // Shuffle array (Fisher-Yates)
         function shuffleArray(array) {
@@ -408,7 +418,7 @@
 
         // Generate positions with variants
         function generatePositions() {
-            currentPosition = 0; // Reset ID counter
+            currentPosition = document.getElementById('numStartId'); // Reset ID counter
 
             const numPositionsInput = document.getElementById('numPositions');
             let numPositions = parseInt(numPositionsInput.value);
@@ -522,8 +532,8 @@
                 weather: weather || undefined,
                 spot: spot || fish.spot || undefined,
                 time: time || undefined,
-                chance: Math.floor(Math.random() * 71) + 30, // 30-100
-                stars: Math.floor(Math.random() * 4) + 1,
+                chance: Math.round(Math.floor(Math.random() * 71) + 30), // 30-100
+                stars: Math.round(Math.floor(Math.random() * 4) + 1),
                 fluff: fish.description
             };
         }
