@@ -1,479 +1,521 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <title>Generator Ryb</title>
-    <style>
-        * { margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; min-height: 100vh; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        h1 { color: #333; margin-bottom: 10px; }
-        .stats { background: #e8f4f8; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        
-        .controls {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        
-        label { display: block; margin: 10px 0 5px; font-weight: bold; }
-        input, select, button {
-            padding: 8px;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            width: 100%;
-            max-width: 300px;
-            margin-bottom: 10px;
-        }
-        
-        button {
-            background: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        
-        button:hover { background: #45a049; }
-        
-        .fish-list {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .fish-item {
-            background: #fafafa;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            display: grid;
-            grid-template-columns: auto 1fr 200px;
-            align-items: center;
-            gap: 10px;
-            grid-auto-flow: column;
-        }
-        
-        .fish-item.editing { background: #fff3cd; border: 2px solid #ffc107; }
-        
-        .fish-labels {
-            font-size: 0.9em;
-            color: #666;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-        }
-        
-        .tags-container {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        
-        .tag {
-            background: #e0f2f1;
-            padding: 3px 8px;
-            border-radius: 15px;
-            font-size: 0.85em;
-            color: #00796b;
-            min-width: 60px;
-            text-align: center;
-        }
-        
-        .tag.special { background: #ffebee; color: #c6282f; }
-        
-        .actions {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-        
-        .edit-btn, .delete-btn {
-            background: #2196F3;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85em;
-        }
-        
-        .edit-btn:hover { background: #0b7dda; }
-        .delete-btn { background: #f44336; }
-        .delete-btn:hover { background: #da190b; }
-        
-        .save-btn {
-            background: #2e7d32;
-            padding: 8px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        
-        .save-btn:hover { background: #1b5e20; }
-        
-        .stats-indicators {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-            padding: 15px;
-            background: #fff3cd;
-            border-radius: 6px;
-        }
-        
-        .stat-box {
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-        }
-        
-        .stat-box h3 { margin-bottom: 5px; font-size: 0.8em; color: #555; }
-        .stat-box-number { font-size: 1.5em; font-weight: bold; color: #4CAF50; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generator pozycji z ryb do bota</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6c8daf 0%, #4a6fa5 100%);
+      color: #333;
+      min-height: 100vh;
+      padding-top: 20px;
+    }
+
+    .app-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: white;
+    }
+
+    .controls {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #4a6fa5;
+    }
+
+    input,
+    select {
+      width: calc(100% + 20px);
+      padding: 12px;
+      border: 2px solid #c0d2ff;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #4a6fa5;
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+      color: #4a6fa5;
+    }
+
+    button {
+      background: linear-gradient(135deg, #4a6fa5 0%, #6c8daf 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .output-section {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    #fishData {
+      width: calc(100% + 20px);
+      min-height: 400px;
+      padding: 16px;
+      border: 2px solid #c0d2ff;
+      border-radius: 8px;
+      font-family: monospace, sans-serif;
+      resize: vertical;
+      overflow-y: auto;
+    }
+
+    .copy-btn {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      background: #4a6fa5;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      background: #e8f0fe;
+      padding: 10px 14px;
+      border-radius: 6px;
+      min-width: 150px;
+    }
+    .label { font-size: 0.95rem; color: #4a6fa5; }
+    .value { font-size: 1.2rem; font-weight: bold; color: #2c3e50; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Generator Pozycji Ryb ⚓🐟</h1>
-        
-        <div class="stats">
-            <div class="stats-indicators">
-                <div class="stat-box">
-                    <h3>Zapas ryb</h3>
-                    <span id="count">0</span>
-                </div>
-                <div class="stat-box">
-                    <h3>Ryby unikalne</h3>
-                    <span id="unique">0</span>
-                </div>
-                <div class="stat-box">
-                    <h3>Pięciowęźlowe</h3>
-                    <span id="fiveStar">0</span>
-                </div>
-                <div class="stat-box">
-                    <h3>Rzadkie</h3>
-                    <span id="rare">0</span>
-                </div>
-            </div>
-            
-            <div class="controls">
-                <h2>Ustawienia</h2>
-                
-                <label for="fishCount">Ilość ryb do wygenerować:</label>
-                <input type="number" id="fishCount" value="5" min="1" max="50">
-                
-                <label for="baseName">Podstawowa nazwa (przyklad: "Blue"):</label>
-                <input type="text" id="baseName" placeholder="Podstawowa nazwa">
-                
-                <label for="minChance">Min. szansa (1-100):</label>
-                <input type="number" id="minChance" value="50" min="1" max="100">
-                
-                <label for="maxStars">Max gwiazdki (1-4):</label>
-                <input type="number" id="maxStars" value="4" min="1" max="4">
-                
-                <button onclick="generateFish()">Wygeneruj Ryby</button>
-            </div>
-        </div>
+  <div class="app-container">
+    <header>
+      <h1>Generator pozycji z ryb do bota</h1>
+      <p style="color:#7f9fc7;">Ustaw parametry i wygeneruj listę pozycji w formacie YML</p>
+    </header>
 
-        <div class="fish-list">
-            <h2>Zarejestrowane ryby ✅</h2>
-            
-            <div id="fishContainer">
-                <p style="text-align:center; color:#666; padding:20px;">Brak ryb - kliknij "Wygeneruj Ryby" lub dodaj ręcznie</p>
-            </div>
+    <div class="controls">
+      <div class="control-group">
+        <label for="fishCount">Ilość pozycji do wygenerowania</label>
+        <input type="number" id="fishCount" min="1" max="100" value="25" />
+      </div>
+
+      <div class="control-group">
+        <label>Zmień nazwy ryb (lista dostępnych):</label><br />
+        <textarea
+          id="fishNames"
+          rows="4"
+          style="width: calc(100% + 20px); padding: 12px; border: 2px solid #c0d2ff; border-radius: 8px; font-size: 0.95rem;"
+        >
+Odwołania do nazw i opisów po myślniku, jedna linia na jedną rybu:
+Glowfin – Fish with glowing, neon-colored fins.
+Shellcrag – Giant crab with a stone shell.
+Abysswalker – Many-legged beast from the deepest ocean.
+... (i tak dalej dla wszystkich z listy)
+        </textarea>
+      </div>
+
+      <div class="control-group">
+        <label>Warunki specjalne (kombinacje weather + spot + time):</label><br />
+        <div style="margin-bottom: 8px;">
+          <input type="checkbox" id="specialCondition1" /> <span style="margin-left: 6px;">Rain, Ocean, Dawn</span>
         </div>
+        <div>
+          <input type="checkbox" id="specialCondition2" /> <span style="margin-left: 6px;">Clear, River, Dusk</span>
+        </div>
+      </div>
+
+      <button onclick="generatePositions()">Generuj pozycje</button>
     </div>
 
-    <script>
-        let fishList = [];
-        let currentEditingId = null;
+    <div class="output-section">
+      <h2>Wygenerowane pozycje (YML)</h2>
+      <p style="color:#7f9fc7; margin-bottom: 8px;">Kliknij przycisk "Kopiuj", aby pobrać dane do katalogu.</p>
+      <div style="position:relative;">
+        <textarea
+          id="fishData"
+          readonly
+          placeholder="Twoje pozycje z ryb pojawią się tutaj..."
+          style="
+            width: calc(100% + 20px);
+            padding: 16px;
+            border: 2px solid #c0d2ff;
+            border-radius: 8px;
+            font-family: monospace, sans-serif;
+            resize: vertical;
+          "
+        ></textarea>
+        <button class="copy-btn" onclick="copyToClipboard()">Kopiuj</button>
+      </div>
 
-        // Generowanie nazw
-        function generateFishName(baseName = '') {
-            const prefixes = ['Great', 'Big', 'Blue', 'Red', 'Silver', 'Golden', 'Electric'];
-            const suffixes = ['Fin', 'Scale', 'Gill', 'Mouth', 'Eye', 'Tail'];
-            
-            if (!baseName) {
-                return `${prefixes[Math.floor(Math.random() * prefixes.length)]} ${suffixes[Math.floor(Math.random() * suffixes.length)]}`;
-            }
-            
-            return `${baseName}${baseName[baseName.length - 1]}${suffixes[Math.floor(Math.random() * suffixes.length)]}`;
+      <div class="stats">
+        <div class="stat">
+          <div class="label">Ryby wygenerowane</div>
+          <div class="value" id="totalValue">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Średnia szansa</div>
+          <div class="value" id="avgChanceValue">0%</div>
+        </div>
+        <div class="stat">
+          <div class="label">Rozkład gwiazdek (1–4)</div>
+          <div class="value" id="starsDistributionValue">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Lista domyślnych ryb z opisami
+    const defaultFishList = [
+      "Glowfin – Fish with glowing, neon-colored fins.",
+      "Shellcrag – Giant crab with a stone shell.",
+      "Abysswalker – Many-legged beast from the deepest ocean.",
+      "Hydraserpent – Multi-headed snake living in coral.",
+      "Waveglider – Creature that flies above the surface.",
+      "Pearlscale – Elegant mermaid-like fish with shiny scales.",
+      "Stormray – Ray that shoots electric blue lightning.",
+      "Bubblemouth – Round fish that traps prey in bubbles.",
+      "Frosttentacle – Jellyfish that freezes water around it.",
+      "Voidshark – Shadowy predator made of dark mist.",
+      "Anchovy – Small, salty fish used in cooking.",
+      "Angelfish – Popular, elegant, disk-shaped aquarium fish.",
+      "Barracuda – Predatory fish with sharp, needle-like teeth.",
+      "Bass – Popular freshwater game fish for anglers.",
+      "Betta – Colorful fish known for aggressive behavior.",
+      "Bluegill – Common North American freshwater sunfish species.",
+      "Bonefish – Fast, silver fish found on flats.",
+      "Burbot – Only freshwater member of cod family.",
+      "Carp – Large, hardy freshwater bottom-feeding fish.",
+      "Catfish – Fish recognized by whisker-like barbels.",
+      "Cisco – Cold-water fish related to whitefish.",
+      "Cod – Important commercial fish with white meat.",
+      "Discus – Colorful, circular South American cichlid.",
+      "Eel – Long, snake-like fish living in water.",
+      "Flounder – Flatfish with both eyes on top.",
+      "Goldfish – Common orange pet kept in bowls.",
+      "Grouper – Large-mouthed predatory saltwater reef fish.",
+      "Guppy – Small, vibrant, easy-to-breed aquarium fish.",
+      "Haddock – Saltwater fish similar to Atlantic cod.",
+      "Hake – Lean, white-fleshed marine food fish.",
+      "Halibut – Largest type of flatfish in oceans.",
+      "Herring – Forage fish often served pickled or smoked.",
+      "Hoki – Deep-sea fish caught near New Zealand.",
+      "Ide – Silvery freshwater fish of northern Europe.",
+      "Inconnu – Large, predatory northern whitefish species.",
+      "Kaluga – Giant predatory sturgeon from Amur River.",
+      "Kanyu – Predatory cyprinid found in East Asia.",
+      "Killifish – Small, hardy, and very colorful fish.",
+      "Koi – Decorative, brightly colored Japanese carp.",
+      "Kokanee – Non-anadromous form of sockeye salmon.",
+      "Mackerel – Oily fish with stripes on back.",
+      "Marlin – Large game fish with long bill.",
+      "Molly – Popular live-bearing fish for home aquariums.",
+      "Mullet – Coastal fish often seen jumping frequently.",
+      "Muskellunge – Large, aggressive North American freshwater predator.",
+      "Perch – Common freshwater fish with spiny fins.",
+      "Pickerel – Smaller relative of the northern pike.",
+      "Pike – Ambush predator with long, pointed snout.",
+      "Plaice – Flatfish known for orange spots.",
+      "Pollock – Marine fish used for frozen products."
+    ];
+
+    // Inicjalizacja textarea z nazwami ryb
+    document.getElementById("fishNames").value = defaultFishList.join("\n");
+
+    /**
+     * Wybiera jedną linie z listy (odpowiednio odseparowaną nazwę i opis).
+     * Przykład: "Glowfin – Fish with glowing, neon-colored fins."
+     */
+    function getRandomFishLine() {
+      const randIndex = Math.floor(Math.random() * defaultFishList.length);
+      return defaultFishList[randIndex];
+    }
+
+    /**
+     * Parsuje listę wybranych nazw. Wiersze muszą być w formacie:
+     * "Nazwa – Opis"
+     */
+    function parseUserFishNames() {
+      const raw = document.getElementById("fishNames").value.trim();
+      if (!raw) return [];
+      // Rozdziłać na linie
+      const lines = raw.split("\n");
+      const parsed = [];
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed && trimmed.includes("–")) {
+          // Domyślny separator – możesz zmienić na inny
+          const [namePart] = trimmed.split("–");
+          // Upewnienie się, że nazwa nie jest pusta
+          const name = namePart.trim();
+          if (name) {
+            parsed.push(name);
+          }
         }
+      }
+      return parsed;
+    }
 
-        // Generowanie losowej ryby
-        function generateFish(id = null) {
-            const names = ['Bass', 'Trout', 'Salmon', 'Goldfish', 'Catfish', 'Anglerfish', 'Cod', 'Tuna'];
-            const weatherOptions = ['Rain', 'Clear', 'Snow', 'Storm'];
-            const spotOptions = ['Ocean', 'River', 'Reef', 'Swamp', 'Lake'];
-            const timeOptions = ['Dawn', 'Dusk', 'Day', "Night"];
-            
-            return {
-                id: id || fishList.length + 1,
-                name: generateFishName(),
-                weather: weatherOptions[Math.floor(Math.random() * weatherOptions.length)],
-                spot: spotOptions[Math.floor(Math.random() * spotOptions.length)],
-                time: timeOptions[Math.floor(Math.random() * timeOptions.length)],
-                chance: Math.floor(50 + Math.random() * 50),
-                stars: Math.floor(1 + Math.random() * 4),
-                fluff: 'Common find.',
-                image: "https://",
-                emoji: "<>",
-                specialConditions: []
-            };
+    /**
+     * Generuje listę obiektów z danymi dla każdej ryby.
+     */
+    function generateFishPositions(count, fishNames, specialConditions) {
+      const positions = [];
+      const allWeather = ["Rain", "Clear", "Snow", "Storm"];
+      const allSpots = ["Ocean", "River", "Reef", "Swamp", "Lake"];
+      const allTimes = ["Dawn", "Dusk", "Day", "Night"];
+
+      // Zbiór wszystkich możliwych kombinacji
+      const allCombinations = [];
+      for (const w of allWeather) {
+        for (const s of allSpots) {
+          for (const t of allTimes) {
+            allCombinations.push([w, s, t].join(","));
+          }
         }
+      }
 
-        // Generowanie wielu ryb
-        function generateFish() {
-            const count = parseInt(document.getElementById('fishCount').value);
-            const baseName = document.getElementById('baseName').value;
-            const minChance = parseInt(document.getElementById('minChance').value);
-            const maxStars = parseInt(document.getElementById('maxStars').value);
-            
-            for (let i = 0; i < count; i++) {
-                let newFish = generateFish(fishList.length + 1);
-                
-                // Zabezpieczenie przed duplikatami
-                if (fishList.some(f => f.name === newFish.name)) {
-                    i--;
-                    continue;
-                }
-                
-                // Aplikacja ustawień użytkownika
-                if (baseName) {
-                    newFish.name = generateFishName(baseName);
-                }
-                
-                if (minChance > 0) {
-                    newFish.chance = Math.max(minChance, Math.floor(50 + Math.random() * 50));
-                }
-                
-                if (maxStars > 0) {
-                    newFish.stars = Math.min(maxStars, Math.floor(1 + Math.random() * 4));
-                }
-                
-                fishList.push(newFish);
-            }
-            
-            updateStats();
-            renderFishList();
+      // Ustawienie standardowych prawdopodobieństw dla każdej kombinacji
+      const comboChances = {};
+      // Domyślnie każde podejście ma 100% szansy (rozwiązanie domyślne)
+      for (const comb of allCombinations) {
+        comboChances[comb] = 100;
+      }
+
+      // Jeśli zaznaczono specjalne kombinacje, przypisz im większe wartości
+      if (specialConditions && specialConditions.length > 0) {
+        const selectedCombs = [];
+        for (const sc of specialConditions) {
+          // Format: "Rain,Ocean,Dawn"
+          selectedCombs.push(sc);
         }
-
-        // Edycja ryby
-        function editFish(id) {
-            currentEditingId = id;
-            const fish = fishList.find(f => f.id === id);
-            
-            if (!fish) return null;
-            
-            return fish;
+        for (const comb of selectedCombs) {
+          // Upewnienie się, że kombinacja jest dostępna
+          if (!comboChances[comb]) {
+            comboChances[comb] = 100; // domyślna wartość
+          } else {
+            // Jeśli już była ustawiona, zwiększ ją np o 30%
+            comboChances[comb] += 25;
+          }
         }
+      }
 
-        // Zapisanie edycji
-        function saveFish(updatedFish) {
-            if (!currentEditingId || !updatedFish) return;
-            
-            const index = fishList.findIndex(f => f.id === currentEditingId);
-            if (index !== -1) {
-                fishList[index] = updatedFish;
-                currentEditingId = null;
-                renderFishList();
-            }
+      // Funkcja do wyboru kombinacji
+      function pickRandomCombination() {
+        // Prawdopodobieństwo dla każdej kombinacji jest proporcjonalne do jej wartości
+        const total = sumValues(Object.values(comboChances));
+        const randScore = Math.random() * total;
+        let accumulated = 0;
+        for (const comb of allCombinations) {
+          accumulated += comboChances[comb];
+          if (accumulated >= randScore) {
+            return comb;
+          }
         }
+        // W razie błędu zwracamy ostatnią
+        return allCombinations[allCombinations.length - 1];
+      }
 
-        // Usunięcie ryby
-        function deleteFish(id) {
-            fishList = fishList.filter(f => f.id !== id);
-            renderFishList();
+      function sumValues(arr) {
+        let sum = 0;
+        for (const val of arr) {
+          sum += val;
         }
+        return sum;
+      }
 
-        // Aktualizacja statystyk
-        function updateStats() {
-            const stats = {
-                total: fishList.length,
-                uniqueNames: Array.from(new Set(fishList.map(f => f.name))).length,
-                fiveStar: fishList.filter(f => f.stars === 5).length,
-                rare: fishList.filter(f => f.chance > 80).length
-            };
-            
-            document.getElementById('count').textContent = stats.total;
-            document.getElementById('unique').textContent = stats.uniqueNames;
-            document.getElementById('fiveStar').textContent = stats.fiveStar;
-            document.getElementById('rare').textContent = stats.rare;
-        }
+      // Generuj pozycje
+      for (let i = 0; i < count; i++) {
+        const fishName =
+          fishNames.length > 0
+            ? parseUserFishNames()[Math.floor(Math.random() * fishNames.length)]
+            : getRandomFishLine();
 
-        // Render listy ryb
-        function renderFishList() {
-            const container = document.getElementById('fishContainer');
-            container.innerHTML = '';
-            
-            if (fishList.length > 0) {
-                fishList.forEach(fish => {
-                    const fishElement = document.createElement('div');
-                    fishElement.className = 'fish-item';
-                    
-                    // Etykiety
-                    const labels = document.createElement('div');
-                    labels.className = 'fish-labels';
-                    
-                    ['weather', 'spot', 'time'].forEach(field => {
-                        const span = document.createElement('span');
-                        span.className = 'tag' + (fish.specialConditions.includes(field) ? ' special' : '');
-                        span.textContent = fish[field].charAt(0).toUpperCase() + fish[field].slice(1);
-                        labels.appendChild(span);
-                    });
-                    
-                    // Dane
-                    fishElement.innerHTML = `
-                        <div>${labels.outerHTML}</div>
-                        <div>
-                            <strong>${fish.name}</strong><br>
-                            <span style="color: #666; font-size: 0.9em;">Szansa: ${fish.chance}% • ${fish.stars} ⭐</span>
-                        </div>
-                        <div>
-                            <div class="tags-container">
-                                ${Array.from({length: fish.stars}, (_,i) => `⭐`).join('')
-                            </div>
-                            <div style="font-size:0.85em; color:#666;">"${fish.fluff}"</div>
-                        </div>
-                        <div class="actions">
-                            <button onclick="editFish(${fish.id})">✏️ Edytuj</button>
-                            <button class="delete-btn" onclick="deleteFish(${fish.id})">🗑️ Usuń</button>
-                        </div>
-                    `;
-                    
-                    // Obsługa edycji
-                    fishElement.querySelector('button[onclick="editFish(' + fish.id + ')"]').addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const edited = editFish(fish.id);
-                        if (edited) {
-                            fishElement.className = 'fish-item editing';
-                            
-                            // Tworzenie formularza edycji
-                            const editForm = document.createElement('div');
-                            editForm.innerHTML = `
-                                <div>
-                                    <label for="editName">Nazwa:</label>
-                                    <input type="text" id="editName" value="${edited.name}">
-                                </div>
-                                
-                                <div>
-                                    <label>Pogoda:</label>
-                                    <select id="editWeather">
-                                        ${['Rain', 'Clear', 'Snow', 'Storm'].map(w => `
-                                            <option value="${w}" ${w === edited.weather ? 'selected' : ''}>${w}</option>
-                                        `).join('')}
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label>Lokacja:</label>
-                                    <select id="editSpot">
-                                        ${['Ocean', 'River', 'Reef', 'Swamp', 'Lake'].map(s => `
-                                            <option value="${s}" ${s === edited.spot ? 'selected' : ''}>${s}</option>
-                                        `).join('')}
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label>Czas:</label>
-                                    <select id="editTime">
-                                        ${['Dawn', 'Dusk', 'Day', "Night"].map(t => `
-                                            <option value="${t}" ${t === edited.time ? 'selected' : ''}>${t}</option>
-                                        `).join('')}
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label for="editChance">Szansa (%):</label>
-                                    <input type="number" id="editChance" value="${edited.chance}" min="1" max="100">
-                                    
-                                    <label for="editStars">Gwiazdki:</label>
-                                    <input type="number" id="editStars" value="${edited.stars}" min="1" max="5">
-                                </div>
-                                
-                                <div>
-                                    <label>Warunki specjalne:</label>
-                                    <div style="display:flex; gap:5px;">
-                                        ${['weather', 'spot', 'time'].map(field => `
-                                            <button onclick="toggleSpecialCondition(${fish.id}, '${field}')">
-                                                ${edited.specialConditions.includes(field) ? '✕' : '✓'} ${field.charAt(0).toUpperCase()}
-                                            </button>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                                
-                                <div style="margin-top:10px; display:flex; gap:8px;">
-                                    <button onclick="saveFish({
-                                        ...${JSON.stringify(edited)},
-                                        name: document.getElementById('editName').value,
-                                        weather: document.getElementById('editWeather').value,
-                                        spot: document.getElementById('editSpot').value,
-                                        time: document.getElementById('editTime').value,
-                                        chance: parseInt(document.getElementById('editChance').value),
-                                        stars: parseInt(document.getElementById('editStars').value)
-                                    })">💾 Zapisz</button>
-                                    
-                                    <button onclick="${fishElement.className = 'fish-item'}">✖️ Anuluj</button>
-                                </div>
-                            `;
-                            
-                            // Zastępowanie treści
-                            fishElement.innerHTML = editForm.outerHTML;
-                        }
-                    };
-                    
-                    container.appendChild(fishElement);
-                });
-            }
-            
-            updateStats();
-        }
+        // Wybierz kombinację
+        const combo = pickRandomCombination();
+        const weather = combo.split(",")[0] || "";
+        const spot = combo.split(",")[1] || "";
+        const time = combo.split(",")[2] || "";
 
-        // Przełączanie warunków specjalnych
-        function toggleSpecialCondition(id, conditionType) {
-            const fish = fishList.find(f => f.id === id);
-            if (fish) {
-                const index = fish.specialConditions.findIndex(c => c === conditionType);
-                
-                if (index === -1) {
-                    fish.specialConditions.push(conditionType);
-                } else {
-                    fish.specialConditions.splice(index, 1);
-                }
-                
-                renderFishList();
-            }
-        }
+        // Losowe prawdopodobieństwo między 1–100
+        const chance = Math.max(1, Math.min(100, Math.random() * 99 + 1));
 
-        // Filtr wyszukiwania
-        function searchFish(needle) {
-            return fishList.filter(fish => 
-                fish.name.toLowerCase().includes(needle.toLowerCase()) ||
-                fish.weather.toLowerCase().includes(needle.toLowerCase()) ||
-                fish.spot.toLowerCase().includes(needle.toLowerCase()) ||
-                fish.time.toLowerCase().includes(needle.toLowerCase())
-            );
-        }
+        // Losowa ilość gwiazdek od 1 do 4
+        const stars = Math.floor(Math.random() * 4) + 1;
 
-        // Załaduj z localStorage przy starcie
-        window.onload = function() {
-            const savedFish = localStorage.getItem('fishList');
-            if (savedFish) {
-                try {
-                    fishList = JSON.parse(savedFish);
-                    renderFishList();
-                } catch (e) {
-                    console.error('Błąd ładowania z localStorage:', e);
-                }
-            }
-            
-            // Zapis do localStorage przy zmianach
-            window.addEventListener('beforeunload', function() {
-                localStorage.setItem('fishList', JSON.stringify(fishList));
-            });
-        };
-    </script>
+        // Tworzenie krótkiego opisu jednozdaniowego
+        const fluff =
+          fishName +
+          (fishName.includes("–") ? "" : " " ) +
+          " " +
+          ("Common".includes(fishName.split(" ")[1] || "") ? "Very common." : "Typical.");
+
+        positions.push({
+          id: i + 1,
+          name: fishName.trim(),
+          weather: weather.trim() || "",
+          spot: spot.trim() || "",
+          time: time.trim() || "",
+          chance,
+          stars,
+          fluff: fluff.trim(),
+          condition: "",
+          image: "https://",
+          emoji: "<>"
+        });
+      }
+      return positions;
+    }
+
+    // Funkcja do formatowania listy w YML
+    function formatYml(positions) {
+      let yml = "";
+      yml += "# Pozycje z ryb dla bota\n";
+      yml += "positions:\n";
+      for (const pos of positions) {
+        yml += `  - id: ${pos.id}\n`;
+        yml += `    name: "${pos.name}"\n`;
+        yml += `    weather: "${pos.weather}"\n`;
+        yml += `    spot: "${pos.spot}"\n`;
+        yml += `    time: "${pos.time}"\n`;
+        yml += `    chance: ${pos.chance}\n`;
+        yml += `    stars: ${pos.stars}\n`;
+        yml += `    fluff: "${pos.fluff}"\n`;
+        yml += `    condition: ""\n`;
+        yml += `    image: "https://"\n`;
+        yml += `    emoji: "<>"\n\n`;
+      }
+      return yml;
+    }
+
+    // Inicjalne dane dla statystyk
+    let totalFish = 0;
+    let allChances = [];
+    let starsCount = { "1": 0, "2": 0, "3": 0, "4": 0 };
+
+    function updateStats(positions) {
+      totalFish = positions.length;
+      // Aktualizacja średniej szansy
+      const totalChance = positions.reduce((sum, p) => sum + p.chance, 0);
+      const avgChance = totalChance / totalFish || 1;
+      document.getElementById("totalValue").textContent = totalFish;
+      document.getElementById("avgChanceValue").textContent =
+        (avgChance * 100).toFixed(2) + "%";
+      // Obliczanie rozkładu gwiazdek
+      for (const p of positions) {
+        starsCount[p.stars] += 1;
+      }
+      const starsValues = Object.values(starsCount);
+      document.getElementById("starsDistributionValue").textContent =
+        "1:" + starsValues[0] + ", 2:" + starsValues[1] + ", 3:" + starsValues[2] + ", 4:" + starsValues[3];
+    }
+
+    function copyToClipboard() {
+      const ymlText = document.getElementById("fishData").value;
+      navigator.clipboard
+        .writeText(ymlText)
+        .then(() => alert("Dane zostały skopiowane do schowaka!"))
+        .catch((err) => alert("Wystąpił błąd podczas kopiowania: " + err);
+    }
+
+    function generatePositions() {
+      // Ustawienie zaznaczonych warunków
+      const specialConditions = [];
+      if (document.getElementById("specialCondition1").checked) {
+        specialConditions.push("Rain,Ocean,Dawn");
+      }
+      if (document.getElementById("specialCondition2").checked) {
+        specialConditions.push("Clear,River,Dusk");
+      }
+
+      // Pobierz ilość
+      const fishCount = parseInt(document.getElementById("fishCount").value, 10);
+      if (isNaN(fishCount) || fishCount < 1 || fishCount > 100) {
+        alert("Proszę wybrać liczbę ryb od 1 do 100.");
+        return;
+      }
+
+      // Pobierz nazwy
+      const userFishNames = parseUserFishNames();
+
+      // Generuj pozycje
+      const positions = generateFishPositions(fishCount, userFishNames, specialConditions);
+
+      // Aktualizuj YML
+      document.getElementById("fishData").value = formatYml(positions);
+
+      // Statystyki
+      updateStats(positions);
+    }
+
+    // Inicjalny wywołanie dla środowiska w konsoli (opcjonalne)
+    generatePositions();
+  </script>
 </body>
 </html>
