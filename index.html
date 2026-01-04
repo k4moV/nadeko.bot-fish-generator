@@ -378,7 +378,7 @@
                 
                 // Optional placeholders
                 yaml += `    condition: ${pos.condition || ''}\n`;
-                yaml += `    image: "${pos.image || linkPrefixInput.value+'/'+filePrefixInput.value+pos.id+'.png'}"\n`;
+                yaml += `    image: "${pos.image || linkPrefixInput.value+filePrefixInput.value+pos.id+'.png'}"\n`;
                 yaml += `    emoji: ${pos.emoji || '<>'}\n\n`;
             });
             
