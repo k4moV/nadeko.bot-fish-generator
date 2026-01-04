@@ -528,7 +528,7 @@
             const numPositions = parseInt(numPositionsInput.value);
             
             if (isNaN(numPositions) || numPositions < 1) {
-                showStatus('error', 'Please enter a valid number of positions (1-100)');
+                showStatus('error', 'Please enter a valid number of positions (1-50)');
                 return;
             }
             
@@ -575,17 +575,17 @@
                 let weather = getRandomWeather(selectedWeathers);
                 
                 // If no weathers selected and some spots exist, use Ocean weather for Ocean spot fish
-                if (selectedSpots.length > 0 && !weather && ['Ocean', 'Reef'].includes(fish.spot || '')) {
-                    weather = 'Ocean';
-                }
+               // if (selectedSpots.length > 0 && !weather && ['Ocean', 'Reef'].includes(fish.spot || '')) {
+                    //weather = 'Ocean';
+               // }
                 
                 // Get random time
                 let time = getRandomTime(selectedTimes);
                 
                 // If no times selected and some spot exists, use Day for Reef/Ocean fish
-                if (selectedSpots.length > 0 && !time && ['Ocean', 'Reef'].includes(fish.spot || '')) {
-                    time = 'Day';
-                }
+               // if (selectedSpots.length > 0 && !time && ['Ocean', 'Reef'].includes(fish.spot || '')) {
+                //    time = 'Day';
+               // }
                 
                 // Get fish spot based on selections
                 const spot = getFishSpot(fish, selectedSpots);
