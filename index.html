@@ -343,7 +343,7 @@
             
             <div class="form-group">
                 <label for="numPositions">Number of Positions to Generate</label>
-                <input type="number" id="numPositions" value="5" min="1" max="100" oninput="updateCountDisplay()">
+                <input type="number" id="numPositions" value="5" min="1" max="50" oninput="updateCountDisplay()">
                 
                 <div id="countDisplay">Positions: <span id="currentCount">5</span></div>
             </div>
@@ -355,7 +355,7 @@
                     <label><input type="checkbox" class="weatherCheckbox" value="Clear"> Clear</label>
                     <label><input type="checkbox" class="weatherCheckbox" value="Snow"> Snow</label>
                     <label><input type="checkbox" class="weatherCheckbox" value="Storm"> Storm</label>
-                    <label><span>or random selection</span></label>
+                    <label><span>none = all weathers</span></label>
                 </div>
             </div>
             
@@ -367,7 +367,7 @@
                     <label><input type="checkbox" class="spotCheckbox" value="Reef"> Reef</label>
                     <label><input type="checkbox" class="spotCheckbox" value="Swamp"> Swamp</label>
                     <label><input type="checkbox" class="spotCheckbox" value="Lake"> Lake</label>
-                    <label><span>or use default for each fish</span></label>
+                    <label><span>none = all spots</span></label>
                 </div>
             </div>
             
@@ -378,7 +378,7 @@
                     <label><input type="checkbox" class="timeCheckbox" value="Dusk"> Dusk</label>
                     <label><input type="checkbox" class="timeCheckbox" value="Day"> Day</label>
                     <label><input type="checkbox" class="timeCheckbox" value="Night"> Night</label>
-                    <label><span>or random selection</span></label>
+                    <label><span>none = all times</span></label>
                 </div>
             </div>
             
@@ -499,16 +499,16 @@
             if (selectedSpots.length > 0) {
                 const randomSpot = selectedSpots[Math.floor(Math.random() * selectedSpots.length)];
                 
-                // For Ocean and Reef, return spot if it matches fish's spot
-                if (['Ocean', 'Reef'].includes(randomSpot)) {
-                    if (fish.spot === randomSpot) {
-                        return randomSpot;
-                    }
-                    return null;
-                }
+               // For Ocean and Reef, return spot if it matches fish's spot
+               // if (['Ocean', 'Reef'].includes(randomSpot)) {
+                 //   if (fish.spot === randomSpot) {
+                      //  return randomSpot;
+                    //}
+                   // return null;
+                //}
                 
                 // For Swamp, Lake, River - always return spot regardless of fish's spot
-                return randomSpot;
+                //return randomSpot;
             }
             
             // If no spots specified, return fish's default spot if it exists
