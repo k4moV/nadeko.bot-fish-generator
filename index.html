@@ -149,9 +149,9 @@
                 <input type="number" id="numPositions" value="5" min="1" max="50"
                        oninput="updateCountDisplay()">
                 
-               //<div id="countDisplay" style="margin-top: 10px; font-weight: bold;">
-                    // Current: 5
-               // </div>
+               /*<div id="countDisplay" style="margin-top: 10px; font-weight: bold;">
+                    Current: 5
+               </div>*/
             </div>
 
             <!-- Variant Options -->
@@ -239,7 +239,7 @@
         </div>
         
         <!-- Stats Section -->
-       // <div class="stats">
+       /* <div class="stats">
            // <h2>Generation Statistics</h2>
             //<div class="stat-item"><span class="stat-label">Unique Species:</span>
               //  <span class="stat-value" id="uniqueSpecies">0</span></div>
@@ -251,7 +251,7 @@
           //      <span class="stat-value" id="lowestChance">0%</span></div>
           //  <div class="stat-item"><span class="stat-label">Variants Generated:</span>
             //    <span class="stat-value" id="variantCount">0</span></div>
-       // </div>
+       // </div> */
     </div>
 
     <script>
@@ -330,10 +330,10 @@
 
         // Get fish data in desired order
         function getFishDataInOrder() {
-           // const shuffleOption = document.getElementById('shuffleOption').value;
+           /* // const shuffleOption = document.getElementById('shuffleOption').value;
            // if (shuffleOption === 'random') {
               //  return shuffleArray(fishData);
-          //  }
+          //  } */
             return fishData.slice(); // Original order
         }
 
@@ -364,7 +364,7 @@
             return yaml.trim();
         }
 
-        // Update statistics display
+       /* // Update statistics display
         //function updateStatistics(positions) {
            // if (positions.length === 0) {
              //   document.getElementById('uniqueSpecies').textContent = '0';
@@ -404,7 +404,7 @@
             // Variant count
            // const variantCount = positions.filter(p => p.isVariant).length;
            // document.getElementById('variantCount').textContent = variantCount;
-       // }
+       // } */
 
         // Generate positions with variants
         function generatePositions() {
@@ -489,7 +489,7 @@
                 }
             }
 
-            // Sort positions by base fish order with variants interleaved
+           /* // Sort positions by base fish order with variants interleaved
           //  positions.sort((a, b) => {
              //   if (!a.isVariant && !b.isVariant) {
               //      return a.baseIndex - b.baseIndex;
@@ -501,10 +501,10 @@
                     // Both variants - keep relative order
                 //    return a.variantOrderIndex - b.variantOrderIndex;
               //  }
-           // });
+           // }); */
 
-            // Reassign IDs in final order
-           // positions.forEach((p, idx) => p.id = idx);
+            Reassign IDs in final order
+            positions.forEach((p, idx) => p.id = idx);
 
             const yamlOutput = generateYAML(positions);
             document.getElementById('yamlOutput').textContent = yamlOutput;
