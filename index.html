@@ -287,9 +287,9 @@
 
     <script>
         let currentPosition = 0;
-var fishData [];
+ 
         // Updated fish data with optional spot
-        function choice (document.getElementById('fishTrashSelect').value){
+     var fishData = [function (document.getElementById('fishTrashSelect').value){
 			
 			if (document.getElementById('fishTrashSelect').value = "Fish"){
 		const fishDatae = [
@@ -397,7 +397,9 @@ var fishData [];
 		{name: "Goggles", description: "Lost swimming equipment for underwater vision.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
 		{name: "Suitcase", description: "Forgotten luggage traveling across the world.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1}
 		    ];}
-			return fishDatae; }
+			return fishDatae; }]();
+
+		
 
         // Update count display
         //function updateCountDisplay() {
