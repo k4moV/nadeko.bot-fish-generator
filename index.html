@@ -5,393 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fish Position Generator</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+               min-height: 100vh; padding: 20px; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; color: white; margin-bottom: 10px;
+             font-size: 2.5em; text-shadow: 2px 2px 4px #000; }
+        .subtitle { text-align: center; color: rgba(255,255,255,0.9);
+                   margin-bottom: 30px; font-size: 1.1em; }
         
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
+        /* Controls Section */
+        .controls { background: white; padding: 25px; border-radius: 15px;
+                  box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 30px;
+                  border-left: 6px solid #667eea; }
+        .controls h2 { color: #667eea; margin-bottom: 20px; font-size: 1.5em; }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 10px; color: #333;
+               font-weight: 600; font-size: 0.9em; }
         
-        h1 {
-            text-align: center;
-            color: white;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px #000000;
-        }
+        select { width: 100%; padding: 12px; border: 2px solid #ddd;
+                border-radius: 8px; font-size: 16px; transition: all 0.3s ease;
+                background-color: white; appearance: none; cursor: pointer; }
+        select:focus { outline: none; border-color: #667eea; }
         
-        .subtitle {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
+        /* Button */
+        .btn-generator { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                       color: white; padding: 15px 35px; border: none;
+                       border-radius: 8px; font-size: 1.2em; cursor: pointer;
+                       transition: all 0.3s ease; margin-top: 15px;
+                       width: 100%; text-transform: uppercase;
+                       letter-spacing: 1px; }
+        .btn-generator:hover { transform: translateY(-2px);
+                             box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
         
-        .controls {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            margin-bottom: 30px;
-            border-left: 6px solid #667eea;
-        }
+        /* Output Section */
+        .output { background: white; padding: 25px; border-radius: 15px;
+                 box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 20px;
+                 position: relative; border-left: 6px solid #764ba2; }
+        .output h2 { color: #764ba2; margin-bottom: 15px; font-size: 1.3em; }
         
-        .controls h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
+        .yaml-output { background: #f8f9fa; padding: 15px;
+                     border-radius: 8px; font-family: 'Courier New', monospace;
+                     font-size: 14px; color: #333; white-space: pre-wrap;
+                     line-height: 1.5; min-height: 300px; position: relative; }
+        .yaml-output::before { content: '---\n'; color: #667eea; font-weight: bold; }
         
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .copy-btn, .download-btn { position: absolute; top: 15px; right: 15px;
+                                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                 color: white; padding: 8px 20px; border: none;
+                                 border-radius: 6px; cursor: pointer; font-size: 0.8em;
+                                 margin-left: 10px; transition: all 0.3s ease; }
+        .copy-btn { right: 90px; }
+        .copy-btn:hover, .download-btn:hover { transform: translateY(-2px); }
         
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #333;
-            font-weight: 600;
-        }
+        /* Stats Section */
+        .stats { background: white; padding: 20px; border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-top: 20px;
+                border-left: 6px solid #f4752e; }
+        .stats h2 { color: #f4752e; margin-bottom: 15px; font-size: 1.2em; }
+        .stat-item { display: flex; justify-content: space-between; padding: 8px 0;
+                    border-bottom: 1px solid #eee; }
+        .stat-label { color: #666; font-weight: 600; }
+        .stat-value { font-weight: bold; color: #f4752e; }
         
-        input[type="number"],
-        input[type="range"],
-        select,
-        input[type="checkbox"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
+        /* Status Messages */
+        .status { position: fixed; top: 20px; right: 20px;
+                 padding: 15px 20px; border-radius: 8px; color: white;
+                 box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-family: sans-serif;
+                 animation: slideDown 0.3s ease; z-index: 1000; }
+        .status.success { background: #28a745; }
+        .status.error { background: #dc3545; }
+        .status.warning { background: #ffc107; color: #333; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); }
+                             to { opacity: 1; transform: translateY(0); } }
         
-        input[type="number"],
-        select {
-            margin-top: 5px;
-        }
-        
-        input[type="range"] {
-            width: 100%;
-            height: 5px;
-            accent-color: #667eea;
-            cursor: pointer;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb:hover {
-            background: #764ba2;
-        }
-        
-        .checkbox-group label {
-            display: inline-block;
-            margin: 5px 0;
-        }
-        
-        .checkbox-group input {
-            margin-right: 10px;
-            accent-color: #667eea;
-        }
-        
-        /* Zmienione styły do zarządzania pojedynczym wyborem */
-        .exclusive-checkboxes {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 8px;
-        }
-        
-        .checkbox-row {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .checkbox-label {
-            font-size: 0.9em;
-            color: #666;
-        }
-        
-        .exclusive-checkbox {
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-height: 40px;
-        }
-        
-        .exclusive-checkbox:hover {
-            background-color: #f8f9fa;
-            border-color: #667eea;
-        }
-        
-        .exclusive-checkbox.checked {
-            background-color: #e8f4ff;
-            border-color: #667eea;
-            color: #667eea;
-        }
-        
-        .checkbox-icon {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #667eea;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        
-        .checkbox-icon.checked {
-            background-color: #667eea;
-        }
-        
-        .btn-generator {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 35px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .btn-generator:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-generator:active {
-            transform: translateY(0);
-        }
-        
-        #countDisplay {
-            margin-top: 10px;
-            padding: 10px 15px;
-            background: #e8f4ff;
-            border-radius: 7px;
-            display: none;
-            font-weight: 600;
-            color: #667eea;
-        }
-        
-        .output {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            min-height: 400px;
-            position: relative;
-            overflow-x: auto;
-            margin-bottom: 20px;
-            border-left: 6px solid #764ba2;
-        }
-        
-        .output h2 {
-            color: #764ba2;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-        
-        .yaml-output {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: #333;
-            white-space: pre-wrap;
-            word-break: break-word;
-            line-height: 1.5;
-            min-height: 300px;
-            position: relative;
-        }
-        
-        .yaml-output::before {
-            content: '---\n';
-            color: #667eea;
-            font-weight: bold;
-        }
-        
-        .copy-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 8px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
-        }
-        
-        .copy-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.5);
-        }
-        
-        .download-btn {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            color: white;
-            padding: 10px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-        
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(118, 66, 178, 0.4);
-        }
-        
-        .stats {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            margin-top: 20px;
-            border-left: 6px solid #f4752e;
-        }
-        
-        .stats h2 {
-            color: #f4752e;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-        
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .stat-label {
-            color: #666;
-            font-weight: 600;
-        }
-        
-        .stat-value {
-            font-weight: bold;
-            color: #f4752e;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: #f8f9fa;
-            color: #333;
-        }
-        
-        tbody tr:hover {
-            background-color: #f0f2f5;
-        }
-        
-        .warning {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            color: #c39b3d;
-            padding: 10px 15px;
-            border-radius: 7px;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        .success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #1b5e20;
-            padding: 10px 15px;
-            border-radius: 7px;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        .error {
-            background: #f8d7da;
-            border: 1px solid #dc3545;
-            color: #9b2c2c;
-            padding: 10px 15px;
-            border-radius: 7px;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        
+        /* Responsive */
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
-            
-            .subtitle {
-                font-size: 1em;
-            }
-            
-            .controls h2 {
-                font-size: 1.2em;
-            }
-            
-            .btn-generator {
-                width: 100%;
-            }
-            
-            .output h2 {
-                font-size: 1.1em;
-            }
+            h1 { font-size: 2em; }
+            .controls { padding: 15px; margin-bottom: 20px; }
+            .btn-generator { font-size: 1em; padding: 12px 20px; }
+            .output { padding: 15px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Fish Position Generator</h1>
-        <p class="subtitle">Generate YAML position files with customizable settings</p>
+        <p class="subtitle">Create custom YAML position files with specific weather, time, and spot settings</p>
         
         <!-- Controls Section -->
         <div class="controls">
@@ -399,63 +100,46 @@
             
             <div class="form-group">
                 <label for="numPositions">Number of Positions to Generate</label>
-                <input type="number" id="numPositions" value="5" min="1" max="100" oninput="updateCountDisplay()">
+                <input type="number" id="numPositions" value="5" min="1" max="50"
+                       oninput="updateCountDisplay()">
                 
-                <div id="countDisplay">Positions: <span id="currentCount">5</span></div>
-            </div>
-            
-            <!-- Start ID Selector -->
-            <div class="form-group">
-                <label for="startIndex">Starting ID (leave blank for 0)</label>
-                <input type="number" id="startIndex" value="" min="0" placeholder="0">
-            </div>
-            
-            <div class="form-group">
-                <label for="weatherSelection">Weather Conditions (check boxes)</label>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" class="weatherCheckbox" value="Rain"> Rain</label>
-                    <label><input type="checkbox" class="weatherCheckbox" value="Clear"> Clear</label>
-                    <label><input type="checkbox" class="weatherCheckbox" value="Snow"> Snow</label>
-                    <label><input type="checkbox" class="weatherCheckbox" value="Storm"> Storm</label>
-                    <label><span>or random selection</span></label>
+                <div id="countDisplay" style="margin-top: 10px; font-weight: bold;">
+                    Current: 5
                 </div>
             </div>
             
             <div class="form-group">
-                <label for="spotSelection">Spot Types (check boxes)</label>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" class="spotCheckbox" value="Ocean"> Ocean</label>
-                    <label><input type="checkbox" class="spotCheckbox" value="River"> River</label>
-                    <label><input type="checkbox" class."spotCheckbox" value="Reef"> Reef</label>
-                    <label><input type="checkbox" class="spotCheckbox" value="Swamp"> Swamp</label>
-                    <label><input type="checkbox" class="spotCheckbox" value="Lake"> Lake</label>
-                    <label><span>or use default for each fish</span></label>
-                </div>
+                <label for="weatherSelect">Weather Condition (Optional)</label>
+                <select id="weatherSelect">
+                    <option value="" selected>Empty - No specific weather</option>
+                    <option value="Rain">Rain</option>
+                    <option value="Clear">Clear</option>
+                    <option value="Snow">Snow</option>
+                    <option value="Storm">Storm</option>
+                </select>
             </div>
             
             <div class="form-group">
-                <label for="timeSelection">Time of Day (check boxes)</label>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" class="timeCheckbox" value="Dawn"> Dawn</label>
-                    <label><input type="checkbox" class="timeCheckbox" value="Dusk"> Dusk</label>
-                    <label><input type="checkbox" class="timeCheckbox" value="Day"> Day</label>
-                    <label><input type="checkbox" class."timeCheckbox" value="Night"> Night</label>
-                    <label><span>or random selection</span></label>
-                </div>
+                <label for="timeSelect">Time of Day (Optional)</label>
+                <select id="timeSelect">
+                    <option value="" selected>Empty - Any time</option>
+                    <option value="Dawn">Dawn</option>
+                    <option value="Day">Day</option>
+                    <option value="Dusk">Dusk</option>
+                    <option value="Night">Night</option>
+                </select>
             </div>
             
-            <!-- Hardcoded Spot Override -->
             <div class="form-group">
-                <div class="checkbox-group">
-                    <label class="override-checkbox">
-                        <input type="checkbox" id="forceSpots">
-                        <strong>Force Specific Spots (overrides fish defaults)</strong>
-                    </label>
-                    <span style="display: block; margin-top: 5px; color: #666; font-size: 0.9em;">
-                        ✓ Only one spot type can be forced at a time<br>
-                        ✓ Prevents spots not matched to fish
-                    </span>
-                </div>
+                <label for="spotSelect">Spot Type (Optional)</label>
+                <select id="spotSelect">
+                    <option value="" selected>Empty - Any spot</option>
+                    <option value="Ocean">Ocean</option>
+                    <option value="River">River</option>
+                    <option value="Reef">Reef</option>
+                    <option value="Swamp">Swamp</option>
+                    <option value="Lake">Lake</option>
+                </select>
             </div>
             
             <button class="btn-generator" onclick="generatePositions()">Generate Positions</button>
@@ -464,26 +148,26 @@
         <!-- Output Section -->
         <div class="output">
             <h2>Generated YAML Positions</h2>
-            <div class="yaml-output" id="yamlOutput">-- Click Generate to see positions --</div>
+            <div class="yaml-output" id="yamlOutput">--- No positions generated yet---</div>
             <button class="copy-btn" onclick="copyYAML()">📋 Copy All</button>
-            <button class="download-btn" onclick="downloadYAML()">📥 Download YAML</button>
+            <button class="download-btn" onclick="downloadYAML()">📥 Download</button>
         </div>
         
         <!-- Stats Section -->
         <div class="stats">
             <h2>Generation Statistics</h2>
-            <div id="statistics">
-                <div class="stat-item"><span class="stat-label">Unique Species:</span> <span class="stat-value" id="uniqueSpecies">0</span></div>
-                <div class="stat-item"><span class="stat-label">Ocean Spots Used:</span> <span class="stat-value" id="oceanCount">0</span></div>
-                <div class="stat-item"><span class="stat-label">Reef Spots Used:</span> <span class="stat-value" id="reefCount">0</span></div>
-                <div class="stat-item"><span class="stat-label">Highest Chance:</span> <span class="stat-value" id="highestChance">0%</span></div>
-                <div class="stat-item"><span class="stat-label">Lowest Chance:</span> <span class="stat-value" id="lowestChance">0%</span></div>
-            </div>
+            <div class="stat-item"><span class="stat-label">Unique Species:</span>
+                <span class="stat-value" id="uniqueSpecies">0</span></div>
+            <div class="stat-item"><span class="stat-label">Spot Distribution:</span>
+                <span class="stat-value" id="spotDistribution">None</span></div>
+            <div class="stat-item"><span class="stat-label">Highest Chance:</span>
+                <span class="stat-value" id="highestChance">0%</span></div>
+            <div class="stat-item"><span class="stat-label">Lowest Chance:</span>
+                <span class="stat-value" id="lowestChance">0%</span></div>
         </div>
     </div>
 
     <script>
-        // Fish data with names, descriptions, and spots
         const fishData = [
             { name: "Anchovy", description: "Small, salty fish used in cooking.", spot: "Ocean" },
             { name: "Angelfish", description: "Popular, elegant, disk-shaped aquarium fish.", spot: "Reef" },
@@ -493,7 +177,7 @@
             { name: "Bluegill", description: "Common North American freshwater sunfish species.", spot: "Lake" },
             { name: "Bonefish", description: "Fast, silver fish found on flats.", spot: "Ocean" },
             { name: "Burbot", description: "Only freshwater member of cod family.", spot: "Lake" },
-            { name: "Carp", description: "Large, hardy freshwater bottom-feeding fish." },
+            { name: "Carp", description: "Large, hardy bottom-feeding fish." },
             { name: "Catfish", description: "Fish recognized by whisker-like barbels.", spot: "River" },
             { name: "Cisco", description: "Cold-water fish related to whitefish.", spot: "Lake" },
             { name: "Cod", description: "Important commercial fish with white meat." },
@@ -507,407 +191,199 @@
             { name: "Hake", description: "Lean, white-fleshed marine food fish.", spot: "Ocean" },
             { name: "Halibut", description: "Largest type of flatfish in oceans.", spot: "Ocean" },
             { name: "Herring", description: "Forage fish often served pickled or smoked.", spot: "Ocean" },
-            { name: "Hoki", description: "Deep-sea fish caught near New Zealand.", spot: "Ocean" },
-            { name: "Ide", description: "Silvery freshwater fish of northern Europe.", spot: "River" },
-            { name: "Inconnu", description: "Large, predatory northern whitefish species.", spot: "River" },
-            { name: "Kaluga", description: "Giant predatory sturgeon from Amur River.", spot: "River" },
-            { name: "Kanyu", description: "Predatory cyprinid found in East Asia.", spot: "River" },
-            { name: "Killifish", description: "Small, hardy, and very colorful fish.", spot: "Swamp" },
-            { name: "Koi", description: "Decorative, brightly colored Japanese carp.", spot: "Lake" },
-            { name: "Kokanee", description: "Non-anadromous form of sockeye salmon.", spot: "Lake" },
-            { name: "Mackerel", description: "Oily fish with stripes on back.", spot: "Ocean" },
-            { name: "Marlin", description: "Large game fish with long bill.", spot: "Ocean" },
-            { name: "Molly", description: "Popular live-bearing fish for home aquariums.", spot: "Swamp" },
-            { name: "Mullet", description: "Coastal fish often seen jumping frequently.", spot: "Ocean" },
-            { name: "Muskellunge", description: "Large, aggressive North American freshwater predator.", spot: "Lake" },
-            { name: "Perch", description: "Common freshwater fish with spiny fins.", spot: "Lake" },
-            { name: "Pickerel", description: "Smaller relative of the northern pike.", spot: "Swamp" },
-            { name: "Pike", description: "Ambush predator with long, pointed snout." },
-            { name: "Plaice", description: "Flatfish known for orange spots.", spot: "Ocean" },
-            { name: "Pollock", description: "Marine fish used for frozen products.", spot: "Ocean" },
-            { name: "Glowfin", description: "Fish with glowing, neon-colored fins.", spot: "Reef" },
-            { name: "Shellcrag", description: "Giant crab with a stone shell.", spot: "Reef" },
-            { name: "Abysswalker", description: "Many-legged beast from the deepest ocean.", spot: "Ocean" },
-            { name: "Hydraserpent", description: "Multi-headed snake living in coral.", spot: "Reef" },
-            { name: "Waveglider", description: "Creature that flies above the surface.", spot: "Ocean" },
-            { name: "Pearlscale", description: "Elegant mermaid-like fish with shiny scales.", spot: "Reef" },
-            { name: "Stormray", description: "Ray that shoots electric blue lightning.", spot: "Ocean" },
-            { name: "Bubblemouth", description: "Round fish that traps prey in bubbles.", spot: "Swamp" },
-            { name: "Frosttentacle", description: "Jellyfish that freezes water around it.", spot: "Ocean" },
-            { name: "Voidshark", description: "Shadowy predator made of dark mist.", spot: "Ocean" }
+            { name: "Koi", description: "Decorative, brightly-colored Japanese carp.", spot: "Lake" },
+            { name: "Mackerel", description: "Oily fish with stripes on back." },
+            { name: "Marlin", description: "Large game fish with long bill." },
+            { name: "Pike", description: "Ambush predator with pointed snout." }
         ];
 
         let currentPosition = 0;
-        let lastSavedConfig = null;
-        
+
+        // Update count display
         function updateCountDisplay() {
             const countInput = document.getElementById('numPositions');
             const display = document.getElementById('currentCount');
             display.textContent = countInput.value;
         }
-        
-        // Check for conflicting checkboxes in same category
-        function checkCheckboxConflicts(category) {
-            const checkedBoxes = document.querySelectorAll(`.${category}Checkbox:checked`);
-            
-            if (checkedBoxes.length > 1) {
-                // Uncheck all except first
-                Array.from(checkedBoxes)[1].checked = false;
-                alert('Only one checkbox can be selected per category at a time!');
-            }
-        }
 
-        // Watch all checkboxes for conflicts
-        document.addEventListener('change', (e) => {
-            if (e.target.type === 'checkbox') {
-                if (e.target.classList.contains('weatherCheckbox')) {
-                    checkCheckboxConflicts('weather');
-                } else if (e.target.classList.contains('spotCheckbox')) {
-                    checkCheckboxConflicts('spot');
-                } else if (e.target.classList.contains('timeCheckbox')) {
-                    checkCheckboxConflicts('time');
-                }
-            }
-        });
-
-        function getRandomUniqueFish(fishList, usedNames = new Set()) {
-            // Filter fish not already used
-            const availableFish = fishList.filter(fish => !usedNames.has(fish.name));
+        // Get unique fish randomly
+        function getRandomUniqueFish(usedNames = new Set()) {
+            const availableFish = fishData.filter(f => !usedNames.has(f.name));
             
-            if (availableFish.length === 0) {
-                return null; // All fish used
-            }
+            if (availableFish.length === 0) return null;
             
-            // Get random unique fish
             const randomIndex = Math.floor(Math.random() * availableFish.length);
             const selectedFish = availableFish[randomIndex];
             
-            // Add to used names and return
             usedNames.add(selectedFish.name);
             return selectedFish;
         }
-        
-        function getRandomWeather(selectedWeathers) {
-            if (selectedWeathers.length > 0) {
-                const randomIndex = Math.floor(Math.random() * selectedWeathers.length);
-                return selectedWeaters[randomIndex];
-            }
-            return null;
-        }
-        
-        function getFishSpot(fish, selectedSpots, forceSpot = false) {
-            // If spots are specified and not empty, use them
-            if (selectedSpots.length > 0 || forceSpot) {
-                const randomSpot = selectedSpots[Math.floor(Math.random() * selectedSpots.length)];
-                
-                // For Ocean and Reef, return spot if it matches fish's spot
-                if (['Ocean', 'Reef'].includes(randomSpot)) {
-                    if (fish.spot === randomSpot) {
-                        return randomSpot;
-                    }
-                    return null;
-                }
-                
-                // For Swamp, Lake, River - always return spot regardless of fish's spot
-                return randomSpot;
-            }
-            
-            // If no spots specified, return fish's default spot if it exists
-            return fish.spot || null;
-        }
-        
-        function getRandomTime(selectedTimes) {
-            if (selectedTimes.length > 0) {
-                const randomIndex = Math.floor(Math.random() * selectedTimes.length);
-                return selectedTimes[randomIndex];
-            }
-            return null;
-        }
-        
-        function generatePositions() {
-            const numPositionsInput = document.getElementById('numPositions');
-            const startIndexInput = document.getElementById('startIndex');
-            
-            const numPositions = parseInt(numPositionsInput.value);
-            const startIndex = parseInt(startIndexInput.value) || 0;
-            
-            if (isNaN(numPositions) || numPositions < 1) {
-                showStatus('error', 'Please enter a valid number of positions (1-100)');
-                return;
-            }
-            
-            // Get selected checkboxes
-            const weatherCheckboxes = document.querySelectorAll('.weatherCheckbox');
-            const spotCheckboxes = document.querySelectorAll('.spotCheckbox');
-            const timeCheckboxes = document.querySelectorAll('.timeCheckbox');
-            
-            const selectedWeathers = Array.from(weatherCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            
-            const selectedSpots = Array.from(spotCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            
-            const selectedTimes = Array.from(timeCheckboxes)
-                .filter(cb => cb.checked)
-               .map(cb => cb.value);
-            
-            // Check for checkbox conflicts
-            if (selectedSpots.length > 1) {
-                // Keep only first checked box, uncheck rest
-                Array.from(spotCheckboxes)[1].checked = false;
-            }
-            
-            // Store selections in JSON
-            const config = {
-                numPositions: numPositions,
-                startIndex: startIndex,
-                weathers: selectedWeathers,
-                spots: selectedSpots,
-                times: selectedTimes,
-                timestamp: new Date().toISOString()
-            };
-            localStorage.setItem('generatorConfig', JSON.stringify(config));
-            lastSavedConfig = config;
-            
-            // Generate positions
-            const positions = [];
-            const usedNames = new Set();
-            
-            for (let i = 0; i < numPositions; i++) {
-                // Get unique fish
-                const fish = getRandomUniqueFish(fishData, usedNames);
-                
-                if (!fish) {
-                    break; 
-                }
-                
-                // Get random weather
-                let weather = getRandomWeather(selectedWeathers);
-                
-                // If no weathers selected and some spots exist, use Ocean weather for Ocean spot fish
-                if (selectedSpots.length > 0 && !weather && ['Ocean', 'Reef'].includes(fish.spot || '')) {
-                    weather = 'Ocean';
-                }
-                
-                // Get random time
-                let time = getRandomTime(selectedTimes);
-                
-                // If no times selected and some spot exists, use Day for Reef/Ocean fish
-                if (selectedSpots.length > 0 && !time && ['Ocean', 'Reef'].includes(fish.spot || '')) {
-                    time = 'Day';
-                }
-                
-                // Get fish spot based on selections
-                const forceSpot = document.getElementById('forceSpotCheckbox').checked;
-                const spot = getFishSpot(fish, selectedSpots, forceSpot);
-                
-                // Skip if spot doesn't match and we don't have forced spot
-                if (!spot && !forceSpot) {
-                    continue;
-                }
-                
-                positions.push({
-                    id: startIndex + i,
-                    name: fish.name,
-                    weather: weather,
-                    spot: spot,
-                    time: time,
-                    chance: Math.floor(Math.random() * 71) + 30, 
-                    stars: Math.floor(Math.random() * 4) + 1,     
-                    fluff: fish.description
-                });
-            }
-            
-            // Generate YAML output
-            const yamlOutput = generateYAML(positions);
-            
-            // Update display
-            document.getElementById('yamlOutput').textContent = yamlOutput;
-            
-            // Update statistics
-            updateStatistics(positions);
-            
-            // Show success message
-            showStatus('success', `Successfully generated ${positions.length} unique positions!`);
-        }
-        
+
+                // Generate YAML from positions
         function generateYAML(positions) {
             let yaml = '';
             
-            positions.forEach((position, index) => {
-                yaml += `  - id: ${position.id}\n`;
+            positions.forEach(pos => {
+                yaml += `  - id: ${pos.id}\n`;
+                yaml += `    name: ${pos.name}\n`;
                 
-                // Name is always required
-                yaml += `    name: ${position.name}\n`;
+                // Always include these fields (empty if no value)
+                yaml += `    weather: ${pos.weather || ''}\n`;
+                yaml += `    spot: ${pos.spot || ''}\n`;
+                yaml += `    time: ${pos.time || ''}\n`;
                 
-                // Weather - only if set or forced for spot type
-                if (position.weather) {
-                    yaml += `    weather: ${position.weather}\n`;
-                } else {
-                    yaml += '    weather: \n';
-                }
+                // Always included with values
+                yaml += `    chance: ${pos.chance}\n`;
+                yaml += `    stars: ${pos.stars}\n`;
+                yaml += `    fluff: "${pos.fluff}"\n`;
                 
-                // Spot - use fish's spot if exists, or set value if specified
-                if (position.spot) {
-                    yaml += `    spot: ${position.spot}\n`;
-                } else {
-                    yaml += '    spot: \n';
-                }
-                
-                // Time - only if set
-                if (position.time) {
-                    yaml += `    time: ${position.time}\n`;
-                } else {
-                    yaml += '    time: \n';
-                }
-                
-                // Chance is always required (random 30-100)
-                yaml += `    chance: ${position.chance}\n`;
-                
-                // Stars is always required (random 1-4)
-                yaml += `    stars: ${position.stars}\n`;
-                
-                // Fluff is always required
-                yaml += `    fluff: "${position.fluff}"\n`;
-                
-                // Condition is always empty
-                yaml += '    condition: \n';
-                
-                // Image is always placeholder
-                yaml += '    image: "https://"\n';
-                
-                // Emoji is always constant
-                yaml += '    emoji: <>\n\n';
+                // Always included (placeholders if empty)
+                yaml += `    condition: ${pos.condition || ''}\n`;
+                yaml += `    image: "${pos.image || 'https://'}"\n`;
+                yaml += `    emoji: ${pos.emoji || '<>'}\n\n`;
             });
             
             return yaml;
         }
-        
+
+
+        // Update statistics display
         function updateStatistics(positions) {
             if (positions.length === 0) {
                 document.getElementById('uniqueSpecies').textContent = '0';
-                document.getElementById('oceanCount').textContent = '0';
-                document.getElementById('reefCount').textContent = '0';
+                document.getElementById('spotDistribution').textContent = 'None';
                 document.getElementById('highestChance').textContent = '0%';
                 document.getElementById('lowestChance').textContent = '0%';
                 return;
             }
-            
-            // Count unique species
+
             const uniqueSpecies = new Set(positions.map(p => p.name)).size;
             document.getElementById('uniqueSpecies').textContent = uniqueSpecies;
-            
-            // Count Ocean and Reef spots
-            let oceanCount = 0;
-            let reefCount = 0;
-            let maxChance = 0;
-            let minChance = 101;
-            
+
+            const spotCount = {};
             positions.forEach(p => {
-                if (p.spot === 'Ocean') oceanCount++;
-                if (p.spot === 'Reef') reefCount++;
-                
-                if (p.chance > maxChance) maxChance = p.chance;
-                if (p.chance < minChance) minChance = p.change;
+                const spot = p.spot || 'Unspecified';
+                spotCount[spot] = (spotCount[spot] || 0) + 1;
             });
-            
-            document.getElementById('oceanCount').textContent = oceanCount;
-            document.getElementById('reefCount').textContent = reefCount;
+            const spotDistributions = Object.entries(spotCount)
+                .map(([spot, count]) => `${spot} (${count})`)
+                .join(', ');
+            document.getSpotDistribution().textContent = spotDistributions;
+
+            let maxChance = 0, minChance = 101;
+            positions.forEach(p => {
+                if (p.chance > maxChance) maxChance = p.chance;
+                if (p.chance < minChance) minChance = p.chance;
+            });
             document.getElementById('highestChance').textContent = `${maxChance}%`;
             document.getElementById('lowestChance').textContent = `${minChance}%`;
         }
-        
+
+        // Generate positions
+        function generatePositions() {
+            const numPositionsInput = document.getElementById('numPositions');
+            const numPositions = parseInt(numPositionsInput.value);
+            
+            if (isNaN(numPositions) || numPositions < 1) {
+                showStatus('error', 'Please enter a valid number (min 1)');
+                return;
+            }
+
+            // Get selected values
+            const weatherSelect = document.getElementById('weatherSelect').value;
+            const timeSelect = document.getElementById('timeSelect').value;
+            const spotSelect = document.getElementById('spotSelect').value;
+
+            const positions = [];
+            const usedNames = new Set();
+
+            for (let i = 0; i < numPositions; i++) {
+                const fish = getRandomUniqueFish(usedNames);
+                
+                if (!fish) {
+                    showStatus('warning', 'Ran out of unique fish! Generated fewer positions.');
+                    break;
+                }
+
+                positions.push({
+                    id: currentPosition++,
+                    name: fish.name,
+                    weather: weatherSelect || undefined,
+                    spot: spotSelect || fish.spot || undefined,
+                    time: timeSelect || undefined,
+                    chance: Math.floor(Math.random() * 71) + 30, // 30-100
+                    stars: Math.floor(Math.random() * 4) + 1,
+                    fluff: fish.description
+                });
+            }
+
+            // Generate and display YAML
+            const yamlOutput = generateYAML(positions);
+            document.getElementById('yamlOutput').textContent = yamlOutput;
+
+            // Update statistics
+            updateStatistics(positions);
+
+            showStatus('success', `Generated ${positions.length} positions!`);
+        }
+
+        // Copy YAML to clipboard
         function copyYAML() {
             const yamlOutput = document.getElementById('yamlOutput');
             const yamlText = yamlOutput.textContent.trim();
-            
-            if (yamlText) {
-                navigator.clipboard.writeText(yamlText).then(() => {
-                    showStatus('success', 'YAML positions copied to clipboard!');
-                }).catch(err => {
-                    showStatus('error', 'Failed to copy YAML: ' + err.message);
-                });
-            } else {
-                showStatus('warning', 'No positions generated yet');
+
+            if (!yamlText || yamlText === '--- No positions generated yet---') {
+                showStatus('warning', 'No positions to copy!');
+                return;
             }
+
+            navigator.clipboard.writeText(yamlText)
+                .then(() => showStatus('success', 'YAML copied to clipboard!'))
+                .catch(err => showStatus('error', 'Copy failed: ' + err));
         }
-        
+
+        // Download YAML as file
         function downloadYAML() {
             const yamlOutput = document.getElementById('yamlOutput');
             const yamlText = yamlOutput.textContent.trim();
-            
-            if (yamlText) {
-                // Create blob and download
-                const blob = new Blob([yamlText], { type: 'text/yaml' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                
-                a.href = url;
-                a.download = `positions-${new Date().toISOString().substring(0, 10)}.yml`;
-                a.click();
-                
-                // Clean up
-                URL.revokeObjectURL(url);
-                
-                showStatus('success', 'YAML file downloaded successfully!');
-            } else {
-                showStatus('error', 'No positions to download');
+
+            if (!yamlText || yamlText === '--- No positions generated yet---') {
+                showStatus('warning', 'No positions to download!');
+                return;
             }
+
+            const blob = new Blob([yamlText], { type: 'text/yaml' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `positions-${new Date().toISOString().split('T')[0]}.yml`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            showStatus('success', 'YAML file downloaded!');
         }
-        
+
+        // Show status messages
         function showStatus(type, message) {
-            const statusContainer = document.getElementById('statusContainer') || document.body;
-            
-            // Clear previous status
-            const existingStatus = document.querySelector('.warning, .success, .error');
-            if (existingStatus) {
-                existingStatus.remove();
-            }
-            
-            // Create status element
             const status = document.createElement('div');
             status.className = `status ${type}`;
             status.textContent = message;
             
-            // Append to body or container
-            statusContainer.appendChild(status);
+            document.body.appendChild(status);
             
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (status.parentNode) {
-                    status.parentNode.removeChild(status);
-                }
-            }, 5000);
+            setTimeout(() => status.remove(), 5000);
         }
-        
-        // Load previous config on page load
-        window.addEventListener('load', () => {
-            const configStorage = localStorage.getItem('generatorConfig');
-            if (configStorage) {
-                try {
-                    const config = JSON.parse(configStorage);
-                    document.getElementById('numPositions').value = config.numPositions || 5;
-                    
-                    // Check checkboxes
-                    config.weathers?.forEach(w => {
-                        const checkbox = document.querySelector(`.weatherCheckbox[value="${w}"]`);
-                        if (checkbox) checkbox.checked = true;
-                    });
-                    
-                    config.spots?.forEach(s => {
-                        const checkbox = document.querySelector(`.spotCheckbox[value="${s}"]`);
-                        if (checkbox) checkbox.checked = true;
-                    });
-                    
-                    config.times?.forEach(t => {
-                        const checkbox = document.querySelector(`.timeCheckbox[value="${t}"]`);
-                        if (checkbox) checkbox.checked = true;
-                    });
-                } catch (e) {
-                    console.error('Failed to load config:', e);
-                }
+
+        // Update statistics display when spot selection changes
+        document.getElementById('spotSelect').addEventListener('change', () => {
+            const spotSelect = document.getElementById('spotSelect').value;
+            const spotDistributionLabel = document.getElementById('spotDistribution');
+            
+            if (spotSelect) {
+                spotDistributionLabel.textContent = spotSelect;
+            } else {
+                spotDistributionLabel.textContent = 'None';
             }
         });
     </script>
