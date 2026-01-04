@@ -470,8 +470,8 @@
                     
                     // Apply rare modifications
                     rarePosition.name = `Rare_${fish.name}`;
-                    rarePosition.chance = Math.max(1, Math.floor(fish.chance / 3));
-                    rarePosition.stars = Math.min(4, fish.stars + 1);
+                    rarePosition.chance = Math.round(Math.max(1, Math.floor(fish.chance / 3)));
+                    rarePosition.stars = Math.round(Math.min(4, fish.stars + 1));
                     rarePosition.fluff = `RARE! ${fish.description}`;
                     
                     positions.push(rarePosition);
@@ -491,7 +491,7 @@
                     
                     // Apply legendary modifications
                     legPos.name = `Legendary_${fish.name}`;
-                    legPos.chance = Math.max(1, Math.floor(fish.chance / 6));
+                    legPos.chance = Math.round(Math.max(1, Math.floor(fish.chance / 6)));
                     legPos.stars = 4;
                     legPos.fluff = `LEGENDARY! ${fish.description}`;
                     
