@@ -149,9 +149,9 @@
                 <input type="number" id="numPositions" value="5" min="1" max="50"
                        oninput="updateCountDisplay()">
                 
-               /*<div id="countDisplay" style="margin-top: 10px; font-weight: bold;">
-                    Current: 5
-               </div>*/
+               <!-- <div id="countDisplay" style="margin-top: 10px; font-weight: bold;"> -->
+                  <!--  Current: 5 -->
+               </div> 
             </div>
 
             <!-- Variant Options -->
@@ -239,19 +239,19 @@
         </div>
         
         <!-- Stats Section -->
-       /* <div class="stats">
-           // <h2>Generation Statistics</h2>
-            //<div class="stat-item"><span class="stat-label">Unique Species:</span>
-              //  <span class="stat-value" id="uniqueSpecies">0</span></div>
-           // <div class="stat-item"><span class="stat-label">Spot Distribution:</span>
-            //    <span class="stat-value" id="spotDistribution">None</span></div>
-          //  <div class="stat-item"><span class="stat-label">Highest Chance:</span>
-             //   <span class="stat-value" id="highestChance">0%</span></div>
-         //   <div class="stat-item"><span class="stat-label">Lowest Chance:</span>
-          //      <span class="stat-value" id="lowestChance">0%</span></div>
-          //  <div class="stat-item"><span class="stat-label">Variants Generated:</span>
-            //    <span class="stat-value" id="variantCount">0</span></div>
-       // </div> */
+       <!-- <div class="stats"> -->
+           <!-- <h2>Generation Statistics</h2> -->
+            <!--<div class="stat-item"><span class="stat-label">Unique Species:</span> -->
+              <!--  <span class="stat-value" id="uniqueSpecies">0</span></div> -->
+           <!-- <div class="stat-item"><span class="stat-label">Spot Distribution:</span> -->
+            <!--    <span class="stat-value" id="spotDistribution">None</span></div> -->
+          <!--  <div class="stat-item"><span class="stat-label">Highest Chance:</span> -->
+             <!--   <span class="stat-value" id="highestChance">0%</span></div> -->
+         <!--   <div class="stat-item"><span class="stat-label">Lowest Chance:</span> -->
+          <!--      <span class="stat-value" id="lowestChance">0%</span></div> -->
+          <!--  <div class="stat-item"><span class="stat-label">Variants Generated:</span> -->
+            <!--    <span class="stat-value" id="variantCount">0</span></div> -->
+       <!-- </div> -->
     </div>
 
     <script>
@@ -503,7 +503,7 @@
               //  }
            // }); */
 
-            Reassign IDs in final order
+            // Reassign IDs in final order
             positions.forEach((p, idx) => p.id = idx);
 
             const yamlOutput = generateYAML(positions);
