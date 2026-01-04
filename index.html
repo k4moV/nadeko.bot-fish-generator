@@ -145,7 +145,7 @@
             <h2>Generation Settings</h2>
             
             <div class="form-group">
-                <label for="numPositions">Number of Fish / Trash to Generate</label>
+                <label for="numPositions">Number of Fish / Trash to Generate (max 50)</label>
                 <input type="number" id="numPositions" value="5" min="1" max="50"
                        oninput="updateCountDisplay()">
                 
@@ -171,22 +171,22 @@
                 <div class="checkbox-group">
                     <label class="checkbox-label" style="flex: 1;">
                         <input type="checkbox" id="enableRare" checked>
-                        Generate Rare variants
+                        Generate Rare variants (random time)
                     </label>
                     <span style="background: #f0e68c; padding: 4px 10px; border-radius: 12px;
                                font-weight: 600; color: #665500; font-size: 0.85em;">
-                       (1/3 chance, +1 star)
+                       (1/3 chance of normal, +1 max star over normal < 4)
                     </span>
                 </div>
 
                 <div class="checkbox-group" style="margin-top: 10px;">
                     <label class="checkbox-label" style="flex: 1;">
                         <input type="checkbox" id="enableLegendary" checked>
-                        Generate Legendary variants
+                        Generate Legendary variants (random time + random weather)
                     </label>
                     <span style="background: #d8bfd8; padding: 4px 10px; border-radius: 12px;
                                font-weight: 600; color: #4b0082; font-size: 0.85em;">
-                       (1/6 chance, 4 stars)
+                       (1/6 chance of normal, always 4 stars max)
                     </span>
                 </div>
 
@@ -198,7 +198,7 @@
             <div class="form-group">
                 <label for="weatherSelect">Weather Condition (Optional)</label>
                 <select id="weatherSelect">
-                    <option value="" selected>Empty - No specific weather</option>
+                    <option value="" selected>Empty - Any weather</option>
                     <option value="Rain">Rain</option>
                     <option value="Clear">Clear</option>
                     <option value="Snow">Snow</option>
@@ -237,15 +237,15 @@
                 </select>
             </div>-->
             
-            <button class="btn-generator" onclick="generatePositions()">Generate Positions</button>
+            <button class="btn-generator" onclick="generatePositions()">Generate YML Code</button>
         </div>
         
         <!-- Output Section -->
         <div class="output">
-            <h2>Generated YAML Positions</h2>
+            <h2>Generated YML Positions</h2>
             <div class="yaml-output" id="yamlOutput"></div>
             <button class="copy-btn" onclick="copyYAML()">📋 Copy All</button>
-            <button class="download-btn" onclick="downloadYAML()">📥 Download</button>
+          <!--  <button class="download-btn" onclick="downloadYAML()">📥 Download</button>-->
         </div>
         
         <!-- Stats Section -->
@@ -519,7 +519,8 @@
            // }); */
 
             // Reassign IDs in final order
-            positions.forEach((p, idx) => p.id = idx);
+			
+            positions.forEach((p, idx) => p.id = (idx + numStartId.value);
 
             const yamlOutput = generateYAML(positions);
             document.getElementById('yamlOutput').textContent = yamlOutput;
@@ -575,7 +576,7 @@
         }
 
         // Download YAML as file
-        function downloadYAML() {
+     /*   function downloadYAML() {
             const yamlOutput = document.getElementById('yamlOutput');
             const yamlText = yamlOutput.textContent.trim();
 
@@ -595,7 +596,7 @@
             URL.revokeObjectURL(url);
             showStatus('success', 'YAML file downloaded!');
         }
-
+*/
         // Show status messages
         function showStatus(type, message) {
             const status = document.createElement('div');
