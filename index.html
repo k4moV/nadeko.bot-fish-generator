@@ -1,521 +1,1106 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generator pozycji z ryb do bota</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <title>Fish Position Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #6c8daf 0%, #4a6fa5 100%);
-      color: #333;
-      min-height: 100vh;
-      padding-top: 20px;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-    .app-container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
 
-    header h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      margin-bottom: 15px;
-      color: white;
-    }
+        h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+            padding: 30px 40px;
+        }
 
-    .controls {
-      background: rgba(255, 255, 255, 0.92);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-    }
+        .tabs {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+        }
 
-    .control-group {
-      margin-bottom: 16px;
-    }
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #334155;
+            transition: all 0.3s ease;
+            position: relative;
+        }
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #4a6fa5;
-    }
+        .tab.active {
+            color: #667eea;
+            background: white;
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 36px;
+                height: 4px;
+                background: #667eea;
+            }
+        }
 
-    input,
-    select {
-      width: calc(100% + 20px);
-      padding: 12px;
-      border: 2px solid #c0d2ff;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
-    }
+        .tab:hover {
+            background: #f1f5f9;
+        }
 
-    input:focus,
-    select:focus {
-      outline: none;
-      border-color: #4a6fa5;
-    }
+        .config-section, .generation-section, .output-section {
+            padding: 25px;
+            background: #f8fafc;
+        }
 
-    .checkbox-group {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
+        .config-section h2, .generation-section h2, .output-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
 
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-    }
+        .form-groups {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
 
-    .checkbox-item input[type="checkbox"] {
-      width: auto;
-      margin-right: 8px;
-      color: #4a6fa5;
-    }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-    button {
-      background: linear-gradient(135deg, #4a6fa5 0%, #6c8daf 100%);
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s;
-      text-transform: uppercase;
-      letter-spacing: 0.9px;
-    }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-weight: 600;
+        }
 
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
-    }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
 
-    .output-section {
-      background: rgba(255, 255, 255, 0.92);
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-    }
+        input[type="number"], select {
+            width: 140px;
+        }
 
-    #fishData {
-      width: calc(100% + 20px);
-      min-height: 400px;
-      padding: 16px;
-      border: 2px solid #c0d2ff;
-      border-radius: 8px;
-      font-family: monospace, sans-serif;
-      resize: vertical;
-      overflow-y: auto;
-    }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
 
-    .copy-btn {
-      position: absolute;
-      right: 15px;
-      top: 10px;
-      background: #4a6fa5;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-    }
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
 
-    .stats {
-      display: flex;
-      gap: 16px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
+        .advanced-settings {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
 
-    .stat {
-      background: #e8f0fe;
-      padding: 10px 14px;
-      border-radius: 6px;
-      min-width: 150px;
-    }
-    .label { font-size: 0.95rem; color: #4a6fa5; }
-    .value { font-size: 1.2rem; font-weight: bold; color: #2c3e50; }
-  </style>
+        .advanced-settings h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .checkbox-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #e8ecf4;
+            transform: translateY(-2px);
+        }
+
+        .checkbox-item input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-item span {
+            flex: 1;
+            color: #334155;
+            user-select: none;
+        }
+
+        .filters-section {
+            margin-top: 20px;
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .filter-items {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-item {
+            padding: 8px 16px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-item:hover {
+            background: white;
+            transform: translateY(-1px);
+        }
+
+        .filter-item.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .generation-settings {
+            margin-top: 20px;
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .generation-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .generation-option {
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .generation-option:hover {
+            background: #e8ecf4;
+            transform: translateY(-1px);
+        }
+
+        .generation-option.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button.generate-btn, button.save-btn {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        button.generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        button.generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button.save-btn {
+            background: #ec4899;
+            color: white;
+        }
+
+        button.save-btn:hover {
+            background: #d92d73;
+            transform: translateY(-2px);
+        }
+
+        .warning-badge {
+            display: inline-block;
+            background: #fee2e2;
+            border: 1px solid #f87171;
+            color: #991b1b;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
+
+        .warning-badge i {
+            margin-right: 5px;
+        }
+
+        .warning-message {
+            background: #fee2e2;
+            border: 1px solid #f87171;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            word-break: break-word;
+        }
+
+        .warning-message h4 {
+            margin-bottom: 10px;
+        }
+
+        .output-section {
+            margin-top: 30px;
+        }
+
+        #yamlOutput {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        .copy-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stats-section {
+            margin-top: 30px;
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            min-height: 200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-title {
+            color: #667eea;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .warning-stat {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .info-stat {
+            background: #fbfaff;
+            color: #1e3a8a;
+        }
+
+        .success-stat {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .badge.warning {
+            background: #fee2e2;
+            border: 1px solid #f87171;
+            color: #991b1b;
+        }
+
+        .badge.danger {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #7f1d1d;
+        }
+
+        .badge.success {
+            background: #ecfdf5;
+            border: 1px solid #d1fae5;
+            color: #059669;
+        }
+
+        .badge.info {
+            background: #fbfaff;
+            border: 1px solid #dbeafe;
+            color: #1e3a8a;
+        }
+
+        .badge.badge {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            margin-left: 5px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px auto;
+            }
+
+            h1 {
+                font-size: 2rem;
+                padding: 20px 30px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                width: 100%;
+            }
+
+            .form-groups {
+                grid-template-columns: 1fr;
+            }
+
+            .advanced-settings, .filters-section, .stats-section {
+                padding: 15px;
+            }
+
+            button.generate-btn, button.save-btn {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .copy-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="app-container">
-    <header>
-      <h1>Generator pozycji z ryb do bota</h1>
-      <p style="color:#7f9fc7;">Ustaw parametry i wygeneruj listę pozycji w formacie YML</p>
-    </header>
-
-    <div class="controls">
-      <div class="control-group">
-        <label for="fishCount">Ilość pozycji do wygenerowania</label>
-        <input type="number" id="fishCount" min="1" max="100" value="25" />
-      </div>
-
-      <div class="control-group">
-        <label>Zmień nazwy ryb (lista dostępnych):</label><br />
-        <textarea
-          id="fishNames"
-          rows="4"
-          style="width: calc(100% + 20px); padding: 12px; border: 2px solid #c0d2ff; border-radius: 8px; font-size: 0.95rem;"
-        >
-Odwołania do nazw i opisów po myślniku, jedna linia na jedną rybu:
-Glowfin – Fish with glowing, neon-colored fins.
-Shellcrag – Giant crab with a stone shell.
-Abysswalker – Many-legged beast from the deepest ocean.
-... (i tak dalej dla wszystkich z listy)
-        </textarea>
-      </div>
-
-      <div class="control-group">
-        <label>Warunki specjalne (kombinacje weather + spot + time):</label><br />
-        <div style="margin-bottom: 8px;">
-          <input type="checkbox" id="specialCondition1" /> <span style="margin-left: 6px;">Rain, Ocean, Dawn</span>
+    <div class="container">
+        <!-- Header/Tabs -->
+        <h1>Fish Position Generator 🎣🐟</h1>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="config">Configuration</button>
+            <button class="tab" data-tab="generation">Generation Settings</button>
+            <button class="tab" data-tab="output">Output</button>
         </div>
-        <div>
-          <input type="checkbox" id="specialCondition2" /> <span style="margin-left: 6px;">Clear, River, Dusk</span>
-        </div>
-      </div>
 
-      <button onclick="generatePositions()">Generuj pozycje</button>
+        <!-- Configuration Tab -->
+        <div class="tab-content config-section active" id="config">
+            <h2>Configuration</h2>
+            
+            <div class="warning-message">
+                <h4>⚠️ Warning: Don't edit YAML manually!</h4>
+                <p>Use the generator buttons to create valid fish positions. Manual editing can break the YAML format.</p>
+            </div>
+
+            <!-- Fish List -->
+            <div class="form-groups">
+                <div class="form-group">
+                    <label for="fishList">Fish Names (Name - Fluff - Spot):<span class="warning-badge"><i class="fas fa-exclamation-triangle"></i> Required</span></label>
+                    <textarea id="fishList" placeholder="Bass - Popular freshwater game fish for anglers. - River">
+Anchovy - Small, salty fish used in cooking. - Ocean
+Angelfish - Popular, elegant, disk-shaped aquarium fish. - Reef
+Barracuda - Predatory fish with sharp, needle-like teeth. - Reef
+Bass - Popular freshwater game fish for anglers.
+Betta - Colorful fish known for aggressive behavior. - Swamp
+Bluegill - Common North American freshwater sunfish species. - Lake
+Bonefish - Fast, silver fish found on flats. - Ocean
+Burbot - Only freshwater member of cod family. - Lake
+Carp - Large, hardy freshwater bottom-feeding fish.
+Catfish - Fish recognized by whisker-like barbels. - River
+Cisco - Cold-water fish related to whitefish. - Lake
+Cod - Important commercial fish with white meat.
+Discus - Colorful, circular South American cichlid. - River
+Eel - Long, snake-like fish living in water.
+Flounder - Flatfish with both eyes on top. - Ocean
+Goldfish - Common orange pet kept in bowls.
+Grouper - Large-mouthed predatory saltwater reef fish. - Reef
+Guppy - Small, vibrant, easy-to-breed aquarium fish. - River
+Haddock - Saltwater fish similar to Atlantic cod. - Ocean
+Hake - Lean, white-fleshed marine food fish. - Ocean
+Halibut - Largest type of flatfish in oceans. - Ocean
+Herring - Forage fish often served pickled or smoked. - Ocean
+Hoki - Deep-sea fish caught near New Zealand. - Ocean
+Ide - Silvery freshwater fish of northern Europe. - River
+Inconnu - Large, predatory northern whitefish species. - River
+Kaluga - Giant predatory sturgeon from Amur River. - River
+Kanyu - Predatory cyprinid found in East Asia. - River
+Killifish - Small, hardy, and very colorful fish. - Swamp
+Koi - Decorative, brightly colored Japanese carp. - Lake
+Kokanee - Non-anadromous form of sockeye salmon. - Lake
+Mackerel - Oily fish with stripes on back. - Ocean
+Marlin - Large game fish with long bill. - Ocean
+Molly - Popular live-bearing fish for home aquariums. - Swamp
+Mullet - Coastal fish often seen jumping frequently. - Ocean
+Muskellunge - Large, aggressive North American freshwater predator. - Lake
+Perch - Common freshwater fish with spiny fins. - Lake
+Pickerel - Smaller relative of the northern pike. - Swamp
+Pike - Ambush predator with long, pointed snout.
+Plaice - Flatfish known for orange spots. - Ocean
+Pollock - Marine fish used for frozen products. - Ocean
+Glowfin - Fish with glowing, neon-colored fins. - Reef
+Shellcrag - Giant crab with a stone shell. - Reef
+Abysswalker - Many-legged beast from the deepest ocean. - Ocean
+Hydraserpent - Multi-headed snake living in coral. - Reef
+Waveglider - Creature that flies above the surface. - Ocean
+Pearlscale - Elegant mermaid-like fish with shiny scales. - Reef
+Stormray - Ray that shoots electric blue lightning. - Ocean
+Bubblemouth - Round fish that traps prey in bubbles. - Swamp
+Frosttentacle - Jellyfish that freezes water around it. - Ocean
+Voidshark - Shadowy predator made of dark mist. - Ocean
+    </textarea>
+                </div>
+            </div>
+
+            <!-- Advanced Settings -->
+            <div class="advanced-settings">
+                <h3>Advanced Filters</h3>
+                
+                <div class="form-group">
+                    <label>Minimum Stars:<span class="warning-badge"><i class="fas fa-exclamation-triangle"></i> Affects drop quality</span></label>
+                    <input type="number" id="minStars" value="1" min="1" max="4" placeholder="1">
+                </div>
+
+                <div class="form-group">
+                    <label>Minimum Chance (%):<span class="warning-badge"><i class="fas fa-exclamation-triangle"></i> Higher = rarer fish</span></label>
+                    <input type="number" id="minChance" value="30" min="5" max="100" placeholder="30">
+                </div>
+
+                <div class="filters-section">
+                    <div class="form-group">
+                        <label for="spotFilter">Filter by Spot:</label>
+                        <div class="filter-items">
+                            <div class="filter-item active" data-value="">All</div>
+                            <div class="filter-item" data-value="Ocean">Ocean</div>
+                            <div class="filter-item" data-value="Reef">Reef</div>
+                            <div class="filter-item" data-value="Lake">Lake</div>
+                            <div class="filter-item" data-value="River">River</div>
+                            <div class="filter-item" data-value="Swamp">Swamp</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weatherFilter">Filter by Weather:</label>
+                        <div class="filter-items">
+                            <div class="filter-item active" data-value="">All</div>
+                            <div class="filter-item" data-value="Rain">Rain</div>
+                            <div class="filter-item" data-value="Clear">Clear</div>
+                            <div class="filter-item" data-value="Snow">Snow</div>
+                            <div class="filter-item" data-value="Storm">Storm</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="timeFilter">Filter by Time:</label>
+                        <div class="filter-items">
+                            <div class="filter-item active" data-value="">All</div>
+                            <div class="filter-item" data-value="Dawn">Dawn</div>
+                            <div class="filter-item" data-value="Dusk">Dusk</div>
+                            <div class="filter-item" data-value="Day">Day</div>
+                            <div class="filter-item" data-value="Night">Night</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generation Settings Tab -->
+        <div class="tab-content generation-section" id="generation">
+            <h2>Generation Settings</h2>
+            
+            <div class="stats-section">
+                <div class="stat-card warning-stat">
+                    <div class="stat-title">Unique Fish Count</div>
+                    <div class="stat-value" id="uniqueFishCount">0</div>
+                </div>
+                
+                <div class="stat-card info-stat">
+                    <div class="stat-title">Positions Generated</div>
+                    <div class="stat-value" id="totalPositions">0</div>
+                </div>
+                
+                <div class="stat-card success-stat">
+                    <div class="stat-title">Rare Fish (50+%)</div>
+                    <div class="stat-value" id="rareFishCount">0</div>
+                </div>
+            </div>
+
+            <!-- Generation Options -->
+            <div class="generation-settings">
+                <div class="form-groups">
+                    <div class="form-group">
+                        <label for="positionsCount">Number of Positions:<span class="warning-badge"><i class="fas fa-exclamation-triangle"></i> Max 100 recommended</span></label>
+                        <input type="number" id="positionsCount" value="10" min="1" max="100" placeholder="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="randomSeed">Random Seed (optional):<span class="badge info">Deterministic generation</span></label>
+                        <input type="number" id="randomSeed" min="1" max="1000000" placeholder="Auto-random">
+                    </div>
+
+                    <div class="generation-options">
+                        <button class="generation-option active" data-count="5">Quick (5)</button>
+                        <button class="generation-option" data-count="10">Medium (10)</button>
+                        <button class="generation-option" data-count="20">Comprehensive (20)</button>
+                        <button class="generation-option" data-count="50">Maximized (50)</button>
+                        <button class="generation-option" data-count="100">Complete (100)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Tab -->
+        <div class="tab-content output-section" id="output">
+            <h2>Generated YAML Positions</h2>
+            
+            <div class="copy-buttons">
+                <div class="stats-section">
+                    <div class="stat-card warning-stat">
+                        <div class="stat-title">Unique Species</div>
+                        <div class="stat-value" id="outputUniqueFish">0</div>
+                    </div>
+                    
+                    <div class="stat-card info-stat">
+                        <div class="stat-title">Average Rarity</div>
+                        <div class="stat-value" id="outputAvgRarity">0%</div>
+                    </div>
+                </div>
+
+                <button class="copy-btn" title="Copy all to clipboard">
+                    <i class="fas fa-copy"></i> Copy All
+                </button>
+                
+                <button class="copy-btn" title="Copy position by ID">
+                    <i class="fas fa-id-card"></i> Copy Selected
+                </button>
+                
+                <button class="download-btn">
+                    <i class="fas fa-download"></i> Download (.yaml)
+                </button>
+            </div>
+
+            <div class="warning-message">
+                <h4>📦 Ready to use!</h4>
+                <p>Paste this YAML into your bot configuration file and restart your server.</p>
+            </div>
+
+            <div class="form-group">
+                <textarea id="yamlOutput" readonly></textarea>
+            </div>
+        </div>
     </div>
 
-    <div class="output-section">
-      <h2>Wygenerowane pozycje (YML)</h2>
-      <p style="color:#7f9fc7; margin-bottom: 8px;">Kliknij przycisk "Kopiuj", aby pobrać dane do katalogu.</p>
-      <div style="position:relative;">
-        <textarea
-          id="fishData"
-          readonly
-          placeholder="Twoje pozycje z ryb pojawią się tutaj..."
-          style="
-            width: calc(100% + 20px);
-            padding: 16px;
-            border: 2px solid #c0d2ff;
-            border-radius: 8px;
-            font-family: monospace, sans-serif;
-            resize: vertical;
-          "
-        ></textarea>
-        <button class="copy-btn" onclick="copyToClipboard()">Kopiuj</button>
-      </div>
+    <script>
+        // Store all state in one object
+        const state = {
+            fishList: [],
+            uniqueIds: new Set(),
+            currentId: 0,
+            warnings: []
+        };
 
-      <div class="stats">
-        <div class="stat">
-          <div class="label">Ryby wygenerowane</div>
-          <div class="value" id="totalValue">0</div>
-        </div>
-        <div class="stat">
-          <div class="label">Średnia szansa</div>
-          <div class="value" id="avgChanceValue">0%</div>
-        </div>
-        <div class="stat">
-          <div class="label">Rozkład gwiazdek (1–4)</div>
-          <div class="value" id="starsDistributionValue">-</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Lista domyślnych ryb z opisami
-    const defaultFishList = [
-      "Glowfin – Fish with glowing, neon-colored fins.",
-      "Shellcrag – Giant crab with a stone shell.",
-      "Abysswalker – Many-legged beast from the deepest ocean.",
-      "Hydraserpent – Multi-headed snake living in coral.",
-      "Waveglider – Creature that flies above the surface.",
-      "Pearlscale – Elegant mermaid-like fish with shiny scales.",
-      "Stormray – Ray that shoots electric blue lightning.",
-      "Bubblemouth – Round fish that traps prey in bubbles.",
-      "Frosttentacle – Jellyfish that freezes water around it.",
-      "Voidshark – Shadowy predator made of dark mist.",
-      "Anchovy – Small, salty fish used in cooking.",
-      "Angelfish – Popular, elegant, disk-shaped aquarium fish.",
-      "Barracuda – Predatory fish with sharp, needle-like teeth.",
-      "Bass – Popular freshwater game fish for anglers.",
-      "Betta – Colorful fish known for aggressive behavior.",
-      "Bluegill – Common North American freshwater sunfish species.",
-      "Bonefish – Fast, silver fish found on flats.",
-      "Burbot – Only freshwater member of cod family.",
-      "Carp – Large, hardy freshwater bottom-feeding fish.",
-      "Catfish – Fish recognized by whisker-like barbels.",
-      "Cisco – Cold-water fish related to whitefish.",
-      "Cod – Important commercial fish with white meat.",
-      "Discus – Colorful, circular South American cichlid.",
-      "Eel – Long, snake-like fish living in water.",
-      "Flounder – Flatfish with both eyes on top.",
-      "Goldfish – Common orange pet kept in bowls.",
-      "Grouper – Large-mouthed predatory saltwater reef fish.",
-      "Guppy – Small, vibrant, easy-to-breed aquarium fish.",
-      "Haddock – Saltwater fish similar to Atlantic cod.",
-      "Hake – Lean, white-fleshed marine food fish.",
-      "Halibut – Largest type of flatfish in oceans.",
-      "Herring – Forage fish often served pickled or smoked.",
-      "Hoki – Deep-sea fish caught near New Zealand.",
-      "Ide – Silvery freshwater fish of northern Europe.",
-      "Inconnu – Large, predatory northern whitefish species.",
-      "Kaluga – Giant predatory sturgeon from Amur River.",
-      "Kanyu – Predatory cyprinid found in East Asia.",
-      "Killifish – Small, hardy, and very colorful fish.",
-      "Koi – Decorative, brightly colored Japanese carp.",
-      "Kokanee – Non-anadromous form of sockeye salmon.",
-      "Mackerel – Oily fish with stripes on back.",
-      "Marlin – Large game fish with long bill.",
-      "Molly – Popular live-bearing fish for home aquariums.",
-      "Mullet – Coastal fish often seen jumping frequently.",
-      "Muskellunge – Large, aggressive North American freshwater predator.",
-      "Perch – Common freshwater fish with spiny fins.",
-      "Pickerel – Smaller relative of the northern pike.",
-      "Pike – Ambush predator with long, pointed snout.",
-      "Plaice – Flatfish known for orange spots.",
-      "Pollock – Marine fish used for frozen products."
-    ];
-
-    // Inicjalizacja textarea z nazwami ryb
-    document.getElementById("fishNames").value = defaultFishList.join("\n");
-
-    /**
-     * Wybiera jedną linie z listy (odpowiednio odseparowaną nazwę i opis).
-     * Przykład: "Glowfin – Fish with glowing, neon-colored fins."
-     */
-    function getRandomFishLine() {
-      const randIndex = Math.floor(Math.random() * defaultFishList.length);
-      return defaultFishList[randIndex];
-    }
-
-    /**
-     * Parsuje listę wybranych nazw. Wiersze muszą być w formacie:
-     * "Nazwa – Opis"
-     */
-    function parseUserFishNames() {
-      const raw = document.getElementById("fishNames").value.trim();
-      if (!raw) return [];
-      // Rozdziłać na linie
-      const lines = raw.split("\n");
-      const parsed = [];
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (trimmed && trimmed.includes("–")) {
-          // Domyślny separator – możesz zmienić na inny
-          const [namePart] = trimmed.split("–");
-          // Upewnienie się, że nazwa nie jest pusta
-          const name = namePart.trim();
-          if (name) {
-            parsed.push(name);
-          }
-        }
-      }
-      return parsed;
-    }
-
-    /**
-     * Generuje listę obiektów z danymi dla każdej ryby.
-     */
-    function generateFishPositions(count, fishNames, specialConditions) {
-      const positions = [];
-      const allWeather = ["Rain", "Clear", "Snow", "Storm"];
-      const allSpots = ["Ocean", "River", "Reef", "Swamp", "Lake"];
-      const allTimes = ["Dawn", "Dusk", "Day", "Night"];
-
-      // Zbiór wszystkich możliwych kombinacji
-      const allCombinations = [];
-      for (const w of allWeather) {
-        for (const s of allSpots) {
-          for (const t of allTimes) {
-            allCombinations.push([w, s, t].join(","));
-          }
-        }
-      }
-
-      // Ustawienie standardowych prawdopodobieństw dla każdej kombinacji
-      const comboChances = {};
-      // Domyślnie każde podejście ma 100% szansy (rozwiązanie domyślne)
-      for (const comb of allCombinations) {
-        comboChances[comb] = 100;
-      }
-
-      // Jeśli zaznaczono specjalne kombinacje, przypisz im większe wartości
-      if (specialConditions && specialConditions.length > 0) {
-        const selectedCombs = [];
-        for (const sc of specialConditions) {
-          // Format: "Rain,Ocean,Dawn"
-          selectedCombs.push(sc);
-        }
-        for (const comb of selectedCombs) {
-          // Upewnienie się, że kombinacja jest dostępna
-          if (!comboChances[comb]) {
-            comboChances[comb] = 100; // domyślna wartość
-          } else {
-            // Jeśli już była ustawiona, zwiększ ją np o 30%
-            comboChances[comb] += 25;
-          }
-        }
-      }
-
-      // Funkcja do wyboru kombinacji
-      function pickRandomCombination() {
-        // Prawdopodobieństwo dla każdej kombinacji jest proporcjonalne do jej wartości
-        const total = sumValues(Object.values(comboChances));
-        const randScore = Math.random() * total;
-        let accumulated = 0;
-        for (const comb of allCombinations) {
-          accumulated += comboChances[comb];
-          if (accumulated >= randScore) {
-            return comb;
-          }
-        }
-        // W razie błędu zwracamy ostatnią
-        return allCombinations[allCombinations.length - 1];
-      }
-
-      function sumValues(arr) {
-        let sum = 0;
-        for (const val of arr) {
-          sum += val;
-        }
-        return sum;
-      }
-
-      // Generuj pozycje
-      for (let i = 0; i < count; i++) {
-        const fishName =
-          fishNames.length > 0
-            ? parseUserFishNames()[Math.floor(Math.random() * fishNames.length)]
-            : getRandomFishLine();
-
-        // Wybierz kombinację
-        const combo = pickRandomCombination();
-        const weather = combo.split(",")[0] || "";
-        const spot = combo.split(",")[1] || "";
-        const time = combo.split(",")[2] || "";
-
-        // Losowe prawdopodobieństwo między 1–100
-        const chance = Math.max(1, Math.min(100, Math.random() * 99 + 1));
-
-        // Losowa ilość gwiazdek od 1 do 4
-        const stars = Math.floor(Math.random() * 4) + 1;
-
-        // Tworzenie krótkiego opisu jednozdaniowego
-        const fluff =
-          fishName +
-          (fishName.includes("–") ? "" : " " ) +
-          " " +
-          ("Common".includes(fishName.split(" ")[1] || "") ? "Very common." : "Typical.");
-
-        positions.push({
-          id: i + 1,
-          name: fishName.trim(),
-          weather: weather.trim() || "",
-          spot: spot.trim() || "",
-          time: time.trim() || "",
-          chance,
-          stars,
-          fluff: fluff.trim(),
-          condition: "",
-          image: "https://",
-          emoji: "<>"
+        // Initialize tabs
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDefaultFish();
+            updateStats();
+            setupEventListeners();
+            applyFilters();
         });
-      }
-      return positions;
-    }
 
-    // Funkcja do formatowania listy w YML
-    function formatYml(positions) {
-      let yml = "";
-      yml += "# Pozycje z ryb dla bota\n";
-      yml += "positions:\n";
-      for (const pos of positions) {
-        yml += `  - id: ${pos.id}\n`;
-        yml += `    name: "${pos.name}"\n`;
-        yml += `    weather: "${pos.weather}"\n`;
-        yml += `    spot: "${pos.spot}"\n`;
-        yml += `    time: "${pos.time}"\n`;
-        yml += `    chance: ${pos.chance}\n`;
-        yml += `    stars: ${pos.stars}\n`;
-        yml += `    fluff: "${pos.fluff}"\n`;
-        yml += `    condition: ""\n`;
-        yml += `    image: "https://"\n`;
-        yml += `    emoji: "<>"\n\n`;
-      }
-      return yml;
-    }
+        // Load default fish list
+        function loadDefaultFish() {
+            const fishListElement = document.getElementById('fishList');
+            if (fishListElement) {
+                // Parse existing fish list
+                parseFishList(fishListElement.value);
+                
+                // Store parsing result
+                state.fishList = parsedFish;
+                
+                // Update unique count
+                updateUniqueFishCount();
+                
+                // Save to localStorage
+                saveToLocalStorage('fishList', fishListElement.value);
+            }
+        }
 
-    // Inicjalne dane dla statystyk
-    let totalFish = 0;
-    let allChances = [];
-    let starsCount = { "1": 0, "2": 0, "3": 0, "4": 0 };
+        // Parse fish list from textarea
+        function parseFishList(list) {
+            const lines = list.trim().split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            
+            return lines.map(line => {
+                const [name, fluff, spot] = line.split('-').map(part => part.trim());
+                
+                // Validate parsing
+                if (!name || !fluff) {
+                    state.warnings.push(`Invalid fish entry: "${line}"`);
+                    return null;
+                }
+                
+                return {
+                    name,
+                    fluff,
+                    spot: spot || null
+                };
+            }).filter(fish => fish !== null);
+        }
 
-    function updateStats(positions) {
-      totalFish = positions.length;
-      // Aktualizacja średniej szansy
-      const totalChance = positions.reduce((sum, p) => sum + p.chance, 0);
-      const avgChance = totalChance / totalFish || 1;
-      document.getElementById("totalValue").textContent = totalFish;
-      document.getElementById("avgChanceValue").textContent =
-        (avgChance * 100).toFixed(2) + "%";
-      // Obliczanie rozkładu gwiazdek
-      for (const p of positions) {
-        starsCount[p.stars] += 1;
-      }
-      const starsValues = Object.values(starsCount);
-      document.getElementById("starsDistributionValue").textContent =
-        "1:" + starsValues[0] + ", 2:" + starsValues[1] + ", 3:" + starsValues[2] + ", 4:" + starsValues[3];
-    }
+        // Generate unique ID for fish position
+        function generateUniqueId() {
+            state.currentId++;
+            return state.currentId;
+        }
 
-    function copyToClipboard() {
-      const ymlText = document.getElementById("fishData").value;
-      navigator.clipboard
-        .writeText(ymlText)
-        .then(() => alert("Dane zostały skopiowane do schowaka!"))
-        .catch((err) => alert("Wystąpił błąd podczas kopiowania: " + err);
-    }
+        // Check if fish has required fields
+        function isValidFish(fish) {
+            return fish && fish.name && fish.fluff;
+        }
 
-    function generatePositions() {
-      // Ustawienie zaznaczonych warunków
-      const specialConditions = [];
-      if (document.getElementById("specialCondition1").checked) {
-        specialConditions.push("Rain,Ocean,Dawn");
-      }
-      if (document.getElementById("specialCondition2").checked) {
-        specialConditions.push("Clear,River,Dusk");
-      }
+        // Apply filters to fish list
+        function applyFilters() {
+            const filteredFish = [];
+            
+            // Get filter values
+            const spotFilter = document.querySelector('#spotFilter.active')?.dataset.value || '';
+            const weatherFilter = document.querySelector('#weatherFilter.active')?.dataset.value || '';
+            const timeFilter = document.querySelector('#timeFilter.active')?.dataset.value || '';
+            
+            // Filter fish based on spots
+            state.fishList.forEach(fish => {
+                let matchesSpot = true;
+                if (spotFilter && spotFilter !== '' && fish.spot !== spotFilter) {
+                    matchesSpot = false;
+                }
+                
+                if (matchesSpot) {
+                    filteredFish.push(fish);
+                }
+            });
+            
+            return filteredFish;
+        }
 
-      // Pobierz ilość
-      const fishCount = parseInt(document.getElementById("fishCount").value, 10);
-      if (isNaN(fishCount) || fishCount < 1 || fishCount > 100) {
-        alert("Proszę wybrać liczbę ryb od 1 do 100.");
-        return;
-      }
+        // Generate YAML positions
+        function generateYAMLPositions(count) {
+            const positions = [];
+            const usedIds = new Set();
+            const usedNames = new Set();
+            
+            // Get filtered valid fish
+            const validFish = applyFilters()
+                .filter(fish => isValidFish(fish));
+            
+            if (validFish.length === 0) {
+                showWarning('No valid fish in list. Please add proper fish entries.', 'error');
+                return [];
+            }
 
-      // Pobierz nazwy
-      const userFishNames = parseUserFishNames();
+            // Generate positions
+            for (let i = 0; i < count; i++) {
+                // Skip if no valid fish left
+                if (validFish.length === 0) {
+                    break;
+                }
+                
+                // Select random unique fish
+                let randomIndex = Math.floor(Math.random() * validFish.length);
+                let selectedFish = validFish[randomIndex];
+                
+                // Check for duplicate names
+                while (usedNames.has(selectedFish.name)) {
+                    randomIndex = (randomIndex + 1) % validFish.length;
+                    selectedFish = validFish[randomIndex];
+                    
+                    // Break if all names are the same
+                    if (i > 100) break;
+                }
+                
+                // Generate unique ID
+                let id = generateUniqueId();
+                while (usedIds.has(id)) {
+                    id = generateUniqueId();
+                }
+                
+                // Create position object
+                const position = {
+                    id,
+                    name: selectedFish.name,
+                    fluff: selectedFish.fluff,
+                    spot: selectedFish.spot || '',
+                    weather: getRandomWeather(),
+                    time: getRandomTime(),
+                    chance: getRandomChance(selectedFish.spot),
+                    stars: getRandomStars(selectedFish.spot)
+                };
+                
+                // Store used IDs and names
+                usedIds.add(id);
+                usedNames.add(selectedFish.name);
+                
+                // Add to positions
+                positions.push(position);
+            }
+            
+            return positions;
+        }
 
-      // Generuj pozycje
-      const positions = generateFishPositions(fishCount, userFishNames, specialConditions);
+        // Helper functions for generation
+        function getRandomWeather() {
+            const weathers = ['Rain', 'Clear', 'Snow', 'Storm'];
+            return weathers[Math.floor(Math.random() * weathers.length)];
+        }
 
-      // Aktualizuj YML
-      document.getElementById("fishData").value = formatYml(positions);
+        function getRandomTime() {
+            const times = ['Dawn', 'Day', 'Dusk', 'Night'];
+            return times[Math.floor(Math.random() * times.length)];
+        }
 
-      // Statystyki
-      updateStats(positions);
-    }
+        function getRandomChance(spot) {
+            let base = 30;
+            
+            // Rare spots have lower chance
+            if (spot === 'Ocean' || spot === 'Reef') {
+                base = 25;
+            } else if (spot === 'Lake' || spot === 'River') {
+                base = 35;
+            } else { // Swamp
+                base = 40;
+            }
+            
+            return Math.max(5, Math.min(100, Math.round(Math.random() * base)));
+        }
 
-    // Inicjalny wywołanie dla środowiska w konsoli (opcjonalne)
-    generatePositions();
-  </script>
+        function getRandomStars(spot) {
+            let min = 1;
+            
+            // Rare spots can have higher stars
+            if (spot === 'Ocean' || spot === 'Reef') {
+                min = 2;
+            } else if (spot === 'Lake' || spot === 'River') {
+                min = 1.5;
+            }
+            
+            return Math.max(1, Math.min(4, parseFloat(min + Math.random() * 1.5)).toFixed(1));
+        }
+
+        // Update stats display
+        function updateStats() {
+            const uniqueFishCount = document.getElementById('uniqueFishCount');
+            const totalPositions = document.getElementById('totalPositions');
+            const rareFishCount = document.getElementById('rareFishCount');
+            
+            if (state.fishList) {
+                // Count unique fish names
+                const uniqueNames = Array.from(
+                    new Set(state.fishList.map(fish => fish.name))
+                ).length;
+                
+                uniqueFishCount.textContent = `${uniqueNames} / ${state.fishList.length}`;
+                
+                // Count rare fish (50%+ chance)
+                const rareCount = state.fishList.filter(
+                    fish => parseFloat(fish.chance || 30) > 50
+                ).length;
+                
+                rareFishCount.textContent = `${rareCount} out of ${state.fish-list.length}`;
+            }
+            
+            totalPositions.textContent = `0`;
+        }
+
+        // Update YAML output
+        function updateYAMLOutput(positions) {
+            const output = document.getElementById('yamlOutput');
+            const outputUniqueFish = document.getElementById('outputUniqueFish');
+            const outputAvgRarity = document.getElementById('outputAvgRarity');
+            
+            if (positions.length > 0) {
+                // Count unique fish in positions
+                const uniquePositions = Array.from(
+                    new Set(positions.map(pos => pos.name))
+                ).length;
+                
+                uniquePositionsDisplay.textContent = `${uniquePositions} / ${positions.length}`;
+                
+                // Calculate average rarity
+                const totalChance = positions.reduce((sum, pos) => 
+                    sum + parseFloat(pos.chance || 30), 0
+                );
+                const avgRarity = (totalChance / positions.length).toFixed(1);
+                
+                avgRarityDisplay.textContent = `${avgRarity}%`;
+            }
+            
+            // Format YAML output
+            const yamlContent = positions
+                .map(pos => {
+                    return `  ${pos.id}: ${JSON.stringify({
+                        name: pos.name,
+                        weather: pos.weather,
+                        spot: pos.spot,
+                        time: pos.time,
+                        chance: pos.chance,
+                        stars: pos.stars,
+                        fluff: pos.fluff
+                    }, null, 2)}`;
+                })
+                .join('\n');
+            
+            output.value = `fishes:\n${yamlContent}\n`;
+        }
+
+        // Save to localStorage
+        function saveToLocalStorage(key, value) {
+            try {
+                localStorage.setItem(key, value);
+                return true;
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+                return false;
+            }
+        }
+
+        // Load from localStorage
+        function loadFromLocalStorage(key) {
+            try {
+                return localStorage.getItem(key) || '';
+            } catch (e) {
+                console.error('Error loading from localStorage:', e);
+                return '';
+            }
+        }
+
+        // Show warning messages
+        function showWarning(message, type = 'warning') {
+            const warningContainer = document.createElement('div');
+            warningContainer.className = `warning-message ${type}`;
+            
+            warningContainer.innerHTML = `
+                <h4>⚠️ Warning</h4>
+                <p>${message}</p>
+            `;
+            
+            document.getElementById('output').appendChild(warningContainer);
+            
+            setTimeout(() => {
+                warningContainer.remove();
+            }, 5000);
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Remove active class from all
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Hide all tab contents
+                    const tabContents = document.querySelectorAll('.tab-content');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show selected tab
+                    const targetId = tab.dataset.tab;
+                    const targetContent = document.getElementById(targetId);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+
+            // Generation option clicks
+            document.querySelectorAll('.generation-option').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const count = parseInt(button.dataset.count);
+                    
+                    // Mark as active
+                    document.querySelectorAll('.generation-option').forEach(other => {
+                        other.classList.remove('active');
+                    });
+                    button.classList.add('active');
+                    
+                    // Generate positions
+                    generatePositions(count);
+                });
+            });
+
+            // Random seed input
+            const randomSeedInput = document.getElementById('randomSeed');
+            if (randomSeedInput) {
+                randomSeedInput.addEventListener('input', (e) => {
+                    const seed = parseInt(e.target.value);
+                    if (seed && !isNaN(seed)) {
+                        // Seed the random number generator
+                        Math.seedrandom(seed);
+                    }
+                });
+            }
+
+            // Copy buttons
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const output = document.getElementById('yamlOutput');
+                    
+                    if (output) {
+                        navigator.clipboard.writeText(output.value).then(() => {
+                            showWarning('YAML copied to clipboard!', 'success');
+                        }).catch(err => {
+                            showWarning('Failed to copy: ' + err.message, 'error');
+                        });
+                    }
+                });
+            });
+
+            // Filter item clicks
+            document.querySelectorAll('.filter-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Remove active class from all
+                    document.querySelectorAll('.filter-item').forEach(other => {
+                        other.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked
+                    item.classList.add('active');
+                    
+                    // Trigger filter application
+    applyFilters();updateYAMLOutput([]);generatePositions(0);
+                });
+            });
+
+            // Position count input
+            const positionsCountInput = document.getElementById('positionsCount');
+            if (positionsCountInput) {
+                positionsCountInput.addEventListener('input', () => {
+                    const count = parseInt(positionsCountInput.value);
+                    if (isNaN(count) || count < 1) {
+                        positionsCountInput.value = '10';
+                    }
+                });
+            }
+        }
+
+        // Generate positions
+        function generatePositions(count) {
+            const positionsCount = parseInt(document.getElementById('positionsCount')?.value) || 10;
+            const minStars = parseFloat(document.getElementById('minStars')?.value) || 1;
+            const minChance = parseFloat(document.getElementById('minChance')?.value) || 30;
+            
+            // Validate inputs
+            if (isNaN(positionsCount) || positionsCount < 1) {
+                showWarning('Invalid position count. Using default: 10', 'warning');
+                positionsCount = 10;
+            }
+            
+            // Generate positions
+            const generated = generateYAMLPositions(positionsCount);
+            
+            // Apply minimum stats
+            const filtered = generated.map(pos => {
+                let adjustedChance = Math.max(minChance, pos.chance);
+                
+                if (parseFloat(pos.stars) < minStars) {
+                    adjustedChance = Math.min(adjustedChance, 80);
+                }
+                
+                return {
+                    ...pos,
+                    chance: adjustedChance.toFixed(1)
+                };
+            });
+            
+            // Update YAML output
+            updateYAMLOutput(filtered);
+        }
+    </script>
 </body>
 </html>
