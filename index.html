@@ -289,7 +289,7 @@
         let currentPosition = 0;
  
         // Updated fish data with optional spot
-     var fishData = [function (fishTrashSelect){
+     let fishData = (function (fishTrashSelect){
 			
 			if (fishTrashSelect = "Fish"){
 		const fishDatae = [
@@ -397,7 +397,7 @@
 		{name: "Goggles", description: "Lost swimming equipment for underwater vision.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
 		{name: "Suitcase", description: "Forgotten luggage traveling across the world.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1}
 		    ];}
-			return fishDatae; }]();
+			return fishDatae; })();
 
 		
 
