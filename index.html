@@ -269,56 +269,56 @@
 
         // Updated fish data with optional spot
                 const fishData = [
-        { name: "Anchovy", description: "Small, salty fish used in cooking.", spot: "Ocean" },
-        { name: "Angelfish", description: "Popular, elegant, disk-shaped aquarium fish.", spot: "Reef" },
-        { name: "Barracuda", description: "Predatory fish with sharp, needle-like teeth.", spot: "Reef" },
-        { name: "Bass", description: "Popular freshwater game fish for anglers." },
-        { name: "Betta", description: "Colorful fish known for aggressive behavior.", spot: "Swamp" },
-        { name: "Bluegill", description: "Common North American freshwater sunfish species.", spot: "Lake" },
-        { name: "Bonefish", description: "Fast, silver fish found on flats.", spot: "Ocean" },
-        { name: "Burbot", description: "Only freshwater member of cod family.", spot: "Lake" },
-        { name: "Carp", description: "Large, hardy freshwater bottom-feeding fish." },
-        { name: "Catfish", description: "Fish recognized by whisker-like barbels.", spot: "River" },
-        { name: "Cisco", description: "Cold-water fish related to whitefish.", spot: "Lake" },
-        { name: "Cod", description: "Important commercial fish with white meat." },
-        { name: "Discus", description: "Colorful, circular South American cichlid.", spot: "River" },
-        { name: "Eel", description: "Long, snake-like fish living in water." },
-        { name: "Flounder", description: "Flatfish with both eyes on top.", spot: "Ocean" },
-        { name: "Goldfish", description: "Common orange pet kept in bowls." },
-        { name: "Grouper", description: "Large-mouthed predatory saltwater reef fish.", spot: "Reef" },
-        { name: "Guppy", description: "Small, vibrant, easy-to-breed aquarium fish.", spot: "River" },
-        { name: "Haddock", description: "Saltwater fish similar to Atlantic cod.", spot: "Ocean" },
-        { name: "Hake", description: "Lean, white-fleshed marine food fish.", spot: "Ocean" },
-        { name: "Halibut", description: "Largest type of flatfish in oceans.", spot: "Ocean" },
-        { name: "Herring", description: "Forage fish often served pickled or smoked.", spot: "Ocean" },
-        { name: "Hoki", description: "Deep-sea fish caught near New Zealand.", spot: "Ocean" },
-        { name: "Ide", description: "Silvery freshwater fish of northern Europe.", spot: "River" },
-        { name: "Inconnu", description: "Large, predatory northern whitefish species.", spot: "River" },
-        { name: "Kaluga", description: "Giant predatory sturgeon from Amur River.", spot: "River" },
-        { name: "Kanyu", description: "Predatory cyprinid found in East Asia.", spot: "River" },
-        { name: "Killifish", description: "Small, hardy, and very colorful fish.", spot: "Swamp" },
-        { name: "Koi", description: "Decorative, brightly colored Japanese carp.", spot: "Lake" },
-        { name: "Kokanee", description: "Non-anadromous form of sockeye salmon.", spot: "Lake" },
-        { name: "Mackerel", description: "Oily fish with stripes on back.", spot: "Ocean" },
-        { name: "Marlin", description: "Large game fish with long bill.", spot: "Ocean" },
-        { name: "Molly", description: "Popular live-bearing fish for home aquariums.", spot: "Swamp" },
-        { name: "Mullet", description: "Coastal fish often seen jumping frequently.", spot: "Ocean" },
-        { name: "Muskellunge", description: "Large, aggressive North American freshwater predator.", spot: "Lake" },
-        { name: "Perch", description: "Common freshwater fish with spiny fins.", spot: "Lake" },
-        { name: "Pickerel", description: "Smaller relative of the northern pike.", spot: "Swamp" },
-        { name: "Pike", description: "Ambush predator with long, pointed snout." },
-        { name: "Plaice", description: "Flatfish known for orange spots.", spot: "Ocean" },
-        { name: "Pollock", description: "Marine fish used for frozen products.", spot: "Ocean" },
-        { name: "Glowfin", description: "Fish with glowing, neon-colored fins.", spot: "Reef" },
-        { name: "Shellcrag", description: "Giant crab with a stone shell.", spot: "Reef" },
-        { name: "Abysswalker", description: "Many-legged beast from the deepest ocean.", spot: "Ocean" },
-        { name: "Hydraserpent", description: "Multi-headed snake living in coral.", spot: "Reef" },
-        { name: "Waveglider", description: "Creature that flies above the surface.", spot: "Ocean" },
-        { name: "Pearlscale", description: "Elegant mermaid-like fish with shiny scales.", spot: "Reef" },
-        { name: "Stormray", description: "Ray that shoots electric blue lightning.", spot: "Ocean" },
-        { name: "Bubblemouth", description: "Round fish that traps prey in bubbles.", spot: "Swamp" },
-        { name: "Frosttentacle", description: "Jellyfish that freezes water around it.", spot: "Ocean" },
-        { name: "Voidshark", description: "Shadowy predator made of dark mist.", spot: "Ocean" }
+        { name: "Anchovy", description: "Small, salty fish used in cooking.", spot: "Ocean", chance, stars},
+        { name: "Angelfish", description: "Popular, elegant, disk-shaped aquarium fish.", spot: "Reef", chance, stars},
+        { name: "Barracuda", description: "Predatory fish with sharp, needle-like teeth.", spot: "Reef", chance, stars},
+        { name: "Bass", description: "Popular freshwater game fish for anglers.", chance, stars},
+        { name: "Betta", description: "Colorful fish known for aggressive behavior.", spot: "Swamp", chance, stars},
+        { name: "Bluegill", description: "Common North American freshwater sunfish species.", spot: "Lake", chance, stars},
+        { name: "Bonefish", description: "Fast, silver fish found on flats.", spot: "Ocean", chance, stars},
+        { name: "Burbot", description: "Only freshwater member of cod family.", spot: "Lake", chance, stars},
+        { name: "Carp", description: "Large, hardy freshwater bottom-feeding fish.", chance, stars},
+        { name: "Catfish", description: "Fish recognized by whisker-like barbels.", spot: "River", chance, stars},
+        { name: "Cisco", description: "Cold-water fish related to whitefish.", spot: "Lake", chance, stars},
+        { name: "Cod", description: "Important commercial fish with white meat.", chance, stars},
+        { name: "Discus", description: "Colorful, circular South American cichlid.", spot: "River", chance, stars},
+        { name: "Eel", description: "Long, snake-like fish living in water.", chance, stars},
+        { name: "Flounder", description: "Flatfish with both eyes on top.", spot: "Ocean", chance, stars},
+        { name: "Goldfish", description: "Common orange pet kept in bowls.", chance, stars},
+        { name: "Grouper", description: "Large-mouthed predatory saltwater reef fish.", spot: "Reef", chance, stars},
+        { name: "Guppy", description: "Small, vibrant, easy-to-breed aquarium fish.", spot: "River", chance, stars},
+        { name: "Haddock", description: "Saltwater fish similar to Atlantic cod.", spot: "Ocean", chance, stars},
+        { name: "Hake", description: "Lean, white-fleshed marine food fish.", spot: "Ocean", chance, stars},
+        { name: "Halibut", description: "Largest type of flatfish in oceans.", spot: "Ocean", chance, stars},
+        { name: "Herring", description: "Forage fish often served pickled or smoked.", spot: "Ocean", chance, stars},
+        { name: "Hoki", description: "Deep-sea fish caught near New Zealand.", spot: "Ocean", chance, stars},
+        { name: "Ide", description: "Silvery freshwater fish of northern Europe.", spot: "River", chance, stars},
+        { name: "Inconnu", description: "Large, predatory northern whitefish species.", spot: "River", chance, stars},
+        { name: "Kaluga", description: "Giant predatory sturgeon from Amur River.", spot: "River", chance, stars},
+        { name: "Kanyu", description: "Predatory cyprinid found in East Asia.", spot: "River", chance, stars},
+        { name: "Killifish", description: "Small, hardy, and very colorful fish.", spot: "Swamp", chance, stars},
+        { name: "Koi", description: "Decorative, brightly colored Japanese carp.", spot: "Lake", chance, stars},
+        { name: "Kokanee", description: "Non-anadromous form of sockeye salmon.", spot: "Lake", chance, stars},
+        { name: "Mackerel", description: "Oily fish with stripes on back.", spot: "Ocean", chance, stars},
+        { name: "Marlin", description: "Large game fish with long bill.", spot: "Ocean", chance, stars},
+        { name: "Molly", description: "Popular live-bearing fish for home aquariums.", spot: "Swamp", chance, stars},
+        { name: "Mullet", description: "Coastal fish often seen jumping frequently.", spot: "Ocean", chance, stars},
+        { name: "Muskellunge", description: "Large, aggressive North American freshwater predator.", spot: "Lake", chance, stars},
+        { name: "Perch", description: "Common freshwater fish with spiny fins.", spot: "Lake", chance, stars},
+        { name: "Pickerel", description: "Smaller relative of the northern pike.", spot: "Swamp", chance, stars},
+        { name: "Pike", description: "Ambush predator with long, pointed snout.", chance, stars},
+        { name: "Plaice", description: "Flatfish known for orange spots.", spot: "Ocean", chance, stars},
+        { name: "Pollock", description: "Marine fish used for frozen products.", spot: "Ocean", chance, stars},
+        { name: "Glowfin", description: "Fish with glowing, neon-colored fins.", spot: "Reef", chance, stars},
+        { name: "Shellcrag", description: "Giant crab with a stone shell.", spot: "Reef", chance, stars},
+        { name: "Abysswalker", description: "Many-legged beast from the deepest ocean.", spot: "Ocean", chance, stars},
+        { name: "Hydraserpent", description: "Multi-headed snake living in coral.", spot: "Reef", chance, stars},
+        { name: "Waveglider", description: "Creature that flies above the surface.", spot: "Ocean", chance, stars},
+        { name: "Pearlscale", description: "Elegant mermaid-like fish with shiny scales.", spot: "Reef", chance, stars},
+        { name: "Stormray", description: "Ray that shoots electric blue lightning.", spot: "Ocean", chance, stars},
+        { name: "Bubblemouth", description: "Round fish that traps prey in bubbles.", spot: "Swamp", chance, stars},
+        { name: "Frosttentacle", description: "Jellyfish that freezes water around it.", spot: "Ocean", chance, stars},
+        { name: "Voidshark", description: "Shadowy predator made of dark mist.", spot: "Ocean", chance, stars}
 		    ];
 
         // Update count display
@@ -454,18 +454,20 @@
                 const fish = availableFish[i];
                 
                 // Create normal variant
-                const basePosition = createFishEntry(fish, weatherSelect, timeSelect, spotSelect);
+                const basePosition = createFishEntry(fish, weatherSelect, timeSelect, spotSelect, );
                 basePosition.baseName = fish.name;
                 basePosition.isVariant = false;
                 positions.push(basePosition);
+				fish.chance = Math.floor(Math.random() * 71) + 30;
+				fish.stars  = Math.floor(Math.random() * 4) + 1;
 
                 // Create rare variant if enabled
                 if (enableRare) {
                     const rarePosition = createFishEntry(
                         fish,
-                        weatherSelect || getRandomWeather(),
-                        timeSelect || getRandomTime(),
-                        spotSelect || getRandomSpot()
+                        //weatherSelect || getRandomWeather(),
+                        getRandomTime()
+                        //spotSelect || getRandomSpot()
                     );
                     rarePosition.baseName = fish.name;
                     rarePosition.isVariant = true;
@@ -473,7 +475,7 @@
                     
                     // Apply rare modifications
                     rarePosition.name = `Rare_${fish.name}`;
-                    rarePosition.chance = Math.round(Math.max(1, Math.floor(fish.chance / 3)));
+                    rarePosition.chance = Math.max(1, Math.floor(fish.chance / 3));
                     rarePosition.stars = Math.round(Math.min(4, fish.stars + 1));
                     rarePosition.fluff = `RARE! ${fish.description}`;
                     
@@ -486,7 +488,7 @@
                         fish,
                         getRandomWeather(),
                         getRandomTime(),
-                        getRandomSpot()
+                        //spotSelect || getRandomSpot()
                     );
                     legPos.baseName = fish.name;
                     legPos.isVariant = true;
@@ -494,7 +496,7 @@
                     
                     // Apply legendary modifications
                     legPos.name = `Legendary_${fish.name}`;
-                    legPos.chance = Math.round(Math.max(1, Math.floor(fish.chance / 6)));
+                    legPos.chance = Math.max(1, Math.floor(fish.chance / 6));
                     legPos.stars = 4;
                     legPos.fluff = `LEGENDARY! ${fish.description}`;
                     
@@ -529,14 +531,14 @@
         }
 
         // Helper to create a fish entry
-        function createFishEntry(fish, weather, time, spot) {
+        function createFishEntry(fish, weather, time, spot, chance, stars) {
             return {
                 name: fish.name,
                 weather: weather || undefined,
                 spot: spot || fish.spot || undefined,
                 time: time || undefined,
-                chance: Math.round(Math.floor(Math.random() * 71) + 30), // 30-100
-                stars: Math.round(Math.floor(Math.random() * 4) + 1),
+                chance: fish.chance, //Math.floor(Math.random() * 71) + 30, // 30-100
+                stars: fish.stars, // Math.floor(Math.random() * 4) + 1,
                 fluff: fish.description
             };
         }
