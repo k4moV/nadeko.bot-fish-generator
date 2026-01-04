@@ -289,9 +289,9 @@
         let currentPosition = 0;
  
         // Updated fish data with optional spot
-     var fishData = (function (document.getElementById('fishTrashSelect').value){
+     var fishData = [function (fishTrashSelect){
 			
-			if (document.getElementById('fishTrashSelect').value = "Fish"){
+			if (fishTrashSelect = "Fish"){
 		const fishDatae = [
         { name: "Anchovy", description: "Small, salty fish used in cooking.", spot: "Ocean", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
         { name: "Angelfish", description: "Popular, elegant, disk-shaped aquarium fish.", spot: "Reef", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
@@ -397,7 +397,7 @@
 		{name: "Goggles", description: "Lost swimming equipment for underwater vision.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
 		{name: "Suitcase", description: "Forgotten luggage traveling across the world.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1}
 		    ];}
-			return fishDatae; })();
+			return fishDatae; }]();
 
 		
 
