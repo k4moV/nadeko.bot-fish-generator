@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fish Position Generator</title>
     <style>
+        /* Keep all your existing styles unchanged */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                min-height: 100vh; padding: 20px; color: #333; }
@@ -29,11 +30,56 @@
                 background-color: white; appearance: none; cursor: pointer; }
         select:focus, input[type="number"]:focus { outline: none; border-color: #667eea; }
         
+        /* Variant Options */
+        .variant-section {
+            padding: 15px 20px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 2px solid #667eea;
+        }
+        .variant-section h3 {
+            color: #444;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+        .variant-section p {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 4px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+            cursor: pointer;
+        }
+        .checkbox-label {
+            color: #333;
+            font-size: 0.95em;
+            user-select: none;
+        }
+        
         /* Button */
         .btn-generator { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                        color: white; padding: 15px 35px; border: none;
                        border-radius: 8px; font-size: 1.2em; cursor: pointer;
-                       transition: all 0.3s ease; margin-top: 15px;
+                       transition: all 0.3s ease; margin-top: 25px;
                        width: 100%; text-transform: uppercase;
                        letter-spacing: 1px; }
         .btn-generator:hover { transform: translateY(-2px);
@@ -54,8 +100,7 @@
         .copy-btn, .download-btn { position: absolute; top: 15px; right: 15px;
                                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                                  color: white; padding: 8px 20px; border: none;
-                                 border-radius: 6px; cursor: pointer; font-size: 0.8em;
-                                 margin-left: 10px; transition: all 0.3s ease; }
+                                 border-radius: 6px; cursor: pointer; font-size: 0.8em; }
         .copy-btn { right: 90px; }
         .copy-btn:hover, .download-btn:hover { transform: translateY(-2px); }
         
@@ -64,6 +109,7 @@
                 box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-top: 20px;
                 border-left: 6px solid #f4752e; }
         .stats h2 { color: #f4752e; margin-bottom: 15px; font-size: 1.2em; }
+        
         .stat-item { display: flex; justify-content: space-between; padding: 8px 0;
                     border-bottom: 1px solid #eee; }
         .stat-label { color: #666; font-weight: 600; }
@@ -92,7 +138,7 @@
 <body>
     <div class="container">
         <h1>Fish Position Generator</h1>
-        <p class="subtitle">Create custom YAML position files with specific weather, time, and spot settings</p>
+        <p class="subtitle">Create custom YAML position files with weather, time, spot, and rarity settings</p>
         
         <!-- Controls Section -->
         <div class="controls">
@@ -106,6 +152,37 @@
                 <div id="countDisplay" style="margin-top: 10px; font-weight: bold;">
                     Current: 5
                 </div>
+            </div>
+
+            <!-- Variant Options -->
+            <div class="variant-section">
+                <h3>🐠 Rarity Options</h3>
+                
+                <div class="checkbox-group">
+                    <label class="checkbox-label" style="flex: 1;">
+                        <input type="checkbox" id="enableRare" checked>
+                        Generate Rare variants
+                    </label>
+                    <span style="background: #f0e68c; padding: 4px 10px; border-radius: 12px;
+                               font-weight: 600; color: #665500; font-size: 0.85em;">
+                       (1/3 chance, +1 star)
+                    </span>
+                </div>
+
+                <div class="checkbox-group" style="margin-top: 10px;">
+                    <label class="checkbox-label" style="flex: 1;">
+                        <input type="checkbox" id="enableLegendary" checked>
+                        Generate Legendary variants
+                    </label>
+                    <span style="background: #d8bfd8; padding: 4px 10px; border-radius: 12px;
+                               font-weight: 600; color: #4b0082; font-size: 0.85em;">
+                       (1/6 chance, 4 stars)
+                    </span>
+                </div>
+
+                <p style="margin-top: 8px; color: #666; font-size: 0.88em;">
+                   Variants will be added after each normal fish
+                </p>
             </div>
             
             <div class="form-group">
@@ -172,13 +249,16 @@
                 <span class="stat-value" id="highestChance">0%</span></div>
             <div class="stat-item"><span class="stat-label">Lowest Chance:</span>
                 <span class="stat-value" id="lowestChance">0%</span></div>
+            <div class="stat-item"><span class="stat-label">Variants Generated:</span>
+                <span class="stat-value" id="variantCount">0</span></div>
         </div>
     </div>
 
     <script>
         let currentPosition = 0;
 
-        const fishData = [
+        // Updated fish data with optional spot
+                const fishData = [
         { name: "Anchovy", description: "Small, salty fish used in cooking.", spot: "Ocean" },
         { name: "Angelfish", description: "Popular, elegant, disk-shaped aquarium fish.", spot: "Reef" },
         { name: "Barracuda", description: "Predatory fish with sharp, needle-like teeth.", spot: "Reef" },
@@ -229,7 +309,8 @@
         { name: "Bubblemouth", description: "Round fish that traps prey in bubbles.", spot: "Swamp" },
         { name: "Frosttentacle", description: "Jellyfish that freezes water around it.", spot: "Ocean" },
         { name: "Voidshark", description: "Shadowy predator made of dark mist.", spot: "Ocean" }
-    ];
+		    ];
+
         // Update count display
         function updateCountDisplay() {
             const countInput = document.getElementById('numPositions');
@@ -269,18 +350,18 @@
                 yaml += `    spot: ${pos.spot || ''}\n`;
                 yaml += `    time: ${pos.time || ''}\n`;
                 
-                // Always included with values
+                // Required fields
                 yaml += `    chance: ${pos.chance}\n`;
                 yaml += `    stars: ${pos.stars}\n`;
                 yaml += `    fluff: "${pos.fluff}"\n`;
                 
-                // Placeholders if empty
+                // Optional placeholders
                 yaml += `    condition: ${pos.condition || ''}\n`;
                 yaml += `    image: "${pos.image || 'https://'}"\n`;
                 yaml += `    emoji: ${pos.emoji || '<>'}\n\n`;
             });
             
-            return yaml.trim(); // Remove trailing newline
+            return yaml.trim();
         }
 
         // Update statistics display
@@ -290,12 +371,17 @@
                 document.getElementById('spotDistribution').textContent = 'None';
                 document.getElementById('highestChance').textContent = '0%';
                 document.getElementById('lowestChance').textContent = '0%';
+                document.getElementById('variantCount').textContent = '0';
                 return;
             }
 
-            const uniqueSpecies = new Set(positions.map(p => p.name)).size;
-            document.getElementById('uniqueSpecies').textContent = uniqueSpecies;
+            // Count unique species (base names only)
+            const uniqueBaseSpecies = new Set(
+                positions.filter(p => !p.isVariant).map(p => p.baseName || p.name)
+            );
+            document.getElementById('uniqueSpecies').textContent = uniqueBaseSpecies.size;
 
+            // Spot distribution
             const spotCount = {};
             positions.forEach(p => {
                 const spot = p.spot || 'Unspecified';
@@ -306,6 +392,7 @@
                 .join(', ');
             document.getElementById('spotDistribution').textContent = spotDistributions;
 
+            // Chance statistics
             let maxChance = 0, minChance = 101;
             positions.forEach(p => {
                 if (p.chance > maxChance) maxChance = p.chance;
@@ -313,12 +400,15 @@
             });
             document.getElementById('highestChance').textContent = `${maxChance}%`;
             document.getElementById('lowestChance').textContent = `${minChance}%`;
+
+            // Variant count
+            const variantCount = positions.filter(p => p.isVariant).length;
+            document.getElementById('variantCount').textContent = variantCount;
         }
 
-        // Generate positions
+        // Generate positions with variants
         function generatePositions() {
-            // Reset ID counter for each generation
-            currentPosition = 0;
+            currentPosition = 0; // Reset ID counter
 
             const numPositionsInput = document.getElementById('numPositions');
             let numPositions = parseInt(numPositionsInput.value);
@@ -332,39 +422,126 @@
             const timeSelect = document.getElementById('timeSelect').value;
             const spotSelect = document.getElementById('spotSelect').value;
 
+            const enableRare = document.getElementById('enableRare').checked;
+            const enableLegendary = document.getElementById('enableLegendary').checked;
+
             const positions = [];
             const usedNames = new Set();
 
             // Get fish data in desired order
             let availableFish = getFishDataInOrder();
             
-            // Limit number of positions if requested more than available fish
-            if (numPositions > availableFish.length) {
+            // Limit if not generating variants
+            if (!enableRare && !enableLegendary && numPositions > availableFish.length) {
                 numPositions = availableFish.length;
-                showStatus('warning', `Only ${availableFish.length} unique fish available. Generating that many.`)
+                showStatus('warning', `Only ${availableFish.length} unique fish available.`);
             }
 
             for (let i = 0; i < numPositions; i++) {
                 const fish = availableFish[i];
                 
-                positions.push({
-                    id: currentPosition++,
-                    name: fish.name,
-                    weather: weatherSelect || undefined,
-                    spot: spotSelect || undefined,
-                    time: timeSelect || undefined,
-                    chance: Math.floor(Math.random() * 71) + 30, // 30-100
-                    stars: Math.floor(Math.random() * 4) + 1,
-                    fluff: fish.description
-                });
+                // Create normal variant
+                const basePosition = createFishEntry(fish, weatherSelect, timeSelect, spotSelect);
+                basePosition.baseName = fish.name;
+                basePosition.isVariant = false;
+                positions.push(basePosition);
+
+                // Create rare variant if enabled
+                if (enableRare) {
+                    const rarePosition = createFishEntry(
+                        fish,
+                        weatherSelect || getRandomWeather(),
+                        timeSelect || getRandomTime(),
+                        spotSelect || getRandomSpot()
+                    );
+                    rarePosition.baseName = fish.name;
+                    rarePosition.isVariant = true;
+                    rarePosition.variantType = 'Rare';
+                    
+                    // Apply rare modifications
+                    rarePosition.name = `Rare_${fish.name}`;
+                    rarePosition.chance = Math.max(1, Math.floor(fish.chance / 3));
+                    rarePosition.stars = Math.min(4, fish.stars + 1);
+                    rarePosition.fluff = `RARE! ${fish.description}`;
+                    
+                    positions.push(rarePosition);
+                }
+
+                // Create legendary variant if enabled
+                if (enableLegendary) {
+                    const legPos = createFishEntry(
+                        fish,
+                        getRandomWeather(),
+                        getRandomTime(),
+                        getRandomSpot()
+                    );
+                    legPos.baseName = fish.name;
+                    legPos.isVariant = true;
+                    legPos.variantType = 'Legendary';
+                    
+                    // Apply legendary modifications
+                    legPos.name = `Legendary_${fish.name}`;
+                    legPos.chance = Math.max(1, Math.floor(fish.chance / 6));
+                    legPos.stars = 4;
+                    legPos.fluff = `LEGENDARY! ${fish.description}`;
+                    
+                    positions.push(legPos);
+                }
             }
+
+            // Sort positions by base fish order with variants interleaved
+            positions.sort((a, b) => {
+                if (!a.isVariant && !b.isVariant) {
+                    return a.baseIndex - b.baseIndex;
+                } else if (a.isVariant && !b.isVariant) {
+                    return 1; // Normal comes before variant
+                } else if (!a.isVariant && b.isVariant) {
+                    return -1;
+                } else {
+                    // Both variants - keep relative order
+                    return a.variantOrderIndex - b.variantOrderIndex;
+                }
+            });
+
+            // Reassign IDs in final order
+            positions.forEach((p, idx) => p.id = idx);
 
             const yamlOutput = generateYAML(positions);
             document.getElementById('yamlOutput').textContent = yamlOutput;
 
             updateStatistics(positions);
 
-            showStatus('success', `Generated ${positions.length} positions!`);
+            showStatus('success', `Generated ${positions.length} positions! (${numPositions} base fish)`);
+
+        }
+
+        // Helper to create a fish entry
+        function createFishEntry(fish, weather, time, spot) {
+            return {
+                name: fish.name,
+                weather: weather || undefined,
+                spot: spot || fish.spot || undefined,
+                time: time || undefined,
+                chance: Math.floor(Math.random() * 71) + 30, // 30-100
+                stars: Math.floor(Math.random() * 4) + 1,
+                fluff: fish.description
+            };
+        }
+
+        // Random selection helpers
+        function getRandomWeather() {
+            const options = ["Rain", "Clear", "Snow", "Storm"];
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        function getRandomTime() {
+            const options = ["Dawn", "Day", "Dusk", "Night"];
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        function getRandomSpot() {
+            const options = ["Ocean", "River", "Reef", "Swamp", "Lake"];
+            return options[Math.floor(Math.random() * options.length)];
         }
 
         // Copy YAML to clipboard
@@ -392,7 +569,6 @@
                 return;
             }
 
-            // Fixed Blob creation (added 'new')
             const blob = new Blob([yamlText], { type: 'text/yaml' });
             const url = URL.createObjectURL(blob);
             
