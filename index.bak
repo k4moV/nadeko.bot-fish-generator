@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head class="container">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Position Generator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+               min-height: 100vh; padding: 20px; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; color: white; margin-bottom: 10px;
+             font-size: 2.5em; text-shadow: 2px 2px 4px #000; }
+        .subtitle { text-align: center; color: rgba(255,255,255,0.9);
+                   margin-bottom: 30px; font-size: 1.1em; }
+        
+        /* Controls Section */
+        .controls { background: white; padding: 25px; border-radius: 15px;
+                  box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 30px;
+                  border-left: 6px solid #667eea; }
+        .controls h2 { color: #667eea; margin-bottom: 20px; font-size: 1.5em; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 10px; color: #333;
+               font-weight: 600; font-size: 0.9em; }
+        
+        select { width: 100%; padding: 12px; border: 2px solid #ddd;
+                border-radius: 8px; font-size: 16px; transition: all 0.3s ease;
+                background-color: white; appearance: none; cursor: pointer; }
+        select:focus { outline: none; border-color: #667eea; }
+        
+        /* Button */
+        .btn-generator { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                       color: white; padding: 15px 35px; border: none;
+                       border-radius: 8px; font-size: 1.2em; cursor: pointer;
+                       transition: all 0.3s ease; margin-top: 15px;
+                       width: 100%; text-transform: uppercase;
+                       letter-spacing: 1px; }
+        .btn-generator:hover { transform: translateY(-2px);
+                             box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
+        
+        /* Output Section */
+        .output { background: white; padding: 25px; border-radius: 15px;
+                 box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 20px;
+                 position: relative; border-left: 6px solid #764ba2; }
+        .output h2 { color: #764ba2; margin-bottom: 15px; font-size: 1.3em; }
+        
+        .yaml-output { background: #f8f9fa; padding: 15px;
+                     border-radius: 8px; font-family: 'Courier New', monospace;
+                     font-size: 14px; color: #333; white-space: pre-wrap;
+                     line-height: 1.5; min-height: 300px; position: relative; }
+        .yaml-output::before { content: '---\n'; color: #667eea; font-weight: bold; }
+        
+        .copy-btn, .download-btn { position: absolute; top: 15px; right: 15px;
+                                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                 color: white; padding: 8px 20px; border: none;
+                                 border-radius: 6px; cursor: pointer; font-size: 0.8em;
+                                 margin-left: 10px; transition: all 0.3s ease; }
+        .copy-btn { right: 90px; }
+        .copy-btn:hover, .download-btn:hover { transform: translateY(-2px); }
+        
+        /* Stats Section */
+        .stats { background: white; padding: 20px; border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-top: 20px;
+                border-left: 6px solid #f4752e; }
+        .stats h2 { color: #f4752e; margin-bottom: 15px; font-size: 1.2em; }
+        .stat-item { display: flex; justify-content: space-between; padding: 8px 0;
+                    border-bottom: 1px solid #eee; }
+        .stat-label { color: #666; font-weight: 600; }
+        .stat-value { font-weight: bold; color: #f4752e; }
+        
+        /* Status Messages */
+        .status { position: fixed; top: 20px; right: 20px;
+                 padding: 15px 20px; border-radius: 8px; color: white;
+                 box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-family: sans-serif;
+                 animation: slideDown 0.3s ease; z-index: 1000; }
+        .status.success { background: #28a745; }
+        .status.error { background: #dc3545; }
+        ..status.warning { background: #ffc107; color: #333; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); }
+                             to { opacity: 1; transform: translateY(0); } }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .controls { padding: 15px; margin-bottom: 20px; }
+            .btn-generator { font-size: 1em; padding: 12px 20px; }
+            .output { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fish Position Generator</h1>
+        <p class="subtitle">Create custom YAML position files with specific weather, time, and spot settings</p>
+        
+        <!-- Controls Section -->
+        <div class="controls">
+            <h2>Generator Settings</h2>
+            
+            <div class="form-group">
+                <label for="numPositions">Number of Positions to Generate</label>
+                <input type="number" id="numPositions" value="5" min="1" max="50"
+                       oninput="updateCountDisplay()">
+                
+                <div id="countDisplay" style="margin-top: 10px; font-weight: bold;">
+                    Current: 5
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="weatherSelect">Weather Condition (Optional)</label>
+                <select id="weatherSelect">
+                    <option value="" selected>Empty - No specific weather</option>
+                    <option value="Rain">Rain</option>
+                    <option value="Clear">Clear</option>
+                    <option value="Snow">Snow</option>
+                    <option value="Storm">Storm</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="timeSelect">Time of Day (Optional)</label>
+                <select id="timeSelect">
+                    <option value="" selected>Empty - Any time</option>
+                    <option value="Dawn">Dawn</option>
+                    <option value="Day">Day</option>
+                    <option value="Dusk">Dusk</option>
+                    <option value="Night">Night</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="spotSelect">Spot Type (Optional)</label>
+                <select id="spotSelect">
+                    <option value="" selected>Empty - Any spot</option>
+                    <option value="Ocean">Ocean</option>
+                    <option value="River">River</option>
+                    <option value="Reef">Reef</option>
+                    <option value="Swamp">Swamp</option>
+                    <option value="Lake">Lake</option>
+                </select>
+            </div>
+            
+            <button class="btn-generator" onclick="generatePositions()">Generate Positions</button>
+        </div>
+        
+        <!-- Output Section -->
+        <div class="output">
+            <h2>Generated YAML Positions</h2>
+            <div class="yaml-output" id="yamlOutput">--- No positions generated yet---</div>
+            <button class="copy-btn" onclick="copyYAML()">📋 Copy All</button>
+            <button class="download-btn" onclick="downloadYAML()">📥 Download</button>
+        </div>
+        
+        <!-- Stats Section -->
+        <div class="stats">
+            <h2>Generation Statistics</h2>
+            <div class="stat-item"><span class="stat-label">Unique Species:</span>
+                <span class="stat-value" id="uniqueSpecies">0</span></div>
+            <div class="stat-item"><span class="stat-label">Spot Distribution:</span>
+                <span class="stat-value" id="spotDistribution">None</span></div>
+            <div class="stat-item"><span class="stat-label">Highest Chance:</span>
+                <span class="stat-value" id="highestChance">0%</span></div>
+            <div class="stat-item"><span class="stat-label">Lowest Chance:</span>
+                <span class="stat-value" id="lowestChance">0%</span></div>
+        </div>
+    </div>
+
+    <script>
+        let currentPosition = 0;
+
+        const fishData = [
+        { name: "Anchovy", description: "Small, salty fish used in cooking.", spot: "Ocean" },
+        { name: "Angelfish", description: "Popular, elegant, disk-shaped aquarium fish.", spot: "Reef" },
+        { name: "Barracuda", description: "Predatory fish with sharp, needle-like teeth.", spot: "Reef" },
+        { name: "Bass", description: "Popular freshwater game fish for anglers." },
+        { name: "Betta", description: "Colorful fish known for aggressive behavior.", spot: "Swamp" },
+        { name: "Bluegill", description: "Common North American freshwater sunfish species.", spot: "Lake" },
+        { name: "Bonefish", description: "Fast, silver fish found on flats.", spot: "Ocean" },
+        { name: "Burbot", description: "Only freshwater member of cod family.", spot: "Lake" },
+        { name: "Carp", description: "Large, hardy freshwater bottom-feeding fish." },
+        { name: "Catfish", description: "Fish recognized by whisker-like barbels.", spot: "River" },
+        { name: "Cisco", description: "Cold-water fish related to whitefish.", spot: "Lake" },
+        { name: "Cod", description: "Important commercial fish with white meat." },
+        { name: "Discus", description: "Colorful, circular South American cichlid.", spot: "River" },
+        { name: "Eel", description: "Long, snake-like fish living in water." },
+        { name: "Flounder", description: "Flatfish with both eyes on top.", spot: "Ocean" },
+        { name: "Goldfish", description: "Common orange pet kept in bowls." },
+        { name: "Grouper", description: "Large-mouthed predatory saltwater reef fish.", spot: "Reef" },
+        { name: "Guppy", description: "Small, vibrant, easy-to-breed aquarium fish.", spot: "River" },
+        { name: "Haddock", description: "Saltwater fish similar to Atlantic cod.", spot: "Ocean" },
+        { name: "Hake", description: "Lean, white-fleshed marine food fish.", spot: "Ocean" },
+        { name: "Halibut", description: "Largest type of flatfish in oceans.", spot: "Ocean" },
+        { name: "Herring", description: "Forage fish often served pickled or smoked.", spot: "Ocean" },
+        { name: "Hoki", description: "Deep-sea fish caught near New Zealand.", spot: "Ocean" },
+        { name: "Ide", description: "Silvery freshwater fish of northern Europe.", spot: "River" },
+        { name: "Inconnu", description: "Large, predatory northern whitefish species.", spot: "River" },
+        { name: "Kaluga", description: "Giant predatory sturgeon from Amur River.", spot: "River" },
+        { name: "Kanyu", description: "Predatory cyprinid found in East Asia.", spot: "River" },
+        { name: "Killifish", description: "Small, hardy, and very colorful fish.", spot: "Swamp" },
+        { name: "Koi", description: "Decorative, brightly colored Japanese carp.", spot: "Lake" },
+        { name: "Kokanee", description: "Non-anadromous form of sockeye salmon.", spot: "Lake" },
+        { name: "Mackerel", description: "Oily fish with stripes on back.", spot: "Ocean" },
+        { name: "Marlin", description: "Large game fish with long bill.", spot: "Ocean" },
+        { name: "Molly", description: "Popular live-bearing fish for home aquariums.", spot: "Swamp" },
+        { name: "Mullet", description: "Coastal fish often seen jumping frequently.", spot: "Ocean" },
+        { name: "Muskellunge", description: "Large, aggressive North American freshwater predator.", spot: "Lake" },
+        { name: "Perch", description: "Common freshwater fish with spiny fins.", spot: "Lake" },
+        { name: "Pickerel", description: "Smaller relative of the northern pike.", spot: "Swamp" },
+        { name: "Pike", description: "Ambush predator with long, pointed snout." },
+        { name: "Plaice", description: "Flatfish known for orange spots.", spot: "Ocean" },
+        { name: "Pollock", description: "Marine fish used for frozen products.", spot: "Ocean" },
+        { name: "Glowfin", description: "Fish with glowing, neon-colored fins.", spot: "Reef" },
+        { name: "Shellcrag", description: "Giant crab with a stone shell.", spot: "Reef" },
+        { name: "Abysswalker", description: "Many-legged beast from the deepest ocean.", spot: "Ocean" },
+        { name: "Hydraserpent", description: "Multi-headed snake living in coral.", spot: "Reef" },
+        { name: "Waveglider", description: "Creature that flies above the surface.", spot: "Ocean" },
+        { name: "Pearlscale", description: "Elegant mermaid-like fish with shiny scales.", spot: "Reef" },
+        { name: "Stormray", description: "Ray that shoots electric blue lightning.", spot: "Ocean" },
+        { name: "Bubblemouth", description: "Round fish that traps prey in bubbles.", spot: "Swamp" },
+        { name: "Frosttentacle", description: "Jellyfish that freezes water around it.", spot: "Ocean" },
+        { name: "Voidshark", description: "Shadowy predator made of dark mist.", spot: "Ocean" }
+    ];
+
+        // Update count display
+        function updateCountDisplay() {
+            const countInput = document.getElementById('numPositions');
+            const display = document.getElementById('countDisplay');
+            display.textContent = `Current: ${countInput.value}`;
+        }
+
+        // Get unique fish randomly
+        function getRandomUniqueFish(usedNames = new Set()) {
+            const availableFish = fishData.filter(f => !usedNames.has(f.name));
+            
+            if (availableFish.length === 0) return null;
+            
+            const randomIndex = Math.floor(Math.random() * availableFish.length);
+            const selectedFish = availableFish[randomIndex];
+            
+            usedNames.add(selectedFish.name);
+            return selectedFish;
+        }
+
+        // Generate YAML from positions
+        function generateYAML(positions) {
+            let yaml = '';
+            
+            positions.forEach(pos => {
+                yaml += `  - id: ${pos.id}\n`;
+                yaml += `    name: ${pos.name}\n`;
+                
+                // Always include these fields (empty if no value)
+                yaml += `    weather: ${pos.weather || ''}\n`;
+                yaml += `    spot: ${pos.spot || ''}\n`;
+                yaml += `    time: ${pos.time || ''}\n`;
+                
+                // Always included with values
+                yaml += `    chance: ${pos.chance}\n`;
+                yaml += `    stars: ${pos.stars}\n`;
+                yaml += `    fluff: "${pos.fluff}"\n`;
+                
+                // Placeholders if empty
+                yaml += `    condition: ${pos.condition || ''}\n`;
+                yaml += `    image: "${pos.image || 'https://'}"\n`;
+                yaml += `    emoji: ${pos.emoji || '<>'}\n\n`;
+            });
+            
+            return yaml.trim(); // Remove trailing newline
+        }
+
+        // Update statistics display
+        function updateStatistics(positions) {
+            if (positions.length === 0) {
+                document.getElementById('uniqueSpecies').textContent = '0';
+                document.getElementById('spotDistribution').textContent = 'None';
+                document.getElementById('highestChance').textContent = '0%';
+                document.getElementById('lowestChance').textContent = '0%';
+                return;
+            }
+
+            const uniqueSpecies = new Set(positions.map(p => p.name)).size;
+            document.getElementById('uniqueSpecies').textContent = uniqueSpecies;
+
+            const spotCount = {};
+            positions.forEach(p => {
+                const spot = p.spot || 'Unspecified';
+                spotCount[spot] = (spotCount[spot] || 0) + 1;
+            });
+            const spotDistributions = Object.entries(spotCount)
+                .map(([spot, count]) => `${spot} (${count})`)
+                .join(', ');
+            document.getElementById('spotDistribution').textContent = spotDistributions;
+
+            let maxChance = 0, minChance = 101;
+            positions.forEach(p => {
+                if (p.chance > maxChance) maxChance = p.chance;
+                if (p.chance < minChance) minChance = p.chance;
+            });
+            document.getElementById('highestChance').textContent = `${maxChance}%`;
+            document.getElementById('lowestChance').textContent = `${minChance}%`;
+        }
+
+        // Generate positions
+        function generatePositions() {
+            // Reset ID counter for each generation
+            currentPosition = 0;
+
+            const numPositionsInput = document.getElementById('numPositions');
+            const numPositions = parseInt(numPositionsInput.value);
+            
+            if (isNaN(numPositions) || numPositions < 1) {
+                showStatus('error', 'Please enter a valid number (min 1)');
+                return;
+            }
+
+            const weatherSelect = document.getElementById('weatherSelect').value;
+            const timeSelect = document.getElementById('timeSelect').value;
+            const spotSelect = document.getElementById('spotSelect').value;
+
+            const positions = [];
+            const usedNames = new Set();
+
+            for (let i = 0; i < numPositions; i++) {
+                const fish = getRandomUniqueFish(usedNames);
+                
+                if (!fish) {
+                    showStatus('warning', 'Ran out of unique fish! Generated fewer positions.');
+                    break;
+                }
+
+                positions.push({
+                    id: currentPosition++,
+                    name: fish.name,
+                    weather: weatherSelect || undefined,
+                    spot: spotSelect || undefined,
+                    time: timeSelect || undefined,
+                    chance: Math.floor(Math.random() * 71) + 30, // 30-100
+                    stars: Math.floor(Math.random() * 4) + 1,
+                    fluff: fish.description
+                });
+            }
+
+            const yamlOutput = generateYAML(positions);
+            document.getElementById('yamlOutput').textContent = yamlOutput;
+
+            updateStatistics(positions);
+
+            showStatus('success', `Generated ${positions.length} positions!`);
+        }
+
+        // Copy YAML to clipboard
+        function copyYAML() {
+            const yamlOutput = document.getElementById('yamlOutput');
+            const yamlText = yamlOutput.textContent.trim();
+
+            if (!yamlText || yamlText === '--- No positions generated yet---') {
+                showStatus('warning', 'No positions to copy!');
+                return;
+            }
+
+            navigator.clipboard.writeText(yamlText)
+                .then(() => showStatus('success', 'YAML copied to clipboard!'))
+                .catch(err => showStatus('error', 'Copy failed: ' + err));
+        }
+
+        // Download YAML as file
+        function downloadYAML() {
+            const yamlOutput = document.getElementById('yamlOutput');
+            const yamlText = yamlOutput.textContent.trim();
+
+            if (!yamlText || yamlText === '--- No positions generated yet---') {
+                showStatus('warning', 'No positions to download!');
+                return;
+            }
+
+            // Fixed Blob creation (added 'new')
+            const blob = new Blob([yamlText], { type: 'text/yaml' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `positions-${new Date().toISOString().split('T')[0]}.yml`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            showStatus('success', 'YAML file downloaded!');
+        }
+
+        // Show status messages
+        function showStatus(type, message) {
+            const status = document.createElement('div');
+            status.className = `status ${type}`;
+            status.textContent = message;
+            
+            document.body.appendChild(status);
+            
+            setTimeout(() => status.remove(), 5000);
+        }
+
+        // Initial setup
+        updateCountDisplay();
+    </script>
+</body>
+</html>
