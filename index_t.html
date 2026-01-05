@@ -85,13 +85,21 @@
         .btn-generator:hover { transform: translateY(-2px);
                              box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
 
-		.btn-pickgenerator { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		.btn-pickgeneratoroff { background: linear-gradient(135deg, #434343 0%, #BABABA 100%);
                        color: white; padding: 15px 35px; border: none;
                        border-radius: 8px; font-size: 1.2em; cursor: pointer;
                        transition: all 0.3s ease; margin-top: 25px;
                        width: 100%; text-transform: uppercase;
                        letter-spacing: 1px; }
-        .btn-pickgenerator:hover { transform: translateY(-2px);
+        .btn-pickgeneratoroff:hover { transform: translateY(-2px);
+                             box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
+		.btn-pickgeneratoron { background: linear-gradient(135deg, #2EB62C 0%, #C5E8B7 100%);
+                       color: white; padding: 15px 35px; border: none;
+                       border-radius: 8px; font-size: 1.2em; cursor: pointer;
+                       transition: all 0.3s ease; margin-top: 25px;
+                       width: 100%; text-transform: uppercase;
+                       letter-spacing: 1px; }
+        .btn-pickgeneratoron:hover { transform: translateY(-2px);
                              box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
         
         /* Output Section */
@@ -153,16 +161,17 @@
         <div class="controls">
             <h2>Generation Settings</h2>
 
-			<div class="form-group">
+			<div>
                 <label for="fishTrashSelect">What do you want to generate? (fish or trash)</label>
-                <select id="fishTrashSelect">
-					<button class="btn-pickgenerator" onclick index.html>Fish</button>
-					<button class="btn-pickgenerator" onclick index_t.html>Trash</button>
+               <!-- <select id="fishTrashSelect">-->
+					<a href="https://k4mov.github.io/nadeko.bot-fish-generator/index.html"><button class="btn-pickgeneratoron">Fish</button></a>
+					<a href="https://k4mov.github.io/nadeko.bot-fish-generator/index_t.html"><button class="btn-pickgeneratoroff">Trash</button></a>
+				
                   <!--  <option value="Fish" selected>Fish</option> -->
                   <!--  <option value="Trash">Trash</option> -->
 
 
-                </select>
+             <!--   </select>-->
             </div>
             
             <div class="form-group">
