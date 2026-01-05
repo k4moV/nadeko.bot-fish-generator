@@ -1,1 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head class="container">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Position Generator</title>
+    <style>
+        /* Keep all your existing styles unchanged */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+               min-height: 100vh; padding: 20px; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; color: white; margin-bottom: 10px;
+             font-size: 2.5em; text-shadow: 2px 2px 4px #000; }
+        .subtitle { text-align: center; color: rgba(255,255,255,0.9);
+                   margin-bottom: 30px; font-size: 1.1em; }
+        
+        /* Controls Section */
+        .controls { background: white; padding: 25px; border-radius: 15px;
+                  box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 30px;
+                  border-left: 6px solid #667eea; }
+        .controls h2 { color: #667eea; margin-bottom: 20px; font-size: 1.5em; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 10px; color: #333;
+               font-weight: 600; font-size: 0.9em; }
+        
+        select, input[type="number"] { width: 100%; padding: 12px; border: 2px solid #ddd;
+                border-radius: 8px; font-size: 16px; transition: all 0.3s ease;
+                background-color: white; appearance: none; cursor: pointer; }
+        select:focus, input[type="number"]:focus { outline: none; border-color: #667eea; }
+        
+        /* Variant Options */
+        .variant-section {
+            padding: 15px 20px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 2px solid #667eea;
+        }
+        .variant-section h3 {
+            color: #444;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+        .variant-section p {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 4px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+            cursor: pointer;
+        }
+        .checkbox-label {
+            color: #333;
+            font-size: 0.95em;
+            user-select: none;
+        }
+        
+        /* Button */
+        .btn-generator { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                       color: white; padding: 15px 35px; border: none;
+                       border-radius: 8px; font-size: 1.2em; cursor: pointer;
+                       transition: all 0.3s ease; margin-top: 25px;
+                       width: 100%; text-transform: uppercase;
+                       letter-spacing: 1px; }
+        .btn-generator:hover { transform: translateY(-2px);
+                             box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
+        
+        /* Output Section */
+        .output { background: white; padding: 25px; border-radius: 15px;
+                 box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 20px;
+                 border-left: 6px solid #764ba2; }
+        .output h2 { color: #764ba2; margin-bottom: 15px; font-size: 1.3em; }
+        
+        .yaml-output { background: #f8f9fa; padding: 15px;
+                     border-radius: 8px; font-family: 'Courier New', monospace;
+                     font-size: 14px; color: #333; white-space: pre-wrap;
+                     line-height: 1.5; min-height: 300px; position: relative; }
+        .yaml-output::before { content: '  '; color: #667eea; font-weight: bold; }
+        
+        .copy-btn, .download-btn { position: absolute; top: 15px; right: 15px;
+                                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                 color: white; padding: 8px 20px; border: none;
+                                 border-radius: 6px; cursor: pointer; font-size: 0.8em; }
+        .copy-btn { right: 90px; }
+        .copy-btn:hover, .download-btn:hover { transform: translateY(-2px); }
+        
+        /* Stats Section */
+        .stats { background: white; padding: 20px; border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-top: 20px;
+                border-left: 6px solid #f4752e; }
+        .stats h2 { color: #f4752e; margin-bottom: 15px; font-size: 1.2em; }
+        
+        .stat-item { display: flex; justify-content: space-between; padding: 8px 0;
+                    border-bottom: 1px solid #eee; }
+        .stat-label { color: #666; font-weight: 600; }
+        .stat-value { font-weight: bold; color: #f4752e; }
+        
+        /* Status Messages */
+        .status { position: fixed; top: 20px; right: 20px;
+                 padding: 15px 20px; border-radius: 8px; color: white;
+                 box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-family: sans-serif;
+                 animation: slideDown 0.3s ease; z-index: 1000; }
+        .status.success { background: #28a745; }
+        .status.error { background: #dc3545; }
+        .status.warning { background: #ffc107; color: #333; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); }
+                             to { opacity: 1; transform: translateY(0); } }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .controls { padding: 15px; margin-bottom: 20px; }
+            .btn-generator { font-size: 1em; padding: 12px 20px; }
+            .output { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fish Generator for Nadeko.bot</h1>
+        <p class="subtitle">by kamov</p>
+        
+        <!-- Controls Section -->
+        <div class="controls">
+            <h2>Generation Settings</h2>
 
+			<div class="form-group">
+                <label for="fishTrashSelect">What do you want to generate? (fish or trash)</label>
+                <select id="fishTrashSelect">
+					<button class="btn-pickgenerator" onclick index.html>Fish</button>
+					<button class="btn-pickgenerator" onclick index_t.html>Trash</button>
+                  <!--  <option value="Fish" selected>Fish</option> -->
+                  <!--  <option value="Trash">Trash</option> -->
+
+
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="numPositions">Number of Fish / Trash to Generate (max 50)</label>
+                <input type="number" id="numPositions" value="5" min="1" max="50"
+                       oninput="updateCountDisplay()">
+                
+               <!-- <div id="countDisplay" style="margin-top: 10px; font-weight: bold;"> -->
+                  <!--  Current: 5 -->
+               <!--</div> -->
+            </div>
+
+			<div class="form-group">
+                <label for="numStartId">Start ID (default 0)</label>
+                <input type="number" id="numStartId" value="0" min="0" max=""
+                       oninput="updateCountDisplay()">
+                
+               <!-- <div id="countDisplay" style="margin-top: 10px; font-weight: bold;"> -->
+                  <!--  Current: 5 -->
+               <!--</div> -->
+            </div>
+
+			<div class="form-group">
+                <label for="linkPrefix">Link prefix (<b>https://yourlinkprefix.to/uploaded/</b>fileprefixID.png</label>
+                <input type="text" id="linkPrefix"
+                       oninput="updateCountDisplay()">
+			</div>
+			<div class="form-group">
+                <label for="filePrefix">file prefix (<b>fileprefix</b>ID.png</label>
+                <input type="text" id="filePrefix"
+                       oninput="updateCountDisplay()">
+			</div>
+
+            <!-- Variant Options -->
+            <!--<div class="variant-section">
+                <h3>🐠 Rarity Options</h3>
+                
+                <div class="checkbox-group">
+                    <label class="checkbox-label" style="flex: 1;">
+                        <input type="checkbox" id="enableRare" unchecked>
+                        Generate Rare variants (random time)
+                    </label>
+                    <span style="background: #f0e68c; padding: 4px 10px; border-radius: 12px;
+                               font-weight: 600; color: #665500; font-size: 0.85em;">
+                       (1/3 chance of normal, +1 max star over normal < 4)
+                    </span>
+                </div>
+
+                <div class="checkbox-group" style="margin-top: 10px;">
+                    <label class="checkbox-label" style="flex: 1;">
+                        <input type="checkbox" id="enableLegendary" unchecked>
+                        Generate Legendary variants (random time + random weather)
+                    </label>
+                    <span style="background: #d8bfd8; padding: 4px 10px; border-radius: 12px;
+                               font-weight: 600; color: #4b0082; font-size: 0.85em;">
+                       (1/6 chance of normal, always 4 stars max)
+                    </span>
+                </div>
+
+                <p style="margin-top: 8px; color: #666; font-size: 0.88em;">
+                   Variants will be added after each normal fish
+                </p>
+            </div> -->
+            
+            <div class="form-group">
+                <label for="weatherSelect">Weather Condition (Optional)</label>
+                <select id="weatherSelect">
+                    <option value="" selected>Empty - Any weather</option>
+                    <option value="Rain">Rain</option>
+                    <option value="Clear">Clear</option>
+                    <option value="Snow">Snow</option>
+                    <option value="Storm">Storm</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="timeSelect">Time of Day (Optional)</label>
+                <select id="timeSelect">
+                    <option value="" selected>Empty - Any time</option>
+                    <option value="Dawn">Dawn</option>
+                    <option value="Day">Day</option>
+                    <option value="Dusk">Dusk</option>
+                    <option value="Night">Night</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="spotSelect">Spot Type (Optional)</label>
+                <select id="spotSelect">
+                    <option value="" selected>Empty - Any spot</option>
+                    <option value="Ocean">Ocean</option>
+                    <option value="River">River</option>
+                    <option value="Reef">Reef</option>
+                    <option value="Swamp">Swamp</option>
+                    <option value="Lake">Lake</option>
+                </select>
+            </div>
+            
+            <!--<div class="form-group">
+                <label for="shuffleOption">Fish Order:</label>
+                <select id="shuffleOption">
+                    <option value="original" selected>Original order</option>
+                    <option value="random">Random shuffle</option>
+                </select>
+            </div>-->
+            
+            <button class="btn-generator" onclick="generatePositions()">Generate YML Code</button>
+        </div>
+        
+        <!-- Output Section -->
+        <div class="output">
+            <h2>Generated YML Positions</h2>
+            <div class="yaml-output" id="yamlOutput"></div>
+            <button class="copy-btn" onclick="copyYAML()">📋 Copy All</button>
+          <!--  <button class="download-btn" onclick="downloadYAML()">📥 Download</button>-->
+        </div>
+        
+        <!-- Stats Section -->
+       <!-- <div class="stats"> -->
+           <!-- <h2>Generation Statistics</h2> -->
+            <!--<div class="stat-item"><span class="stat-label">Unique Species:</span> -->
+              <!--  <span class="stat-value" id="uniqueSpecies">0</span></div> -->
+           <!-- <div class="stat-item"><span class="stat-label">Spot Distribution:</span> -->
+            <!--    <span class="stat-value" id="spotDistribution">None</span></div> -->
+          <!--  <div class="stat-item"><span class="stat-label">Highest Chance:</span> -->
+             <!--   <span class="stat-value" id="highestChance">0%</span></div> -->
+         <!--   <div class="stat-item"><span class="stat-label">Lowest Chance:</span> -->
+          <!--      <span class="stat-value" id="lowestChance">0%</span></div> -->
+          <!--  <div class="stat-item"><span class="stat-label">Variants Generated:</span> -->
+            <!--    <span class="stat-value" id="variantCount">0</span></div> -->
+       <!-- </div> -->
+    </div>
+
+    <script>
+        let currentPosition = 0;
+    const fishData [
+        {name: "Bottle", description: "Plastic container floating in currents.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Boot", description: "Old rubber footwear stuck in mud.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Can", description: "Rusty aluminum soda or beer container.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Tire", description: "Heavy rubber wheel buried in muck.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Net", description: "Ghost fishing gear tangling coral branches.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Wrapper", description: "Crinkly plastic snack or candy packaging.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Bicycle", description: "Mangled metal frame resting on bottom.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Anchor", description: "Lost iron weight damaging the reef.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Battery", description: "Leaking chemical cell poisoning the water.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Lighter", description: "Small plastic tool used for fire.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Spoon", description: "Metallic cutlery dropped during a picnic.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Glove", description: "Single industrial or surgical hand covering.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Bag", description: "Thin plastic film resembling a jellyfish.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Straw", description: "Small plastic tube stuck in sand.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Diaper", description: "Absorbent waste caught in the reeds.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Bottlecap", description: "Small metal or plastic lid.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Crate", description: "Large plastic box used for transport.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Shoe", description: "Leather or fabric footwear lost long ago.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Pipe", description: "Rusty metal tube leaking unknown fluids.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Hook", description: "Sharp metal piece lost by fishermen.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Barrel", description: "Large drum filled with toxic waste.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Bucket", description: "Plastic pail used for building castles.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Mask", description: "Discarded protective face covering for health.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Cable", description: "Long copper wire tangled in rocks.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Cart", description: "Rusty metal shopping trolley from city.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Phone", description: "Broken electronic device dropped from boat.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Fender", description: "Rubber boat bumper drifting at sea.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Chair", description: "Broken plastic furniture from a garden.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Frisbee", description: "Plastic disc floating near the beach.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Buoy", description: "Detached marine marker covered in barnacles.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Line", description: "Tangled nylon thread from fishing reels.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Jar", description: "Glass container for food or preserves.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Keyboard", description: "Old computer part thrown from bridge.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Syringe", description: "Medical waste hidden in the mud.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Kettle", description: "Broken kitchen appliance found near pier.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Radio", description: "Ancient electronic box with corroded circuits.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Propeller", description: "Broken metal blade from a motor.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Rug", description: "Heavy wet fabric soaked in oil.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Spectacles", description: "Lost glasses lying on the sand.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Engine", description: "Massive iron motor sinking to abyss.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Comb", description: "Small plastic tool for styling hair.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Traffic-cone", description: "Bright orange plastic road safety marker.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Sandal", description: "Foam flip-flop floating near the shore.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Umbrella", description: "Broken frame with torn fabric pieces.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Cigarette", description: "Filter waste polluting the shoreline area.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Buoyancy-vest", description: "Torn life jacket floating in waves.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Handle", description: "Broken piece from a car door.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Sink", description: "Ceramic bathroom fixture dumped in water.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Goggles", description: "Lost swimming equipment for underwater vision.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1},
+		{name: "Suitcase", description: "Forgotten luggage traveling across the world.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1}
+		    ];
+
+	
+        // Update count display
+        //function updateCountDisplay() {
+          //  const countInput = document.getElementById('numPositions');
+          // const display = document.getElementById('countDisplay');
+          //  display.textContent = `Current: ${countInput.value}`;
+       // }
+
+        // Shuffle array (Fisher-Yates)
+        //function shuffleArray(array) {
+        //   let shuffled = array.slice();
+          //  for (let i = shuffled.length - 1; i > 0; i--) {
+          //      const j = Math.floor(Math.random() * (i + 1));
+          //      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        //    }
+         //   return shuffled;
+       // }
+
+        // Get fish data in desired order
+        function getFishDataInOrder() {
+           /* // const shuffleOption = document.getElementById('shuffleOption').value;
+           // if (shuffleOption === 'random') {
+              //  return shuffleArray(fishData);
+          //  } */
+            return fishData.slice(); // Original order
+        }
+
+        // Generate YAML from positions
+        function generateYAML(positions) {
+            let yaml = '';
+            
+            positions.forEach(pos => {
+                yaml += `  - id: ${pos.id}\n`;
+                yaml += `    name: ${pos.name}\n`;
+                
+                // Always include these fields (empty if no value)
+                yaml += `    weather: ${pos.weather || ''}\n`;
+                yaml += `    spot: ${pos.spot || ''}\n`;
+                yaml += `    time: ${pos.time || ''}\n`;
+                
+                // Required fields
+                yaml += `    chance: ${pos.chance}\n`;
+                yaml += `    stars: ${pos.stars}\n`;
+                yaml += `    fluff: "${pos.fluff}"\n`;
+                
+                // Optional placeholders
+                yaml += `    condition: ${pos.condition || ''}\n`;
+                yaml += `    image: "${pos.image || linkPrefix.value+filePrefix.value+pos.id+'.png'}"\n`;
+                yaml += `    emoji: ${pos.emoji || '<>'}\n\n`;
+            });
+            
+            return yaml.trim();
+        }
+
+       /* // Update statistics display
+        //function updateStatistics(positions) {
+           // if (positions.length === 0) {
+             //   document.getElementById('uniqueSpecies').textContent = '0';
+             //   document.getElementById('spotDistribution').textContent = 'None';
+             //   document.getElementById('highestChance').textContent = '0%';
+              //  document.getElementById('lowestChance').textContent = '0%';
+            //    document.getElementById('variantCount').textContent = '0';
+             //   return;
+          //  }
+
+            // Count unique species (base names only)
+           // const uniqueBaseSpecies = new Set(
+          //      positions.filter(p => !p.isVariant).map(p => p.baseName || p.name)
+          //  );
+          //  document.getElementById('uniqueSpecies').textContent = uniqueBaseSpecies.size;
+
+            // Spot distribution
+           // const spotCount = {};
+          //  positions.forEach(p => {
+            //    const spot = p.spot || 'Unspecified';
+            //    spotCount[spot] = (spotCount[spot] || 0) + 1;
+          //  });
+           // const spotDistributions = Object.entries(spotCount)
+           //     .map(([spot, count]) => `${spot} (${count})`)
+             //   .join(', ');
+           // document.getElementById('spotDistribution').textContent = spotDistributions;
+
+            // Chance statistics
+          //  let maxChance = 0, minChance = 101;
+           // positions.forEach(p => {
+           //     if (p.chance > maxChance) maxChance = p.chance;
+            //    if (p.chance < minChance) minChance = p.chance;
+           // });
+          //  document.getElementById('highestChance').textContent = `${maxChance}%`;
+          //  document.getElementById('lowestChance').textContent = `${minChance}%`;
+
+            // Variant count
+           // const variantCount = positions.filter(p => p.isVariant).length;
+           // document.getElementById('variantCount').textContent = variantCount;
+       // } */
+
+        // Generate positions with variants
+        function generatePositions() {
+            currentPosition = document.getElementById('numStartId'); // Reset ID counter
+
+            const numPositionsInput = document.getElementById('numPositions');
+            let numPositions = parseInt(numPositionsInput.value);
+
+			const numStartIdInput = document.getElementById('numStartId');
+            let numStartId = parseInt(numStartIdInput.value);
+
+			const filePrefixInput = document.getElementById('filePrefix');
+			let filePrefix = filePrefixInput.value;
+
+			const linkPrefixInput = document.getElementById('linkPrefix');
+			let linkPrefix = linkPrefixInput.value;
+            
+            //if (isNaN(numPositions) || numPositions < 1) {
+             //   showStatus('error', 'Please enter a valid number (min 1)');
+             //   return;
+            // 		}
+			
+            const weatherSelect = document.getElementById('weatherSelect').value;
+            const timeSelect = document.getElementById('timeSelect').value;
+            const spotSelect = document.getElementById('spotSelect').value;
+
+            const enableRare = document.getElementById('enableRare').checked;
+            const enableLegendary = document.getElementById('enableLegendary').checked;
+
+            const positions = [];
+            const usedNames = new Set();
+
+            // Get fish data in desired order
+            let availableFish = getFishDataInOrder();
+            
+            // Limit if not generating variants
+            if (!enableRare && !enableLegendary && numPositions > availableFish.length) {
+                numPositions = availableFish.length;
+                showStatus('warning', `Only ${availableFish.length} unique fish available.`);
+            }
+
+            for (let i = 0; i < numPositions; i++) {
+                const fish = availableFish[i];
+                
+                // Create normal variant
+                const basePosition = createFishEntry(fish, weatherSelect, timeSelect, spotSelect, );
+                basePosition.baseName = fish.name;
+                basePosition.isVariant = false;
+                positions.push(basePosition);
+				//fish.chance = Math.floor(Math.random() * 71) + 30;
+				//fish.stars  = Math.floor(Math.random() * 4) + 1;
+
+                // Create rare variant if enabled
+                if (enableRare) {
+                    const rarePosition = createFishEntry(
+                        fish,
+                        //weatherSelect || getRandomWeather(),
+                        getRandomTime()
+                        //spotSelect || getRandomSpot()
+                    );
+                    rarePosition.baseName = fish.name;
+                    rarePosition.isVariant = true;
+                    rarePosition.variantType = 'Rare';
+                    
+                    // Apply rare modifications
+                    rarePosition.name = `Rare_${fish.name}`;
+                    rarePosition.chance = Math.max(1, Math.floor(fish.chance / 3));
+                    rarePosition.stars = Math.min(fish.stars + 1, 4);
+                    rarePosition.fluff = `RARE! ${fish.description}`;
+                    
+                    positions.push(rarePosition);
+                }
+
+                // Create legendary variant if enabled
+                if (enableLegendary) {
+                    const legPos = createFishEntry(
+                        fish,
+                        getRandomWeather(),
+                        getRandomTime(),
+                        //spotSelect || getRandomSpot()
+                    );
+                    legPos.baseName = fish.name;
+                    legPos.isVariant = true;
+                    legPos.variantType = 'Legendary';
+                    
+                    // Apply legendary modifications
+                    legPos.name = `Legendary_${fish.name}`;
+                    legPos.chance = Math.max(1, Math.floor(fish.chance / 6));
+                    legPos.stars = 4;
+                    legPos.fluff = `LEGENDARY! ${fish.description}`;
+                    
+                    positions.push(legPos);
+                }
+            }
+
+           /* // Sort positions by base fish order with variants interleaved
+          //  positions.sort((a, b) => {
+             //   if (!a.isVariant && !b.isVariant) {
+              //      return a.baseIndex - b.baseIndex;
+              //  } else if (a.isVariant && !b.isVariant) {
+              //      return 1; // Normal comes before variant
+              //  } else if (!a.isVariant && b.isVariant) {
+              //      return -1;
+              //  } else {
+                    // Both variants - keep relative order
+                //    return a.variantOrderIndex - b.variantOrderIndex;
+              //  }
+           // }); */
+
+            // Reassign IDs in final order
+			
+            positions.forEach((p, idx) => p.id = idx + numStartId);
+
+            const yamlOutput = generateYAML(positions);
+            document.getElementById('yamlOutput').textContent = yamlOutput;
+
+            // updateStatistics(positions);
+
+          //  showStatus('success', `Generated ${positions.length} positions! (${numPositions} base fish)`);
+
+        }
+
+        // Helper to create a fish entry
+        function createFishEntry(fish, weather, time, spot, chance, stars) {
+            return {
+                name: fish.name,
+                weather: weather || undefined,
+                spot: spot || fish.spot || undefined,
+                time: time || undefined,
+                chance: fish.chance, //Math.floor(Math.random() * 71) + 30, // 30-100
+                stars: fish.stars, // Math.floor(Math.random() * 4) + 1,
+                fluff: fish.description,
+				image: fish.link,
+            };
+        }
+
+        // Random selection helpers
+        function getRandomWeather() {
+            const options = ["Rain", "Clear", "Snow", "Storm"];
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        function getRandomTime() {
+            const options = ["Dawn", "Day", "Dusk", "Night"];
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        function getRandomSpot() {
+            const options = ["Ocean", "River", "Reef", "Swamp", "Lake"];
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        // Copy YAML to clipboard
+        function copyYAML() {
+            const yamlOutput = document.getElementById('yamlOutput');
+            const yamlText = yamlOutput.textContent.trim();
+
+            if (!yamlText || yamlText === '--- No positions generated yet---') {
+                showStatus('warning', 'No positions to copy!');
+                return;
+            }
+
+            navigator.clipboard.writeText(yamlText)
+                .then(() => showStatus('success', 'YAML copied to clipboard!'))
+                .catch(err => showStatus('error', 'Copy failed: ' + err));
+        }
+
+        // Download YAML as file
+     /*   function downloadYAML() {
+            const yamlOutput = document.getElementById('yamlOutput');
+            const yamlText = yamlOutput.textContent.trim();
+
+            if (!yamlText || yamlText === '--- No positions generated yet---') {
+                showStatus('warning', 'No positions to download!');
+                return;
+            }
+
+            const blob = new Blob([yamlText], { type: 'text/yaml' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `positions-${new Date().toISOString().split('T')[0]}.yml`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            showStatus('success', 'YAML file downloaded!');
+        }
+*/
+        // Show status messages
+        function showStatus(type, message) {
+            const status = document.createElement('div');
+            status.className = `status ${type}`;
+            status.textContent = message;
+            
+            document.body.appendChild(status);
+            
+            setTimeout(() => status.remove(), 5000);
+        }
+
+        // Initial setup
+       // updateCountDisplay();
+    </script>
+</body>
+</html>
