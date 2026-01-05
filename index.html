@@ -170,7 +170,7 @@
             </div>
             
             <div class="form-group">
-                <label for="numPositions">Number of Fish to Generate (max 50)</label>
+                <label for="numPositions">How many base fish you want to generate? (max 50)</label>
                 <input type="number" id="numPositions" value="5" min="1" max="50"
                        oninput="updateCountDisplay()">
                 
@@ -208,6 +208,7 @@
                     <span style="background: #f0e68c; padding: 4px 10px; border-radius: 12px;
                                font-weight: 600; color: #665500; font-size: 0.85em;">
                        (1/3 chance of normal, +1 max star over normal < 4)
+						   
                     </span>
                 </div>
 
@@ -223,7 +224,7 @@
                 </div>
 
                 <p style="margin-top: 8px; color: #666; font-size: 0.88em;">
-                   Variants will be added after each normal fish
+        variants will extend fish generation, for example if u want to generate 10 fish with rare, and legendary variants for each, you will generate total of 30 entries
                 </p>
             </div>
             
@@ -269,7 +270,6 @@
             <h2>Generated YML Positions</h2>
             <div class="yaml-output" id="yamlOutput"></div>
             <button class="copy-btn" onclick="copyYAML()">📋 Copy All</button>
-          <!--  <button class="download-btn" onclick="downloadYAML()">📥 Download</button>-->
         </div>
         
     </div>
