@@ -166,12 +166,6 @@
                <!-- <select id="fishTrashSelect">-->
 					<a href="./index.html"><button class="btn-pickgeneratoroff">Fish</button></a>
 					<a href="./index_t.html"><button class="btn-pickgeneratoron">Trash</button></a>
-				
-                  <!--  <option value="Fish" selected>Fish</option> -->
-                  <!--  <option value="Trash">Trash</option> -->
-
-
-             <!--   </select>-->
             </div>
             
             <div class="form-group">
@@ -179,19 +173,13 @@
                 <input type="number" id="numPositions" value="5" min="1" max="50"
                        oninput="updateCountDisplay()">
                 
-               <!-- <div id="countDisplay" style="margin-top: 10px; font-weight: bold;"> -->
-                  <!--  Current: 5 -->
-               <!--</div> -->
             </div>
 
 			<div class="form-group">
                 <label for="numStartId">Start ID (default 0)</label>
                 <input type="number" id="numStartId" value="0" min="0" max=""
                        oninput="updateCountDisplay()">
-                
-               <!-- <div id="countDisplay" style="margin-top: 10px; font-weight: bold;"> -->
-                  <!--  Current: 5 -->
-               <!--</div> -->
+
             </div>
 
 			<div class="form-group">
@@ -268,16 +256,7 @@
                     <option value="Swamp">Swamp</option>
                     <option value="Lake">Lake</option>
                 </select>
-            </div>
-            
-            <!--<div class="form-group">
-                <label for="shuffleOption">Fish Order:</label>
-                <select id="shuffleOption">
-                    <option value="original" selected>Original order</option>
-                    <option value="random">Random shuffle</option>
-                </select>
-            </div>-->
-            
+            </div>     
             <button class="btn-generator" onclick="generatePositions()">Generate YML Code</button>
         </div>
         
@@ -288,21 +267,7 @@
             <button class="copy-btn" onclick="copyYAML()">📋 Copy All</button>
           <!--  <button class="download-btn" onclick="downloadYAML()">📥 Download</button>-->
         </div>
-        
-        <!-- Stats Section -->
-       <!-- <div class="stats"> -->
-           <!-- <h2>Generation Statistics</h2> -->
-            <!--<div class="stat-item"><span class="stat-label">Unique Species:</span> -->
-              <!--  <span class="stat-value" id="uniqueSpecies">0</span></div> -->
-           <!-- <div class="stat-item"><span class="stat-label">Spot Distribution:</span> -->
-            <!--    <span class="stat-value" id="spotDistribution">None</span></div> -->
-          <!--  <div class="stat-item"><span class="stat-label">Highest Chance:</span> -->
-             <!--   <span class="stat-value" id="highestChance">0%</span></div> -->
-         <!--   <div class="stat-item"><span class="stat-label">Lowest Chance:</span> -->
-          <!--      <span class="stat-value" id="lowestChance">0%</span></div> -->
-          <!--  <div class="stat-item"><span class="stat-label">Variants Generated:</span> -->
-            <!--    <span class="stat-value" id="variantCount">0</span></div> -->
-       <!-- </div> -->
+
     </div>
 
     <script>
@@ -360,30 +325,7 @@
 		{name: "Suitcase", description: "Forgotten luggage traveling across the world.", chance: Math.floor(Math.random() * 71) + 30, stars: Math.floor(Math.random() * 4) + 1}
 		    ];
 
-	
-        // Update count display
-        //function updateCountDisplay() {
-          //  const countInput = document.getElementById('numPositions');
-          // const display = document.getElementById('countDisplay');
-          //  display.textContent = `Current: ${countInput.value}`;
-       // }
-
-        // Shuffle array (Fisher-Yates)
-        //function shuffleArray(array) {
-        //   let shuffled = array.slice();
-          //  for (let i = shuffled.length - 1; i > 0; i--) {
-          //      const j = Math.floor(Math.random() * (i + 1));
-          //      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        //    }
-         //   return shuffled;
-       // }
-
-        // Get fish data in desired order
         function getFishDataInOrder() {
-           /* // const shuffleOption = document.getElementById('shuffleOption').value;
-           // if (shuffleOption === 'random') {
-              //  return shuffleArray(fishData);
-          //  } */
             return fishData.slice(); // Original order
         }
 
@@ -413,50 +355,7 @@
             
             return yaml.trim();
         }
-
-       /* // Update statistics display
-        //function updateStatistics(positions) {
-           // if (positions.length === 0) {
-             //   document.getElementById('uniqueSpecies').textContent = '0';
-             //   document.getElementById('spotDistribution').textContent = 'None';
-             //   document.getElementById('highestChance').textContent = '0%';
-              //  document.getElementById('lowestChance').textContent = '0%';
-            //    document.getElementById('variantCount').textContent = '0';
-             //   return;
-          //  }
-
-            // Count unique species (base names only)
-           // const uniqueBaseSpecies = new Set(
-          //      positions.filter(p => !p.isVariant).map(p => p.baseName || p.name)
-          //  );
-          //  document.getElementById('uniqueSpecies').textContent = uniqueBaseSpecies.size;
-
-            // Spot distribution
-           // const spotCount = {};
-          //  positions.forEach(p => {
-            //    const spot = p.spot || 'Unspecified';
-            //    spotCount[spot] = (spotCount[spot] || 0) + 1;
-          //  });
-           // const spotDistributions = Object.entries(spotCount)
-           //     .map(([spot, count]) => `${spot} (${count})`)
-             //   .join(', ');
-           // document.getElementById('spotDistribution').textContent = spotDistributions;
-
-            // Chance statistics
-          //  let maxChance = 0, minChance = 101;
-           // positions.forEach(p => {
-           //     if (p.chance > maxChance) maxChance = p.chance;
-            //    if (p.chance < minChance) minChance = p.chance;
-           // });
-          //  document.getElementById('highestChance').textContent = `${maxChance}%`;
-          //  document.getElementById('lowestChance').textContent = `${minChance}%`;
-
-            // Variant count
-           // const variantCount = positions.filter(p => p.isVariant).length;
-           // document.getElementById('variantCount').textContent = variantCount;
-       // } */
-
-        // Generate positions with variants
+		
         function generatePositions() {
             currentPosition = document.getElementById('numStartId'); // Reset ID counter
 
@@ -471,11 +370,6 @@
 
 			const linkPrefixInput = document.getElementById('linkPrefix');
 			let linkPrefix = linkPrefixInput.value;
-            
-            //if (isNaN(numPositions) || numPositions < 1) {
-             //   showStatus('error', 'Please enter a valid number (min 1)');
-             //   return;
-            // 		}
 			
             const weatherSelect = document.getElementById('weatherSelect').value;
             const timeSelect = document.getElementById('timeSelect').value;
@@ -504,14 +398,12 @@
                 basePosition.baseName = fish.name;
                 basePosition.isVariant = false;
                 positions.push(basePosition);
-				//fish.chance = Math.floor(Math.random() * 71) + 30;
-				//fish.stars  = Math.floor(Math.random() * 4) + 1;
 
                 // Create rare variant if enabled
                 if (enableRare) {
                     const rarePosition = createFishEntry(
                         fish,
-                        //weatherSelect || getRandomWeather(),
+                        '',
                         getRandomTime()
                         //spotSelect || getRandomSpot()
                     );
@@ -550,31 +442,12 @@
                 }
             }
 
-           /* // Sort positions by base fish order with variants interleaved
-          //  positions.sort((a, b) => {
-             //   if (!a.isVariant && !b.isVariant) {
-              //      return a.baseIndex - b.baseIndex;
-              //  } else if (a.isVariant && !b.isVariant) {
-              //      return 1; // Normal comes before variant
-              //  } else if (!a.isVariant && b.isVariant) {
-              //      return -1;
-              //  } else {
-                    // Both variants - keep relative order
-                //    return a.variantOrderIndex - b.variantOrderIndex;
-              //  }
-           // }); */
-
             // Reassign IDs in final order
 			
             positions.forEach((p, idx) => p.id = idx + numStartId);
 
             const yamlOutput = generateYAML(positions);
             document.getElementById('yamlOutput').textContent = yamlOutput;
-
-            // updateStatistics(positions);
-
-          //  showStatus('success', `Generated ${positions.length} positions! (${numPositions} base fish)`);
-
         }
 
         // Helper to create a fish entry
@@ -621,29 +494,6 @@
                 .then(() => showStatus('success', 'YAML copied to clipboard!'))
                 .catch(err => showStatus('error', 'Copy failed: ' + err));
         }
-
-        // Download YAML as file
-     /*   function downloadYAML() {
-            const yamlOutput = document.getElementById('yamlOutput');
-            const yamlText = yamlOutput.textContent.trim();
-
-            if (!yamlText || yamlText === '--- No positions generated yet---') {
-                showStatus('warning', 'No positions to download!');
-                return;
-            }
-
-            const blob = new Blob([yamlText], { type: 'text/yaml' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `positions-${new Date().toISOString().split('T')[0]}.yml`;
-            a.click();
-            
-            URL.revokeObjectURL(url);
-            showStatus('success', 'YAML file downloaded!');
-        }
-*/
         // Show status messages
         function showStatus(type, message) {
             const status = document.createElement('div');
@@ -654,9 +504,6 @@
             
             setTimeout(() => status.remove(), 5000);
         }
-
-        // Initial setup
-       // updateCountDisplay();
     </script>
 </body>
 </html>
